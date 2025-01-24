@@ -67,9 +67,9 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패.")
     })
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
-        Map<String, Object> response = memberService.login(memberLoginRequestDTO);
-        return ApiResponse.success(SuccessStatus.SEND_LOGIN_SUCCESS, response);
+    public ResponseEntity<ApiResponse<MemberLoginResponseDTO>> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
+        MemberLoginResponseDTO responseDTO = memberService.login(memberLoginRequestDTO);
+        return ApiResponse.success(SuccessStatus.SEND_LOGIN_SUCCESS, responseDTO);
     }
 
     @Operation(
