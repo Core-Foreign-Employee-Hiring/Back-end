@@ -26,6 +26,18 @@ jobs:
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
 
+    # 2-2. application-jwt.yml 파일 생성
+    - name: Create application-jwt.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_JWT_YML }}" > src/main/resources/application-jwt.yml
+
+    # 2-3. application-mail.yml 파일 생성
+    - name: Create application-mail.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_MAIL_YML }}" > src/main/resources/application-mail.yml
+
     # 3. Gradle 설정
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
