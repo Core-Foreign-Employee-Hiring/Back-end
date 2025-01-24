@@ -1,9 +1,11 @@
 package com.core.foreign.api.member.controller;
 
 import com.core.foreign.api.member.dto.*;
+import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.EmailService;
 import com.core.foreign.api.member.service.MemberService;
+import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ApiResponse;
 import com.core.foreign.common.response.ErrorStatus;
@@ -12,12 +14,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import static com.core.foreign.common.response.SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS;
 
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
@@ -114,4 +123,140 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.SEND_ALLOW_USERID_SUCCESS);
     }
 
+    @Operation(
+            summary = "고용주 프로필 조회 API",
+            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/my-profile")
+    public ResponseEntity<ApiResponse<EmployerProfileResponseDTO>> getEmployerProfile(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        EmployerProfileResponseDTO responseDTO = memberService.getEmployerProfile(securityMember.getId());
+
+        return ApiResponse.success(SuccessStatus.SEND_SELECT_EMPLOYER_SUCCESS, responseDTO);
+    }
+
+    @Operation(
+            summary = "고용주 이름, 생년월일, 성별 수정 API",
+            description = "고용주의 이름, 생년월일, 성별을 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이름, 생년월일, 성별 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping("/employer/profile/basic-info")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerBasicInfo(@RequestParam String name,
+                                                                     @RequestParam LocalDate birthday,
+                                                                     @RequestParam boolean isMaie,
+                                                                     @AuthenticationPrincipal SecurityMember securityMember) {
+        memberService.updateEmployerBasicInfo(securityMember.getId(), name, birthday, isMaie);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    /**
+     * @apiNote
+     * 이메일 변경 시 토큰 조심
+     */
+    @Operation(
+            summary = "고용주 이메일 수정 API",
+            description = "고용주의 이메일을 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이메일 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping("/employer/profile/email")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
+        memberService.updateEmployerEmail(securityMember.getId(), email);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "고용주 휴대폰 번호 수정 API",
+            description = "고용주의 휴대폰 번호를 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 휴대폰 번호 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping("/employer/profile/phone-number")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
+
+        memberService.updateEmployerPhoneNumber(securityMember.getId(), phoneNumber);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "고용주 주소 수정 API",
+            description = "고용주의 주소를 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 주소 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping("/employer/profile/address")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerAddress(@RequestParam String zipcode,
+                                                                   @RequestParam String address1,
+                                                                   @RequestParam String address2,
+                                                                   @AuthenticationPrincipal SecurityMember securityMember) {
+        memberService.updateEmployerAddress(securityMember.getId(), zipcode, address1, address2);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "고용주 휴대폰 번호 수정 API",
+            description = "고용주의 휴대폰 번호를 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 휴대폰 번호 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping("/employer/profile/agreements")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerAgreements(@RequestParam boolean termsOfServiceAgreement,
+                                                                      @RequestParam boolean personalInfoAgreement,
+                                                                      @RequestParam boolean adInfoAgreementSnsMms,
+                                                                      @RequestParam boolean adInfoAgreementEmail,
+                                                                      @AuthenticationPrincipal SecurityMember securityMember) {
+
+        memberService.updateEmployerAgreement(securityMember.getId(), termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSnsMms, adInfoAgreementEmail);
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "이메일 중복 확인 API",
+            description = "이메일 중복 확인하여 사용가능한 이메일인지 판단합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 이메일입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 이메일입니다."),
+    })
+    @PostMapping("/duplication/email")
+    public ResponseEntity<ApiResponse<Boolean>> isEmailDuplication(@RequestParam String email) {
+        boolean duplicateEmail = memberService.isDuplicateEmail(email);
+
+        return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicateEmail);
+    }
+
+
+    @Operation(
+            summary = "휴대폰 번호 중복 확인 API",
+            description = "휴대폰 번호 중복 확인하여 사용가능한지 판단합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 휴대폰 번호입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 휴대폰 번호입니다."),
+    })
+    @PostMapping("/duplication/phone-number")
+    public ResponseEntity<ApiResponse<Boolean>> isPhoneNumberDuplication(@RequestParam String phoneNumber) {
+        boolean duplicatePhoneNumber = memberService.isDuplicatePhoneNumber(phoneNumber);
+
+        return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicatePhoneNumber);
+    }
 }
