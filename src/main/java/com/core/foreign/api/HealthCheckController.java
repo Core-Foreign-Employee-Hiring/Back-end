@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthCheckController {
 
-    // 최초 회원가입 사용자 유저 태그 등록 API
     @Operation(
             summary = "Health Check API",
             description = "서버와의 응답이 정상인지 확인하는 API입니다."
