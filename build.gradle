@@ -27,6 +27,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+	// Apache Commons Validator
+	implementation 'commons-validator:commons-validator:1.9.0'
+
+	// Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2'
+
+	//SpringSecurity
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-crypto'
+
+	//JWT
+	implementation 'com.auth0:java-jwt:4.4.0'
+
 	// JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -41,7 +54,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	//Swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
