@@ -19,6 +19,9 @@ public class Employer extends Member {
     private LocalDate establishedDate;         // 설립일
     private String businessField;              // 업직종
 
+    private String companyEmail;
+    private String mainPhoneNumber;
+
     public Employer(String userId,
                     String password,
                     String name,
@@ -40,5 +43,7 @@ public class Employer extends Member {
         this.companyName = companyName;
         this.establishedDate = establishedDate;
         this.businessField = businessField;
+        this.companyEmail=email;
+        this.mainPhoneNumber=phoneNumber;
     }
 }

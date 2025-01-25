@@ -1,7 +1,6 @@
 package com.core.foreign.api.member.dto;
 
 import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

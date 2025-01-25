@@ -1,10 +1,8 @@
 package com.core.foreign.api.member.service;
 
-import com.core.foreign.api.member.dto.EmployeeRegisterRequestDTO;
-import com.core.foreign.api.member.dto.EmployerProfileResponseDTO;
-import com.core.foreign.api.member.dto.EmployerRegisterRequestDTO;
-import com.core.foreign.api.member.dto.MemberLoginRequestDTO;
-import com.core.foreign.api.member.dto.MemberLoginResponseDTO;
+import com.core.foreign.api.business_field.BusinessField;
+import com.core.foreign.api.business_field.service.BusinessFiledUpdater;
+import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.repository.EmailVerificationRepository;
@@ -19,9 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +31,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
     private final DuplicationValidator duplicationValidator;
+    private final BusinessFiledUpdater businessFiledUpdater;
 
     // 고용인 회원가입
     @Transactional
@@ -279,5 +277,10 @@ public class MemberService {
 
 
         return true;
+    }
+
+    @Transactional
+    public void updateBusinessFiledOfEmployer(Long employerId, List<BusinessField> newFields){
+        businessFiledUpdater.updateBusinessFiledOfEmployer(employerId, newFields);
     }
 }
