@@ -45,11 +45,12 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(Arrays.asList(
                             "https://www.forwork.co.kr",
+                            "https://api.forwork.co.kr",
                             "http://localhost:8100"
                     ));
-                    config.setAllowedMethods(Collections.singletonList("*"));
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS"));
                     config.setAllowCredentials(true);
-                    config.setAllowedHeaders(Collections.singletonList("*"));
+                    config.setAllowedHeaders(Arrays.asList("Authorization", "Authorization-Refresh","Content-Type", "X-Requested-With", "Accept", "Origin"));
                     config.setMaxAge(3600L);
                     config.addExposedHeader("Authorization");
                     config.addExposedHeader("Authorization-Refresh");

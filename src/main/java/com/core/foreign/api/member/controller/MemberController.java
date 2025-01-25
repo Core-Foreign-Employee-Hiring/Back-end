@@ -3,7 +3,6 @@ package com.core.foreign.api.member.controller;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
-import com.core.foreign.api.member.service.EmailService;
 import com.core.foreign.api.member.service.MemberService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
@@ -31,16 +30,19 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtService jwtService;
-    private final EmailService emailService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
-            description = "피고용인 회원가입을 진행합니다. / 전화번호 전달 형식 : 01012345678" +
-                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
-                    "isOver15                   만 15세 이상 확인" +
-                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
-                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
-                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
+            description = "피고용인 회원가입을 진행합니다.<br>" +
+                    "<p>" +
+                    "전화번호(phoneNumber) 전달 형식 : 01012345678<br>" +
+                    "생년월일(birthDate) 전달 형식 : 2025-01-20<br>" +
+                    "<p>" +
+                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
+                    "isOver15 : 만 15세 이상 확인<br>" +
+                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
+                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
+                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -54,12 +56,34 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 회원가입 API",
-            description = "고용주 회원가입을 진행합니다. / 설립일 전달 형식 : 2025-01-01, 전화번호 전달 형식 : 01012345678" +
-                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
-                    "isOver15                   만 15세 이상 확인" +
-                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
-                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
-                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
+            description = "고용인 회원가입을 진행합니다.<br>" +
+                    "<p>" +
+                    "전화번호(phoneNumber) 전달 형식 : 01012345678<br>" +
+                    "설립일(establishedDate) 전달 형식 : 2025-01-20<br>" +
+                    "가입명의자생년월일(birthDate) 전달 형식 : 2025-01-20<br>" +
+                    "사업자등록번호(businessRegistrationNumber) 전달 형식 : 0000000000<br>" +
+                    "<p>" +
+                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
+                    "isOver15 : 만 15세 이상 확인<br>" +
+                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
+                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
+                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>" +
+                    "<p>" +
+                    "businessField 전달 형식 : FOOD_BEVERAGE<br>" +
+                    "<p>" +
+                    "FOOD_BEVERAGE : 외식/음료,<br>" +
+                    "STORE_SALES : 매장/판매,<br>" +
+                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
+                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
+                    "OFFICE_SALES : 사무/영업,<br>" +
+                    "DRIVING_DELIVERY : 운전/배달,<br>" +
+                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
+                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
+                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
+                    "RURAL_FISHING : 농어촌/선원,<br>" +
+                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
+                    "EDUCATION : 교육,<br>" +
+                    "OTHER_SERVICE : 기타/서비스"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -130,12 +154,13 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 프로필 조회 API",
-            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다." +
-                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
-                    "isOver15                   만 15세 이상 확인" +
-                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
-                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
-                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
+            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다.<br>" +
+                    "<p>" +
+                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
+                    "isOver15 : 만 15세 이상 확인<br>" +
+                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
+                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
+                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
@@ -222,11 +247,13 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 약관 동의 수정 API",
-            description = "고용주의 약관 동의를 수정합니다."+
-            "termsOfServiceAgreement    서비스 이용 약관 동의" +
-            "personalInfoAgreement      인정보 수집 및 이용 동의" +
-            "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
-            "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
+            description = "고용주의 약관 동의를 수정합니다.<br>"+
+                          "<p>" +
+                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
+                    "isOver15 : 만 15세 이상 확인<br>" +
+                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
+                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
+                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 약관 동의 수정 성공"),
@@ -275,8 +302,22 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주의 업직종을 수정 API",
-            description = "고용주의 업직종을 수정합니다. 최대 5개"
+            summary = "고용주 업직종 수정 API",
+            description = "고용주의 업직종을 수정합니다. 최대 5개 <br>" +
+                    "<p>" +
+                    "FOOD_BEVERAGE : 외식/음료,<br>" +
+                    "STORE_SALES : 매장/판매,<br>" +
+                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
+                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
+                    "OFFICE_SALES : 사무/영업,<br>" +
+                    "DRIVING_DELIVERY : 운전/배달,<br>" +
+                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
+                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
+                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
+                    "RURAL_FISHING : 농어촌/선원,<br>" +
+                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
+                    "EDUCATION : 교육,<br>" +
+                    "OTHER_SERVICE : 기타/서비스"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 업직종 수정 성공."),
