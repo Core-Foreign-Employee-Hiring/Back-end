@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Transactional
-public class BusinessFiledUpdater {
+public class BusinessFieldUpdater {
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
     private final MemberRepository memberRepository;
 

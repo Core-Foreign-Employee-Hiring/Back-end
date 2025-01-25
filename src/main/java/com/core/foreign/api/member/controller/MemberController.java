@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS;
+
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v1/member")
@@ -271,5 +273,22 @@ public class MemberController {
         }
 
         return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS);
+    }
+
+    @Operation(
+            summary = "마이페이지(고용주)-내 기업 정보 API",
+            description = "고용주의 기업 정보를 조회합니다. "
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 기업 정보 조회 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/employer/my-company")
+    public ResponseEntity<ApiResponse<EmployerCompanyInfoResponseDTO>> getEmployerCompanyInfo(@AuthenticationPrincipal SecurityMember securityMember) {
+        EmployerCompanyInfoResponseDTO companyInfo = memberService.getCompanyInfo(securityMember.getId());
+
+        ResponseEntity<ApiResponse<EmployerCompanyInfoResponseDTO>> success = ApiResponse.success(SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS, companyInfo);
+        return success;
+
     }
 }

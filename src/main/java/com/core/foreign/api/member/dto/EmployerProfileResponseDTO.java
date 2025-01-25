@@ -25,6 +25,7 @@ public class EmployerProfileResponseDTO {
     private String address2;
 
     private boolean termsOfServiceAgreement;
+    private boolean isOver15; // 만 15세 이상 확인
     private boolean personalInfoAgreement;
     private boolean adInfoAgreementSnsMms;
     private boolean adInfoAgreementEmail;
@@ -41,6 +42,7 @@ public class EmployerProfileResponseDTO {
                 .address1(employer.getAddress().getAddress1())
                 .address2(employer.getAddress().getAddress2())
                 .termsOfServiceAgreement(employer.isTermsOfServiceAgreement())
+                .isOver15(employer.isOver15())
                 .personalInfoAgreement(employer.isPersonalInfoAgreement())
                 .adInfoAgreementSnsMms(employer.isAdInfoAgreementSnsMms())
                 .adInfoAgreementEmail(employer.isAdInfoAgreementEmail())

@@ -28,10 +28,11 @@ public abstract class Member extends BaseTimeEntity {
     private LocalDate birthday;  // 생년월일
     private boolean isMale;      // 성별
 
-    private boolean termsOfServiceAgreement;          // 서비스 이용 약관 동의
-    private boolean personalInfoAgreement;           // 개인정보 수집 및 이용 동의
-    private boolean adInfoAgreementSnsMms;           // 광고성 정보 수신 동의 (SNS/MMS)
-    private boolean adInfoAgreementEmail;            // 광고성 정보 수신 동의 (이메일)
+    private boolean termsOfServiceAgreement;
+    private boolean isOver15; // 만 15세 이상 확인
+    private boolean personalInfoAgreement;
+    private boolean adInfoAgreementSnsMms;
+    private boolean adInfoAgreementEmail;
 
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +51,7 @@ public abstract class Member extends BaseTimeEntity {
                      LocalDate birthday,
                      boolean isMale,
                      boolean termsOfServiceAgreement,
+                     boolean isOver15,
                      boolean personalInfoAgreement,
                      boolean adInfoAgreementSmsMms,
                      boolean adInfoAgreementEmail) {
@@ -63,6 +65,7 @@ public abstract class Member extends BaseTimeEntity {
         this.birthday = birthday;
         this.isMale = isMale;
         this.termsOfServiceAgreement = termsOfServiceAgreement;
+        this.isOver15 = isOver15;
         this.personalInfoAgreement = personalInfoAgreement;
         this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
         this.adInfoAgreementEmail = adInfoAgreementEmail;

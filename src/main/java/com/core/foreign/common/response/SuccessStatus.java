@@ -21,6 +21,7 @@ public enum SuccessStatus {
     SEND_PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "프로필 변경 성공"),
     SEND_SELECT_EMPLOYER_SUCCESS(HttpStatus.OK, "고용주 조회 성공"),
     SEND_EMAIL_DUPLICATION_SUCCESS(HttpStatus.OK,"사용 가능한 이메일"),
+    SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS(HttpStatus.OK,"고용주 회사 정보 조회 성공"),
 
     /**
      * 201
