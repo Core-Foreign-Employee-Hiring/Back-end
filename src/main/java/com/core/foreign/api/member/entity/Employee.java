@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @DiscriminatorValue("EMPLOYEE")
 @Getter
@@ -24,8 +26,14 @@ public class Employee extends Member {
                     Address address,
                     String nationality,
                     String education,
-                    String visa) {
-        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYEE);
+                    String visa,
+                    LocalDate birthday,
+                    boolean isMail,
+                    boolean termsOfServiceAgreement,
+                    boolean personalInfoAgreement,
+                    boolean adInfoAgreementSmsMms,
+                    boolean adInfoAgreementEmail) {
+        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYEE, birthday, isMail, termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;

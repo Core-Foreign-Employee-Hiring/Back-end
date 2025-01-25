@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -23,6 +25,14 @@ public abstract class Member extends BaseTimeEntity {
     private String email;        // 이메일
     private String phoneNumber;  // 전화번호
     private String refreshToken; // 리프레시토큰
+    private LocalDate birthday;  // 생년월일
+    private boolean isMale;      // 성별
+
+    private boolean termsOfServiceAgreement;          // 서비스 이용 약관 동의
+    private boolean personalInfoAgreement;           // 개인정보 수집 및 이용 동의
+    private boolean adInfoAgreementSnsMms;           // 광고성 정보 수신 동의 (SNS/MMS)
+    private boolean adInfoAgreementEmail;            // 광고성 정보 수신 동의 (이메일)
+
 
     @Enumerated(EnumType.STRING)
     private Role role;           // 회원 Role (EMPLOYEE, EMPLOYER 등)
@@ -36,7 +46,13 @@ public abstract class Member extends BaseTimeEntity {
                      String email,
                      String phoneNumber,
                      Address address,
-                     Role role) {
+                     Role role,
+                     LocalDate birthday,
+                     boolean isMale,
+                     boolean termsOfServiceAgreement,
+                     boolean personalInfoAgreement,
+                     boolean adInfoAgreementSmsMms,
+                     boolean adInfoAgreementEmail) {
         this.userId = userId;
         this.password = password;
         this.name = name;
@@ -44,12 +60,48 @@ public abstract class Member extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.role = role;
+        this.birthday = birthday;
+        this.isMale = isMale;
+        this.termsOfServiceAgreement = termsOfServiceAgreement;
+        this.personalInfoAgreement = personalInfoAgreement;
+        this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
+        this.adInfoAgreementEmail = adInfoAgreementEmail;
+
     }
 
     // 리프레시토큰 업데이트
     public Member updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         return this;
+    }
+
+
+    public void updateBasicInfo(String name, LocalDate birthday, boolean isMale){
+        this.name = name;
+        this.birthday = birthday;
+        this.isMale = isMale;
+    }
+
+    public void updateAgreement(boolean termsOfServiceAgreement,
+                                boolean personalInfoAgreement,
+                                boolean adInfoAgreementSmsMms,
+                                boolean adInfoAgreementEmail){
+        this.termsOfServiceAgreement = termsOfServiceAgreement;
+        this.personalInfoAgreement = personalInfoAgreement;
+        this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
+        this.adInfoAgreementEmail = adInfoAgreementEmail;
+    }
+
+    public void updateEmail(String email){
+        this.email=email;
+    }
+
+    public void updatePhoneNumber(String phoneNumber){
+        this.phoneNumber=phoneNumber;
+    }
+
+    public void updateAddress(Address address){
+        this.address=address;
     }
 
 }

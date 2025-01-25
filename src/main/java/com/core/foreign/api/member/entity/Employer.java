@@ -28,8 +28,14 @@ public class Employer extends Member {
                     String businessRegistrationNumber,
                     String companyName,
                     LocalDate establishedDate,
-                    String businessField) {
-        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYER);
+                    String businessField,
+                    LocalDate birthday,
+                    boolean isMale,
+                    boolean termsOfServiceAgreement,
+                    boolean personalInfoAgreement,
+                    boolean adInfoAgreementSmsMms,
+                    boolean adInfoAgreementEmail) {
+        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYER, birthday, isMale, termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.companyName = companyName;
         this.establishedDate = establishedDate;

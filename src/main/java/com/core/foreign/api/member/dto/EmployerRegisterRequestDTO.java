@@ -23,7 +23,7 @@ public class EmployerRegisterRequestDTO {
     private String businessRegistrationNumber;
     private String companyName;
     private LocalDate establishedDate;
-    private String businessField;
+    private String businessField;   //
 
     @Builder
     public EmployerRegisterRequestDTO(String userId, String email, String password, String name, String phoneNumber,

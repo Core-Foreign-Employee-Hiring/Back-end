@@ -18,6 +18,9 @@ public enum SuccessStatus {
     SEND_EMAIL_VERIFICATION_CODE_SUCCESS(HttpStatus.OK,"이메일 인증코드 발송 성공"),
     SEND_EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK,"이메일 코드 인증 성공"),
     SEND_ALLOW_USERID_SUCCESS(HttpStatus.OK,"사용자 ID 사용 가능"),
+    SEND_PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "프로필 변경 성공"),
+    SEND_SELECT_EMPLOYER_SUCCESS(HttpStatus.OK, "고용주 조회 성공"),
+    SEND_EMAIL_DUPLICATION_SUCCESS(HttpStatus.OK,"사용 가능한 이메일"),
 
     /**
      * 201

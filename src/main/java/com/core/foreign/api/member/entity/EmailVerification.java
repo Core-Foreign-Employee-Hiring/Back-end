@@ -24,6 +24,8 @@ public class EmailVerification extends BaseTimeEntity {
     private String email;
     private String code;
     private Integer expirationTimeInMinutes;
+
+    @Builder.Default
     private boolean isVerified = false;
 
     public boolean isExpired(LocalDateTime verifiedAt) {

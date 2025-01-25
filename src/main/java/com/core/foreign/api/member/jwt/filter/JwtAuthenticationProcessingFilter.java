@@ -4,6 +4,7 @@ import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.jwt.util.PasswordUtil;
+import com.core.foreign.common.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,28 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private final MemberRepository memberRepository;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
+
+    private static final String[] SWAGGER_URIS = {
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/swagger-ui/index.html"
+    };
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestURI = request.getRequestURI();
+
+        // Swagger 관련 경로는 필터를 적용하지 않음. 디버깅 불편함.
+        for (String uri : SWAGGER_URIS) {
+            if (requestURI.startsWith(uri)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -99,14 +122,22 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     // 인증 정보를 SecurityContext에 설정하는 메서드
     private void setAuthentication(Member member) {
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+        /*UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
                 .username(member.getEmail())
                 .password(member.getPassword())
                 .roles(member.getRole().name())
+                .build();*/
+
+
+        SecurityMember securityMember = SecurityMember.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .password(member.getPassword())
+                .role(member.getRole())
                 .build();
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null, authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+                securityMember, null, null);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
