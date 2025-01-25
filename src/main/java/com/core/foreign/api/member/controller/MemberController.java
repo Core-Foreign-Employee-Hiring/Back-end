@@ -1,7 +1,7 @@
 package com.core.foreign.api.member.controller;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.*;
-import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.EmailService;
 import com.core.foreign.api.member.service.MemberService;
@@ -14,19 +14,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.apache.commons.validator.routines.EmailValidator;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
-
-import static com.core.foreign.common.response.SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS;
+import java.util.List;
 
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
@@ -147,7 +140,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이름, 생년월일, 성별 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping("/employer/profile/basic-info")
+    @PatchMapping("/employer/profile/basic-info")
     public ResponseEntity<ApiResponse<Void>> updateEmployerBasicInfo(@RequestParam String name,
                                                                      @RequestParam LocalDate birthday,
                                                                      @RequestParam boolean isMaie,
@@ -169,7 +162,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이메일 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping("/employer/profile/email")
+    @PatchMapping("/employer/profile/email")
     public ResponseEntity<ApiResponse<Void>> updateEmployerEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
         memberService.updateEmployerEmail(securityMember.getId(), email);
 
@@ -184,7 +177,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 휴대폰 번호 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping("/employer/profile/phone-number")
+    @PatchMapping("/employer/profile/phone-number")
     public ResponseEntity<ApiResponse<Void>> updateEmployerPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
 
         memberService.updateEmployerPhoneNumber(securityMember.getId(), phoneNumber);
@@ -200,7 +193,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 주소 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping("/employer/profile/address")
+    @PatchMapping("/employer/profile/address")
     public ResponseEntity<ApiResponse<Void>> updateEmployerAddress(@RequestParam String zipcode,
                                                                    @RequestParam String address1,
                                                                    @RequestParam String address2,
@@ -211,14 +204,14 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 휴대폰 번호 수정 API",
-            description = "고용주의 휴대폰 번호를 수정합니다."
+            summary = "고용주 약관 동의 수정 API",
+            description = "고용주의 약관 동의를 수정합니다."
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 휴대폰 번호 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 약관 동의 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping("/employer/profile/agreements")
+    @PatchMapping("/employer/profile/agreements")
     public ResponseEntity<ApiResponse<Void>> updateEmployerAgreements(@RequestParam boolean termsOfServiceAgreement,
                                                                       @RequestParam boolean personalInfoAgreement,
                                                                       @RequestParam boolean adInfoAgreementSnsMms,
@@ -258,5 +251,25 @@ public class MemberController {
         boolean duplicatePhoneNumber = memberService.isDuplicatePhoneNumber(phoneNumber);
 
         return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicatePhoneNumber);
+    }
+
+    @Operation(
+            summary = "고용주의 업직종을 수정 API",
+            description = "고용주의 업직종을 수정합니다. 최대 5개"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 업직종 수정 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "최대 5개까지 가능합니다."),
+    })
+    @PatchMapping("/employer/my-company/business-fields")
+    public ResponseEntity<ApiResponse<Void>> updateBusinessFiledOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                           @RequestParam List<BusinessField> businessFields) {
+        memberService.updateBusinessFiledOfEmployer(securityMember.getId(), businessFields);
+
+        if(businessFields.size()>=5) {
+            throw new BadRequestException("최대 5개까지 가능합니다.");
+        }
+
+        return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS);
     }
 }

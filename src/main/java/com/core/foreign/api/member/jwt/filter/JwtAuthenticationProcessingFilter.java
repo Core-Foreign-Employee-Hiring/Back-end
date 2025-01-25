@@ -1,10 +1,13 @@
 package com.core.foreign.api.member.jwt.filter;
 
 import com.core.foreign.api.member.entity.Member;
-import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.jwt.service.JwtService;
-import com.core.foreign.api.member.jwt.util.PasswordUtil;
+import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.common.SecurityMember;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
