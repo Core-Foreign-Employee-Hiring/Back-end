@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS;
+
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v1/member")
@@ -33,7 +35,12 @@ public class MemberController {
 
     @Operation(
             summary = "피고용인 회원가입 API",
-            description = "피고용인 회원가입을 진행합니다. / 전화번호 전달 형식 : 01012345678"
+            description = "피고용인 회원가입을 진행합니다. / 전화번호 전달 형식 : 01012345678" +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -47,7 +54,12 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 회원가입 API",
-            description = "고용주 회원가입을 진행합니다. / 설립일 전달 형식 : 2025-01-01, 전화번호 전달 형식 : 01012345678"
+            description = "고용주 회원가입을 진행합니다. / 설립일 전달 형식 : 2025-01-01, 전화번호 전달 형식 : 01012345678" +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -118,7 +130,12 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 프로필 조회 API",
-            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다."
+            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다." +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
@@ -205,7 +222,11 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 약관 동의 수정 API",
-            description = "고용주의 약관 동의를 수정합니다."
+            description = "고용주의 약관 동의를 수정합니다."+
+            "termsOfServiceAgreement    서비스 이용 약관 동의" +
+            "personalInfoAgreement      인정보 수집 및 이용 동의" +
+            "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+            "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 약관 동의 수정 성공"),
@@ -271,5 +292,22 @@ public class MemberController {
         }
 
         return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS);
+    }
+
+    @Operation(
+            summary = "마이페이지(고용주)-내 기업 정보 API",
+            description = "고용주의 기업 정보를 조회합니다. "
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 기업 정보 조회 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/employer/my-company")
+    public ResponseEntity<ApiResponse<EmployerCompanyInfoResponseDTO>> getEmployerCompanyInfo(@AuthenticationPrincipal SecurityMember securityMember) {
+        EmployerCompanyInfoResponseDTO companyInfo = memberService.getCompanyInfo(securityMember.getId());
+
+        ResponseEntity<ApiResponse<EmployerCompanyInfoResponseDTO>> success = ApiResponse.success(SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS, companyInfo);
+        return success;
+
     }
 }

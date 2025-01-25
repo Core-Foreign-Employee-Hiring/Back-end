@@ -1,7 +1,10 @@
 package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.business_field.service.BusinessFiledUpdater;
+import com.core.foreign.api.business_field.BusinessFieldTarget;
+import com.core.foreign.api.business_field.entity.BusinessFieldEntity;
+import com.core.foreign.api.business_field.repository.BusinessFieldEntityRepository;
+import com.core.foreign.api.business_field.service.BusinessFieldUpdater;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
@@ -31,7 +34,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
     private final DuplicationValidator duplicationValidator;
-    private final BusinessFiledUpdater businessFiledUpdater;
+    private final BusinessFieldUpdater businessFiledUpdater;
+    private final BusinessFieldEntityRepository businessFieldEntityRepository;
 
     // 고용인 회원가입
     @Transactional
@@ -69,12 +73,13 @@ public class MemberService {
                 employeeRegisterRequestDTO.getNationality(),
                 employeeRegisterRequestDTO.getEducation(),
                 employeeRegisterRequestDTO.getVisa(),
-                LocalDate.now(),   // 임시
-                true  ,             // 임시
-                true,               // 임시
-                true,               // 임시
-                true,               // 임시
-                true                // 임시
+                employeeRegisterRequestDTO.getBirthDate(),
+                employeeRegisterRequestDTO.isMale(),
+                employeeRegisterRequestDTO.isTermsOfServiceAgreement(),
+                employeeRegisterRequestDTO.isOver15(),
+                employeeRegisterRequestDTO.isPersonalInfoAgreement(),
+                employeeRegisterRequestDTO.isAdInfoAgreementSnsMms(),
+                employeeRegisterRequestDTO.isAdInfoAgreementEmail()
         );
 
         memberRepository.save(employee);
@@ -116,16 +121,20 @@ public class MemberService {
                 employerRegisterRequestDTO.getBusinessRegistrationNumber(),
                 employerRegisterRequestDTO.getCompanyName(),
                 employerRegisterRequestDTO.getEstablishedDate(),
-                employerRegisterRequestDTO.getBusinessField(),
-                LocalDate.now(),   // 임시
-                true,              // 임시
-                true,               // 임시
-                true,               // 임시
-                true,               // 임시
-                true                // 임시
+                employerRegisterRequestDTO.getBirthDate(),
+                employerRegisterRequestDTO.isMale(),
+                employerRegisterRequestDTO.isTermsOfServiceAgreement(),
+                employerRegisterRequestDTO.isOver15(),
+                employerRegisterRequestDTO.isPersonalInfoAgreement(),
+                employerRegisterRequestDTO.isAdInfoAgreementSnsMms(),
+                employerRegisterRequestDTO.isAdInfoAgreementEmail()
         );
 
-        memberRepository.save(employer);
+        Employer savedEmployer = memberRepository.save(employer);
+
+        // 업집종 추가.
+        businessFiledUpdater.updateBusinessFiledOfEmployer(savedEmployer.getId(), List.of(employerRegisterRequestDTO.getBusinessField()));
+
     }
 
     // 로그인
@@ -282,5 +291,18 @@ public class MemberService {
     @Transactional
     public void updateBusinessFiledOfEmployer(Long employerId, List<BusinessField> newFields){
         businessFiledUpdater.updateBusinessFiledOfEmployer(employerId, newFields);
+    }
+
+
+    public EmployerCompanyInfoResponseDTO getCompanyInfo(Long employerId){
+        // 인증에서 이미 존재하는 거 검증.
+        Employer employer = (Employer)memberRepository.findById(employerId).get();
+
+
+        List<BusinessField> businessFields = businessFieldEntityRepository.findByTargetAndTargetId(BusinessFieldTarget.EMPLOYER, employerId)
+                .stream().map(BusinessFieldEntity::getBusinessField).toList();
+
+        return EmployerCompanyInfoResponseDTO.from(employer, businessFields);
+
     }
 }

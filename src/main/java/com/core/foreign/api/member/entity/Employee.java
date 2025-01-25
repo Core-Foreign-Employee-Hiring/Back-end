@@ -30,10 +30,11 @@ public class Employee extends Member {
                     LocalDate birthday,
                     boolean isMail,
                     boolean termsOfServiceAgreement,
+                    boolean isOver15,
                     boolean personalInfoAgreement,
                     boolean adInfoAgreementSmsMms,
                     boolean adInfoAgreementEmail) {
-        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYEE, birthday, isMail, termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
+        super(userId, password, name, email, phoneNumber, address, Role.EMPLOYEE, birthday, isMail, termsOfServiceAgreement,isOver15,  personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;
