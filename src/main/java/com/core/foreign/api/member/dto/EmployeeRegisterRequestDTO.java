@@ -53,10 +53,10 @@ public class EmployeeRegisterRequestDTO {
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;
-        this.termsOfServiceAgreement = termsOfServiceAgreement;
-        this.isOver15 = isOver15;
-        this.personalInfoAgreement = personalInfoAgreement;
-        this.adInfoAgreementSnsMms = adInfoAgreementSnsMms;
-        this.adInfoAgreementEmail = adInfoAgreementEmail;
+        this.termsOfServiceAgreement = termsOfServiceAgreement;  // 서비스 이용 약관 동의
+        this.isOver15 = isOver15;                                // 만 15세 이상 확인
+        this.personalInfoAgreement = personalInfoAgreement;      // 개인정보 수집 및 이용 동의
+        this.adInfoAgreementSnsMms = adInfoAgreementSnsMms;      // 광고성 정보 수신 동의 (SNS/MMS)
+        this.adInfoAgreementEmail = adInfoAgreementEmail;        // 광고성 정보 수신 동의 (이메일)
     }
 }

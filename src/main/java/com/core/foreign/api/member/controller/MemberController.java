@@ -35,7 +35,12 @@ public class MemberController {
 
     @Operation(
             summary = "피고용인 회원가입 API",
-            description = "피고용인 회원가입을 진행합니다. / 전화번호 전달 형식 : 01012345678"
+            description = "피고용인 회원가입을 진행합니다. / 전화번호 전달 형식 : 01012345678" +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -49,7 +54,12 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 회원가입 API",
-            description = "고용주 회원가입을 진행합니다. / 설립일 전달 형식 : 2025-01-01, 전화번호 전달 형식 : 01012345678"
+            description = "고용주 회원가입을 진행합니다. / 설립일 전달 형식 : 2025-01-01, 전화번호 전달 형식 : 01012345678" +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -120,7 +130,12 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 프로필 조회 API",
-            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다."
+            description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다." +
+                    "termsOfServiceAgreement    서비스 이용 약관 동의" +
+                    "isOver15                   만 15세 이상 확인" +
+                    "personalInfoAgreement      인정보 수집 및 이용 동의" +
+                    "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+                    "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
@@ -207,7 +222,11 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 약관 동의 수정 API",
-            description = "고용주의 약관 동의를 수정합니다."
+            description = "고용주의 약관 동의를 수정합니다."+
+            "termsOfServiceAgreement    서비스 이용 약관 동의" +
+            "personalInfoAgreement      인정보 수집 및 이용 동의" +
+            "adInfoAgreementSnsMms      광고성 정보 수신 동의 (SNS/MMS)" +
+            "adInfoAgreementEmail       광고성 정보 수신 동의 (이메일)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 약관 동의 수정 성공"),
