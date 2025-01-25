@@ -140,7 +140,7 @@ public class MemberService {
         }
 
         // JWT 토큰 생성 (Access, Refresh)
-        Map<String, String> tokens = jwtService.createAccessAndRefreshToken(member.getEmail());
+        Map<String, String> tokens = jwtService.createAccessAndRefreshToken(member.getId());
 
         // DTO를 사용하여 응답 데이터 구성
         return new MemberLoginResponseDTO(

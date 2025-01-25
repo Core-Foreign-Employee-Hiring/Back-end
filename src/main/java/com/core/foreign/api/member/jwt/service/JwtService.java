@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -35,30 +36,30 @@ public class JwtService {
     private final MemberRepository memberRepository;
 
     // Access Token 생성
-    public String createAccessToken(String email) {
+    public String createAccessToken(Long memberId) {
         Date now = new Date();
         return JWT.create()
-                .withSubject(email)
+                .withSubject(String.valueOf(memberId))
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
     // Refresh Token 생성
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(Long memberId) {
         Date now = new Date();
         return JWT.create()
-                .withSubject(email)
+                .withSubject(String.valueOf(memberId))
                 .withExpiresAt(new Date(now.getTime() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
     // Access Token과 Refresh Token 발급 및 반환
-    public Map<String, String> createAccessAndRefreshToken(String email) {
-        String accessToken = createAccessToken(email);
-        String refreshToken = createRefreshToken(email);
+    public Map<String, String> createAccessAndRefreshToken(Long memberId) {
+        String accessToken = createAccessToken(memberId);
+        String refreshToken = createRefreshToken(memberId);
 
         // Refresh Token DB에 업데이트
-        updateRefreshToken(email, refreshToken);
+        updateRefreshToken(memberId, refreshToken);
 
         log.info("Access Token, Refresh Token 발급 완료");
         log.info("Access Token : {}", accessToken);
@@ -72,8 +73,8 @@ public class JwtService {
     }
 
     @Transactional
-    public void updateRefreshToken(String email, String refreshToken) {
-        memberRepository.findByEmail(email).ifPresent(member -> {
+    public void updateRefreshToken(Long memberId, String refreshToken) {
+        memberRepository.findById(memberId).ifPresent(member -> {
             Member updatedMember = member.updateRefreshToken(refreshToken);
             memberRepository.save(updatedMember);
         });
@@ -92,6 +93,22 @@ public class JwtService {
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다: {}", e.getMessage());
             return false;
+        }
+    }
+
+    public Optional<String> extractMemberId(String accessToken) {
+        try {
+            Optional<String> sub = Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
+                    .build()
+                    .verify(accessToken)
+                    .getClaim("sub")
+                    .asString());
+
+
+            return sub;
+        } catch (Exception e) {
+            log.error("액세스 토큰이 유효하지 않습니다.");
+            return Optional.empty();
         }
     }
 

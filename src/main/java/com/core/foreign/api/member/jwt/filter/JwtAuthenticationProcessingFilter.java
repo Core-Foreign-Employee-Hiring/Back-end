@@ -82,8 +82,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         Optional<String> accessToken = extractToken(request, accessTokenHeader)
                 .filter(jwtService::isTokenValid);
 
-        accessToken.ifPresent(token -> jwtService.extractEmail(token)
-                .ifPresent(email -> memberRepository.findByEmail(email)
+        accessToken.ifPresent(token -> jwtService.extractMemberId(token)
+                .ifPresent(id -> memberRepository.findById(Long.valueOf(id))
                         .ifPresent(this::setAuthentication)));
 
         filterChain.doFilter(request, response);
@@ -93,11 +93,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private void handleRefreshToken(HttpServletResponse response, String refreshToken) {
         memberRepository.findByRefreshToken(refreshToken)
                 .ifPresent(user -> {
-                    String newAccessToken = jwtService.createAccessToken(user.getEmail());
-                    String newRefreshToken = jwtService.createRefreshToken(user.getEmail());
+                    String newAccessToken = jwtService.createAccessToken(user.getId());
+                    String newRefreshToken = jwtService.createRefreshToken(user.getId());
 
                     // Refresh Token 업데이트
-                    jwtService.updateRefreshToken(user.getEmail(), newRefreshToken);
+                    jwtService.updateRefreshToken(user.getId(), newRefreshToken);
 
                     // 새로운 Access Token과 Refresh Token을 헤더로 설정
                     response.setHeader(accessTokenHeader, "Bearer " + newAccessToken);
