@@ -46,7 +46,7 @@ public class SecurityConfig {
                     config.setAllowedOrigins(Arrays.asList(
                             "https://www.forwork.co.kr",
                             "https://api.forwork.co.kr",
-                            "http://localhost:8100"
+                            "http://localhost:3000"
                     ));
                     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS"));
                     config.setAllowCredentials(true);
