@@ -22,11 +22,15 @@ public enum SuccessStatus {
     SEND_SELECT_EMPLOYER_SUCCESS(HttpStatus.OK, "고용주 조회 성공"),
     SEND_EMAIL_DUPLICATION_SUCCESS(HttpStatus.OK,"사용 가능한 이메일"),
     SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS(HttpStatus.OK,"고용주 회사 정보 조회 성공"),
+    SEND_NO_DRAFT_SAVE_SUCCESS(HttpStatus.OK,"임시 저장된 공고가 없습니다."),
+    SEND_DRAFT_SAVE_SUCCESS(HttpStatus.OK,"임시 저장된 공고 조회 성공"),
 
     /**
      * 201
      */
-    CREATE_ARTICLE_SUCCESS(HttpStatus.CREATED, "게시판 등록 성공"),
+    CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 등록 성공"),
+    CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 임시 저장 성공"),
+
 
     ;
 

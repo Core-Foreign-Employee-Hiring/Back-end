@@ -1,6 +1,5 @@
 package com.core.foreign.api.business_field.entity;
 
-
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.business_field.BusinessFieldTarget;
 import jakarta.persistence.*;
@@ -21,7 +20,6 @@ public class BusinessFieldEntity {
 
     @Enumerated(STRING)
     private BusinessField businessField;
-
 
     @Enumerated(STRING)
     @Column(name="target")

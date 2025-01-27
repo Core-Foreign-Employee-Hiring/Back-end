@@ -20,6 +20,9 @@ public enum ErrorStatus {
     WRONG_EMAIL_VERIFICATION_CODE_EXCEPTION(HttpStatus.BAD_REQUEST,"이메일 인증코드가 올바르지 않습니다."),
     VALIDATION_EMAIL_FORMAT_EXCEPTION(HttpStatus.BAD_REQUEST,"올바른 이메일 형식이 아닙니다."),
     MISSING_EMAIL_VERIFICATION_EXCPETION(HttpStatus.BAD_REQUEST,"이메일 인증을 진행해주세요."),
+    ONLY_ADD_RECRUIT_ARTICLE_EMPLOYER_EXCEPTION(HttpStatus.BAD_REQUEST,"고용주만 공고 등록이 가능합니다."),
+    NOT_ENOUGH_PREMIUM_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 공고 등록 가능 횟수가 부족합니다."),
+    ALEADY_PUBLISHED_RECRUIT_ARTICLE_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 퍼블리싱된 공고 입니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -33,11 +36,12 @@ public enum ErrorStatus {
      */
 
     USERID_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 아이디를 찾을 수 없습니다."),
+    RECRUIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR
      */
-
+    FAIL_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드 실패하였습니다."),
     ;
 
     private final HttpStatus httpStatus;
