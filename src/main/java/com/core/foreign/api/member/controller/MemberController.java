@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS;
-import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS;
+import static com.core.foreign.common.response.SuccessStatus.*;
 
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
@@ -385,7 +384,7 @@ public class MemberController {
                                                                        @RequestBody EmployeeBasicResumeUpdateDTO updateDTO) {
         memberService.updateEmployeeBasicResume(securityMember.getId(), updateDTO);
 
-        ResponseEntity<ApiResponse<Void>> success = ApiResponse.success_only(SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS);
+        ResponseEntity<ApiResponse<Void>> success = ApiResponse.success_only(SEND_EMPLOYEE_BASIC_RESUME_UPDATE_SUCCESS);
         return success;
 
     }
