@@ -44,6 +44,12 @@ jobs:
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_AWS_YML }}" > src/main/resources/application-aws.yml
 
+    # 2-5. application-sms.yml 파일 생성
+    - name: Create application-sms.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_SMS_YML }}" > src/main/resources/application-sms.yml
+
     # 3. Gradle 설정
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
