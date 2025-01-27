@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS;
 import static com.core.foreign.common.response.SuccessStatus.SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS;
 
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
@@ -351,4 +352,42 @@ public class MemberController {
         return success;
 
     }
+
+    @Operation(
+            summary = "마이페이지(피고용인)-기본 이력서 조회 API",
+            description = "피고용인의 기본 이력서를 조회합니다.. "
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고요인의 기본 이력서 조회 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/employee/basic-resume")
+    public ResponseEntity<ApiResponse<EmployeeBasicResumeResponseDTO>> getEmployeeBasicResume(@AuthenticationPrincipal SecurityMember securityMember) {
+        EmployeeBasicResumeResponseDTO employeeBasicResume = memberService.getEmployeeBasicResume(securityMember.getId());
+
+        ResponseEntity<ApiResponse<EmployeeBasicResumeResponseDTO>> success = ApiResponse.success(SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS, employeeBasicResume);
+        return success;
+
+    }
+
+    @Operation(
+            summary = "마이페이지(피고용인)-기본 이력서 수정 API",
+            description = "피고용인의 기본 이력서를 수정합니다. " +
+                    "변경 대상: 학력, 비자, 주소" +
+                    " 연략처와 이메일 변경은 각각 다른 api 로 제공 예정."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고요인의 기본 이력서 수정 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/employee/basic-resume")
+    public ResponseEntity<ApiResponse<Void>> updateEmployeeBasicResume(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                       @RequestBody EmployeeBasicResumeUpdateDTO updateDTO) {
+        memberService.updateEmployeeBasicResume(securityMember.getId(), updateDTO);
+
+        ResponseEntity<ApiResponse<Void>> success = ApiResponse.success_only(SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS);
+        return success;
+
+    }
+
 }
