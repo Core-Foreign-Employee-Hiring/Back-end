@@ -1,5 +1,6 @@
 package com.core.foreign.api.member.entity;
 
+import com.core.foreign.api.member.dto.EmployeeBasicResumeUpdateDTO;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -38,5 +39,12 @@ public class Employee extends Member {
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;
+    }
+
+
+   public void updateBasicResume(EmployeeBasicResumeUpdateDTO updateDTO){
+        education=updateDTO.getEducation();
+        visa=updateDTO.getVisa();
+        updateAddress(new Address(updateDTO.getZipcode(), updateDTO.getAddress1(), updateDTO.getAddress2()));
     }
 }

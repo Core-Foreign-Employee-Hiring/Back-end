@@ -305,4 +305,17 @@ public class MemberService {
         return EmployerCompanyInfoResponseDTO.from(employer, businessFields);
 
     }
+
+    public EmployeeBasicResumeResponseDTO getEmployeeBasicResume(Long employeeId){
+        // 토큰 검사할 때 존재하는 거 알았어
+        Employee employee = (Employee) memberRepository.findById(employeeId).get();
+        return EmployeeBasicResumeResponseDTO.from(employee);
+    }
+
+    @Transactional
+    public void updateEmployeeBasicResume(Long employeeId, EmployeeBasicResumeUpdateDTO updateDTO){
+        Employee employee = (Employee) memberRepository.findById(employeeId).get();
+
+        employee.updateBasicResume(updateDTO);
+    }
 }
