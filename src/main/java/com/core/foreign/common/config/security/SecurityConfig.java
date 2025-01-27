@@ -67,7 +67,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/member/employee-register", "/api/v1/member/employer-register",
                                 "/api/v1/member/login","/api/v1/member/token-reissue","/api/v1/member/verify-email",
-                                "/api/v1/member/verification-email-code","/api/v1/member/verify-userid"
+                                "/api/v1/member/verification-email-code","/api/v1/member/verify-userid","/api/v1/member/verify-phone",
+                                "/api/v1/member/verification-phone-code"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증 허가
                         .anyRequest().authenticated()
                 )

@@ -10,6 +10,7 @@ import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.repository.EmailVerificationRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.member.repository.PhoneNumberVerificationRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
@@ -33,6 +34,7 @@ public class MemberService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
+    private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
     private final DuplicationValidator duplicationValidator;
     private final BusinessFieldUpdater businessFiledUpdater;
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
@@ -48,12 +50,23 @@ public class MemberService {
         if (memberRepository.findByEmail(employeeRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
+        // 핸드폰번호 중복 검증
+        if (memberRepository.findByEmail(employeeRegisterRequestDTO.getPassword()).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
 
         // 이메일 인증 여부 체크
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(employeeRegisterRequestDTO.getEmail())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCPETION.getMessage()));
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
         if (!emailVerification.isVerified()) {
-            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCPETION.getMessage());
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        // 핸드폰번호 인증 여부 체크
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(employeeRegisterRequestDTO.getPhoneNumber())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+        if (!phoneNumberVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
 
         Address address = new Address(
@@ -96,12 +109,23 @@ public class MemberService {
         if (memberRepository.findByEmail(employerRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
+        // 핸드폰번호 중복 검증
+        if (memberRepository.findByEmail(employerRegisterRequestDTO.getPassword()).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
 
         // 이메일 인증 여부 체크
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(employerRegisterRequestDTO.getEmail())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCPETION.getMessage()));
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
         if (!emailVerification.isVerified()) {
-            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCPETION.getMessage());
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        // 핸드폰번호 인증 여부 체크
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(employerRegisterRequestDTO.getPhoneNumber())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+        if (!phoneNumberVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
 
         Address address = new Address(
