@@ -24,7 +24,8 @@ public enum SuccessStatus {
     SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS(HttpStatus.OK,"고용주 회사 정보 조회 성공"),
     SEND_NO_DRAFT_SAVE_SUCCESS(HttpStatus.OK,"임시 저장된 공고가 없습니다."),
     SEND_DRAFT_SAVE_SUCCESS(HttpStatus.OK,"임시 저장된 공고 조회 성공"),
-    SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS(HttpStatus.OK,"고용주 회사 정보 조회 성공"),
+    SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS(HttpStatus.OK,"피고용인 기본 이력서 조회 성공"),
+    SEND_EMPLOYEE_BASIC_RESUME_UPDATE_SUCCESS(HttpStatus.OK,"피고용인 기본 이력서 수정 성공"),
 
     /**
      * 201
