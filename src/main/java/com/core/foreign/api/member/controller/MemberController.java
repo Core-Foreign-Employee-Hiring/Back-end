@@ -176,7 +176,8 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 이름, 생년월일, 성별 수정 API",
-            description = "고용주의 이름, 생년월일, 성별을 수정합니다."
+            description = "고용주의 이름, 생년월일, 성별을 수정합니다." +
+                    " 생년월일: yyyy-mm-dd 형식"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이름, 생년월일, 성별 수정 성공"),
@@ -192,10 +193,7 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
-    /**
-     * @apiNote
-     * 이메일 변경 시 토큰 조심
-     */
+
     @Operation(
             summary = "고용주 이메일 수정 API",
             description = "고용주의 이메일을 수정합니다."
@@ -212,6 +210,21 @@ public class MemberController {
     }
 
     @Operation(
+            summary = "고용주 회사 이메일 수정 API",
+            description = "고용주의 회사 이메일을 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 이메일 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/employer/profile/company-email")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
+        memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
             summary = "고용주 휴대폰 번호 수정 API",
             description = "고용주의 휴대폰 번호를 수정합니다."
     )
@@ -223,6 +236,22 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployerPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
 
         memberService.updateEmployerPhoneNumber(securityMember.getId(), phoneNumber);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "고용주 회사 대표 연락처 수정 API",
+            description = "고용주 회사 대표 연락처를 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 대표 연락처 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/employer/profile/main-phone-number")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
+
+        memberService.updateEmployerCompanyPhoneNumber(securityMember.getId(), phoneNumber);
 
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
@@ -261,30 +290,41 @@ public class MemberController {
     })
     @PatchMapping("/employer/profile/agreements")
     public ResponseEntity<ApiResponse<Void>> updateEmployerAgreements(@RequestParam boolean termsOfServiceAgreement,
+                                                                      @RequestParam boolean isOver15,
                                                                       @RequestParam boolean personalInfoAgreement,
                                                                       @RequestParam boolean adInfoAgreementSnsMms,
                                                                       @RequestParam boolean adInfoAgreementEmail,
                                                                       @AuthenticationPrincipal SecurityMember securityMember) {
 
-        memberService.updateEmployerAgreement(securityMember.getId(), termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSnsMms, adInfoAgreementEmail);
+        memberService.updateEmployerAgreement(securityMember.getId(), termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSnsMms, adInfoAgreementEmail);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
+    /**
+     *
+     * @deprecated
+     * @apiNote
+     * 인증 메일 전송에서 중북 확인을 같이합니다.
+     */
     @Operation(
             summary = "이메일 중복 확인 API",
-            description = "이메일 중복 확인하여 사용가능한 이메일인지 판단합니다."
+            description = "이메일 중복 확인하여 사용가능한 이메일인지 판단합니다." +
+                    " 지원 중단: 인증 메일 전송에서 중복 확인을 같이합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 이메일입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 이메일입니다."),
     })
-    @PostMapping("/duplication/email")
+//    @PostMapping("/duplication/email")
     public ResponseEntity<ApiResponse<Boolean>> isEmailDuplication(@RequestParam String email) {
         boolean duplicateEmail = memberService.isDuplicateEmail(email);
 
         return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicateEmail);
     }
 
+    /**
+     * @deprecated
+     */
 
     @Operation(
             summary = "휴대폰 번호 중복 확인 API",
@@ -294,7 +334,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 휴대폰 번호입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 휴대폰 번호입니다."),
     })
-    @PostMapping("/duplication/phone-number")
+//    @PostMapping("/duplication/phone-number")
     public ResponseEntity<ApiResponse<Boolean>> isPhoneNumberDuplication(@RequestParam String phoneNumber) {
         boolean duplicatePhoneNumber = memberService.isDuplicatePhoneNumber(phoneNumber);
 
@@ -332,7 +372,7 @@ public class MemberController {
             throw new BadRequestException("최대 5개까지 가능합니다.");
         }
 
-        return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS);
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(

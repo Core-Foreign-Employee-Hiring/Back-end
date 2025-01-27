@@ -44,4 +44,12 @@ public class Employer extends Member {
         this.companyEmail=email;
         this.mainPhoneNumber=phoneNumber;
     }
+
+    public void updateCompanyEmail(String companyEmail){
+        this.companyEmail=companyEmail;
+    }
+
+    public void updateCompanyMainPhoneNumber(String mainPhoneNumber){
+        this.mainPhoneNumber=mainPhoneNumber;
+    }
 }

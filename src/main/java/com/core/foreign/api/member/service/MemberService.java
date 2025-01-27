@@ -17,12 +17,15 @@ import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +38,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
-    private final DuplicationValidator duplicationValidator;
+    private final DuplicationUtil duplicationUtil;
     private final BusinessFieldUpdater businessFiledUpdater;
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
+    private final EmailService emailService;
 
     // 고용인 회원가입
     @Transactional
@@ -51,7 +55,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
         // 핸드폰번호 중복 검증
-        if (memberRepository.findByEmail(employeeRegisterRequestDTO.getPassword()).isPresent()) {
+        if (memberRepository.findByEmail(employeeRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
@@ -110,7 +114,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
         // 핸드폰번호 중복 검증
-        if (memberRepository.findByEmail(employerRegisterRequestDTO.getPassword()).isPresent()) {
+        if (memberRepository.findByEmail(employerRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
@@ -127,7 +131,6 @@ public class MemberService {
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
-
         Address address = new Address(
                 employerRegisterRequestDTO.getZipcode(),
                 employerRegisterRequestDTO.getAddress1(),
@@ -225,13 +228,100 @@ public class MemberService {
     @Transactional
     public void updateEmployerAgreement(Long memberId,
                                         boolean termsOfServiceAgreement,
+                                        boolean isOver15,
                                         boolean personalInfoAgreement,
                                         boolean adInfoAgreementSmsMms,
                                         boolean adInfoAgreementEmail){
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
-        member.updateAgreement(termsOfServiceAgreement, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
+        member.updateAgreement(termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
 
+    }
+
+    /**
+     * 지우기 아까움 ㅜㅜ
+     * @deprecated
+     *
+
+     */
+    @Transactional
+    public String sendVerificationEmail(Long memberId, String email, String token) {
+        // 이메일 형식 처리.
+
+        // Apache Commons EmailValidator 검증
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new BadRequestException(ErrorStatus.VALIDATION_EMAIL_FORMAT_EXCEPTION.getMessage());
+        }
+
+        // 이메일 중복 처리.
+        boolean isToken = false;
+        boolean emailDuplicated = duplicationUtil.isEmailDuplicated(email);
+        if (emailDuplicated) { // 중복 o
+            // 중복 토근이 없으면.
+            if (token == null) {
+                throw new BadRequestException("중복된 이메일입니다.");
+            }
+
+            // 중복 토큰이 있으면
+            if (!jwtService.isTokenValid(token)) { // 토큰이 잘못되었을 경우.
+                log.info("토큰이 이상한데...");
+
+                /**
+                 * 현재 토큰에 문제가 있는 경우임.
+                 *
+                 * 1) 토큰 새로해서 발급해주기 <- 현재 유저가 어떤 토큰을 발급 받았는디 DB 에서 유지해줘야 함.
+                 * 2) 그냥 중복 이메일 처리 <- 실수로 뒤로가기 해결을 위해 토큰 방식을 사용하는데 목적에 전혀 맞지 않음
+                 *
+                 * 현재 2)이지만 나중에 리펙토링할 때 1) 로 수정해줘야 함.
+                 *
+                 */
+                throw new BadRequestException("중복된 이메일입니다.");
+            }
+            String duplicationIdString = jwtService.extractDuplicationId(token).get();
+            Long duplicationId = Long.valueOf(duplicationIdString);
+
+            Optional<EmailDuplication> duplicationMail = duplicationUtil.getDuplicationMail(duplicationId);
+
+            if (duplicationMail.isEmpty()) {
+                /**
+                 * token에 있는 메일이 DB 에 없을 경우 <- 스케줄링 잘못돌린 경우 같은데 token 의 수명이 스케줄링 주기보단 짦아야겠따.
+                 */
+
+                log.info("token 의 메일이 DB에 없음.");
+
+                throw new BadRequestException("중복된 이메일입니다.");
+            }
+
+            EmailDuplication emailDuplication = duplicationMail.get();
+            String tokenEmail = emailDuplication.getEmail();
+
+            if(email.equals(tokenEmail)){
+                isToken = true;
+            }else{  // 다른 이메일로 변경을 신청한 거야. 이럴 경우 다른 이메일이 우선.
+                
+            }
+            
+            
+        }
+
+        // 중복 x 면
+        log.info("중복된 이메일이 아닙니다.");
+
+        // 이메일 코드 발송
+        emailService.sendVerificationEmail(email, LocalDateTime.now());
+
+        // 중복 토큰 발급.
+
+        String duplicationToken;
+        if (isToken) {
+            duplicationToken = token;
+        } else {
+            Long duplicationMailId = duplicationUtil.getDuplicationMailId(email);
+            duplicationToken = jwtService.createDuplicationToken(duplicationMailId);
+
+        }
+
+        return duplicationToken;
     }
 
     @Transactional
@@ -239,20 +329,89 @@ public class MemberService {
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
 
+        // 이메일 중복 검증
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
+        }
+
+        // 이메일 인증 여부 체크
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
+        if (!emailVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
         member.updateEmail(email);
 
         // email 중복 테이블에서 삭제.
-        duplicationValidator.removeEmailDuplication(email);
+//        duplicationUtil.removeEmailDuplication(email);
+    }
+
+    @Transactional
+    public void updateEmployerCompanyEmail(Long memberId, String email){
+        // 이미 필터에서 있는 거 확인했음.
+        Employer employer = (Employer)memberRepository.findById(memberId).get();
+
+        // 이메일 중복 검증
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
+        }
+
+        // 이메일 인증 여부 체크
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
+        if (!emailVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        employer.updateCompanyEmail(email);
+
+        // email 중복 테이블에서 삭제.
+//        duplicationUtil.removeEmailDuplication(email);
     }
 
     @Transactional
     public void updateEmployerPhoneNumber(Long memberId, String phoneNumber){
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
+
+        // 핸드폰번호 중복 검증
+        if (memberRepository.findByEmail(phoneNumber).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
+
+        // 핸드폰번호 인증 여부 체크
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+        if (!phoneNumberVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+
         member.updatePhoneNumber(phoneNumber);
 
-        // phoneNumber 중복 테이블에서 삭제.
-        duplicationValidator.removePhoneNumberDuplication(phoneNumber);
+    }
+
+    @Transactional
+    public void updateEmployerCompanyPhoneNumber(Long memberId, String phoneNumber){
+        // 이미 필터에서 있는 거 확인했음.
+        Employer employer = (Employer)memberRepository.findById(memberId).get();
+
+        // 핸드폰번호 중복 검증
+        if (memberRepository.findByEmail(phoneNumber).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
+
+        // 핸드폰번호 인증 여부 체크
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+        if (!phoneNumberVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+
+        employer.updateCompanyMainPhoneNumber(phoneNumber);
+
     }
 
 
@@ -271,9 +430,8 @@ public class MemberService {
 
 
     /**
-     *
-
-     *
+     * @deprecated
+     * *
      * 이메일 중복을 확인합니다.
      * 1) Member Table 에서 이미 사용 중인지
      * 2) 누군가 이미 변경하기 위해 찜해 뒀음.
@@ -281,6 +439,7 @@ public class MemberService {
      * 변경할 email 을 미리 찜해두는 것임.
      *  ** 만약, 찜해두고 변경 하지 않을 경우 찜 해제해야 함. <- 이 부분 프론트랑 상의할 것 **
      *  찜 해제하기 위해 프론트가 백엔드에게 알려줬음 좋겠음.
+     *  *
      */
     @Transactional
     public boolean isDuplicateEmail(String email) {
@@ -291,11 +450,17 @@ public class MemberService {
         }
 
 
-        duplicationValidator.validateEmailDuplication(email);
+        duplicationUtil.validateEmailDuplication(email);
 
 
         return true;
     }
+
+    /**
+     *
+     *
+     * @deprecated
+     */
 
     @Transactional
     public boolean isDuplicatePhoneNumber(String phoneNumber) {
@@ -306,7 +471,7 @@ public class MemberService {
         }
 
 
-        duplicationValidator.validatePhoneNumberDuplication(phoneNumber);
+        duplicationUtil.validatePhoneNumberDuplication(phoneNumber);
 
 
         return true;

@@ -6,7 +6,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface EmailDuplicationRepository extends JpaRepository<EmailDuplication, Long> {
+
+    Optional<EmailDuplication> findByEmail(String email);
+
 
     @Modifying
     @Query("delete from EmailDuplication e where e.email=:email")

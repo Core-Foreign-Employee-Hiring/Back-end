@@ -5,12 +5,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class EmailDuplication {
     @Id
     @GeneratedValue(strategy = IDENTITY)  // 이건 굳이...? email 로 pk 잡을까?
