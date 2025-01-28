@@ -42,6 +42,7 @@ public enum ErrorStatus {
 
     USERID_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 아이디를 찾을 수 없습니다."),
     RECRUIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다."),
+    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR

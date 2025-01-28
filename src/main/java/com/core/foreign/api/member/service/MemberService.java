@@ -507,4 +507,13 @@ public class MemberService {
 
         employee.updateBasicResume(updateDTO);
     }
+
+    // 사용자 ID 찾기
+    public String findUserId(String name, String phoneNumber) {
+        Member member = memberRepository.findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        return member.getUserId();
+    }
+
 }

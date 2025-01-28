@@ -429,4 +429,18 @@ public class MemberController {
 
     }
 
+    @Operation(
+            summary = "사용자 ID 찾기 API",
+            description = "이름과 전화번호를 이용하여 사용자의 ID를 반환합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용자 ID 찾기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다.")
+    })
+    @GetMapping("/find-user-id")
+    public ResponseEntity<ApiResponse<String>> findUserId(@RequestParam String name, @RequestParam String phoneNumber) {
+        String userId = memberService.findUserId(name, phoneNumber);
+        return ApiResponse.success(SuccessStatus.SEND_FIND_USERID_SUCCESS, userId);
+    }
+
 }
