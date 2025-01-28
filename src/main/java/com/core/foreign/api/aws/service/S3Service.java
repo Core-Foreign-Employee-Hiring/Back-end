@@ -1,5 +1,6 @@
 package com.core.foreign.api.aws.service;
 
+import com.core.foreign.api.file.FileDirAndName;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,36 @@ public class S3Service {
         }
         // 파일명 예시: post_2025-01-26_19:32:12.jpg
         String fileName = "post_" + currentDateTime + extension;
+        // 난수 문자열
+        String randomString = RandomStringUtils.randomAlphanumeric(16);
+        // 최종 S3 경로
+        String fileKey = dir + "/" + randomString + "/" + fileName;
+
+        // 업로드
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileKey)
+                .acl("public-read")
+                .build();
+        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+        // 업로드 후 S3 도메인 + 경로 형태의 URL 반환
+        return s3Domain + "/" + fileKey;
+    }
+
+    // 이미지 업로드 메서드
+    public String uploadImage(MultipartFile file, FileDirAndName dirAndName) throws IOException {
+        String dir = dirAndName.getDir();
+        // 현재 날짜/시간
+        String currentDateTime = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date());
+        // 확장자 추출
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        // 파일명 예시: post_2025-01-26_19:32:12.jpg
+        String fileName = dirAndName.getFileName() + currentDateTime + extension;
         // 난수 문자열
         String randomString = RandomStringUtils.randomAlphanumeric(16);
         // 최종 S3 경로

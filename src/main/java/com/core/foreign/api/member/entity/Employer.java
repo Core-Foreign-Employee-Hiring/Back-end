@@ -7,12 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @DiscriminatorValue("EMPLOYER")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Employer extends Member {
+
+    private String companyImageUrl;
 
     private String businessRegistrationNumber; // 사업자등록번호
     private String companyName;                // 회사점포명
@@ -51,5 +54,12 @@ public class Employer extends Member {
 
     public void updateCompanyMainPhoneNumber(String mainPhoneNumber){
         this.mainPhoneNumber=mainPhoneNumber;
+    }
+
+    public void updateBusinessInfo(String businessNo, String startDate, String representativeName) {
+        businessRegistrationNumber = businessNo;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        establishedDate = LocalDate.parse(startDate, formatter);
+        companyName = representativeName;
     }
 }
