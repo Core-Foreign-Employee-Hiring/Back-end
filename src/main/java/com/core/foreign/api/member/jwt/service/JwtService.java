@@ -33,6 +33,8 @@ public class JwtService {
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
 
+    private final Long duplicationTokenExpirationPeriod= 3600000L; // 1시간. 설마 1시간 동안 이메일 변경하겠어?
+
     private final MemberRepository memberRepository;
 
     // Access Token 생성
@@ -50,6 +52,15 @@ public class JwtService {
         return JWT.create()
                 .withSubject(String.valueOf(memberId))
                 .withExpiresAt(new Date(now.getTime() + refreshTokenExpirationPeriod))
+                .sign(Algorithm.HMAC512(secretKey));
+    }
+
+    // Duplication Token 생성
+    public String createDuplicationToken(Long id) {
+        Date now = new Date();
+        return JWT.create()
+                .withSubject(String.valueOf(id))
+                .withExpiresAt(new Date(now.getTime() + duplicationTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -111,6 +122,24 @@ public class JwtService {
             return Optional.empty();
         }
     }
+
+    public Optional<String> extractDuplicationId(String duplicationToken) {
+        try {
+            Optional<String> sub = Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
+                    .build()
+                    .verify(duplicationToken)
+                    .getClaim("sub")
+                    .asString());
+
+
+            return sub;
+        } catch (Exception e) {
+            log.error("중복 토큰이 유효하지 않습니다.");
+            return Optional.empty();
+        }
+    }
+
+
 
     public Optional<String> extractEmail(String accessToken) {
         try {

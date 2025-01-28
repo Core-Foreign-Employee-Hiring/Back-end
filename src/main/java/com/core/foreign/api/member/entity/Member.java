@@ -86,10 +86,12 @@ public abstract class Member extends BaseTimeEntity {
     }
 
     public void updateAgreement(boolean termsOfServiceAgreement,
+                                boolean isOver15,
                                 boolean personalInfoAgreement,
                                 boolean adInfoAgreementSmsMms,
                                 boolean adInfoAgreementEmail){
         this.termsOfServiceAgreement = termsOfServiceAgreement;
+        this.isOver15=isOver15;
         this.personalInfoAgreement = personalInfoAgreement;
         this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
         this.adInfoAgreementEmail = adInfoAgreementEmail;
