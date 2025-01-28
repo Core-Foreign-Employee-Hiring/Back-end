@@ -472,11 +472,10 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping(value="/employer/company-validate")
-    public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@AuthenticationPrincipal SecurityMember securityMember,
-                                                               @RequestParam String businessNo,
-                                                               @RequestParam String startDate,
-                                                               @RequestParam String representativeName) {
+    @GetMapping(value = "/employer/company-validate")
+    public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@RequestParam String businessNo,
+                                                                  @RequestParam String startDate,
+                                                                  @RequestParam String representativeName) {
 
         boolean companyValidate = companyValidationService.isCompanyValidate(businessNo, startDate, representativeName);
 
