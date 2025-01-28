@@ -8,6 +8,7 @@ import com.core.foreign.api.business_field.service.BusinessFieldUpdater;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
+import com.core.foreign.api.member.repository.CompanyValidationRepository;
 import com.core.foreign.api.member.repository.EmailVerificationRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.repository.PhoneNumberVerificationRepository;
@@ -42,6 +43,7 @@ public class MemberService {
     private final BusinessFieldUpdater businessFiledUpdater;
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
     private final EmailService emailService;
+    private final CompanyValidationRepository companyValidationRepository;
 
     // 고용인 회원가입
     @Transactional
@@ -514,6 +516,22 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
         return member.getUserId();
+    }
+
+
+    @Transactional
+    public void updateEmployerBusinessInfo(Long employerId,String businessNo, String startDate, String representativeName){
+        Employer employer = (Employer)memberRepository.findById(employerId).get();
+
+
+        Optional<CompanyValidation> cv = companyValidationRepository.findByBusinessNoAndStartDateAndRepresentativeName(businessNo, startDate, representativeName);
+        if(cv.isEmpty()){
+            throw new BadRequestException("사업자등록 정보 진위 확인하세요.");
+        }
+
+        employer.updateBusinessInfo(businessNo, startDate, representativeName);
+        companyValidationRepository.delete(cv.get());
+
     }
 
 }

@@ -1,8 +1,10 @@
 package com.core.foreign.api.member.controller;
 
 import com.core.foreign.api.business_field.BusinessField;
+import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
+import com.core.foreign.api.member.service.CompanyValidationService;
 import com.core.foreign.api.member.service.MemberService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
@@ -13,9 +15,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +34,8 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtService jwtService;
+    private final FileService fileService;
+    private final CompanyValidationService companyValidationService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
@@ -441,6 +447,61 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> findUserId(@RequestParam String name, @RequestParam String phoneNumber) {
         String userId = memberService.findUserId(name, phoneNumber);
         return ApiResponse.success(SuccessStatus.SEND_FIND_USERID_SUCCESS, userId);
+    }
+
+    @Operation(summary = "고용주 회사 이미지 변경. API",
+            description = "고용주의 회사 이미지를 변경합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회사 이미지 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping(value="/employer/company-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> updateCompanyImage(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                @RequestPart(value = "companyImage", required = false) MultipartFile companyImage) {
+        fileService.uploadCompanyImage(securityMember.getId(), companyImage);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(summary = "사업자등록 정보 진위 확인. API",
+            description = "사업자등록 정보의 진위 여부를 확인합니다." +
+                    "true: 성공" +
+                    "false: 사업자등록 정보가 잘못됨.)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value="/employer/company-validate")
+    public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@AuthenticationPrincipal SecurityMember securityMember,
+                                                               @RequestParam String businessNo,
+                                                               @RequestParam String startDate,
+                                                               @RequestParam String representativeName) {
+
+        boolean companyValidate = companyValidationService.isCompanyValidate(businessNo, startDate, representativeName);
+
+
+        return ApiResponse.success(SuccessStatus.SEND_COMPANY_VALIDATION_COMPLETED, companyValidate);
+    }
+
+    @Operation(summary = "사업자번호 정보 변경. API",
+            description = "사업자번호 정보를 변경합니다."
+
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 변경 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping(value="/employer/business-info")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerBusinessInfo(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                  @RequestParam String businessNo,
+                                                                  @RequestParam String startDate,
+                                                                  @RequestParam String representativeName) {
+
+      memberService.updateEmployerBusinessInfo(securityMember.getId(), businessNo, startDate, representativeName);
+
+
+        return ApiResponse.success_only(SEND_PROFILE_UPDATE_SUCCESS);
     }
 
 }

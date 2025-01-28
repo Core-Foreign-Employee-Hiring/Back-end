@@ -29,6 +29,10 @@ public enum SuccessStatus {
     SEND_SMS_VERIFICATION_CODE_SUCCESS(HttpStatus.OK,"SMS 인증코드 발송 성공"),
     SEND_VERIFY_SMS_CODE_SUCCESS(HttpStatus.OK,"SMS 코드 인증 성공"),
     SEND_FIND_USERID_SUCCESS(HttpStatus.OK,"사용자 ID 찾기 성공"),
+    SEND_COMPANY_VALIDATION_COMPLETED(HttpStatus.OK, "사업자등록 정보 진위 조회 완료"),
+
+
+
 
     /**
      * 201

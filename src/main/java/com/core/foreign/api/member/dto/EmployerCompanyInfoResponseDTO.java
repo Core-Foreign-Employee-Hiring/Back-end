@@ -11,6 +11,8 @@ import java.util.List;
 @Getter
 public class EmployerCompanyInfoResponseDTO {
 
+    private String companyImage;
+
     private String companyName;
     private String name;  // 일단, Member 의 name 으로 할 것.
     private String businessRegistrationNumber;
@@ -29,6 +31,7 @@ public class EmployerCompanyInfoResponseDTO {
         EmployerCompanyInfoResponseDTO dto = new EmployerCompanyInfoResponseDTO();
         Address address = employer.getAddress();
 
+        dto.companyImage= employer.getCompanyImageUrl();
         dto.companyName = employer.getCompanyName();
         dto.name = employer.getName();
         dto.businessRegistrationNumber = employer.getBusinessRegistrationNumber();
