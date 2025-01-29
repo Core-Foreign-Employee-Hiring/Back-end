@@ -51,10 +51,16 @@ jobs:
         echo "${{ secrets.APPLICATION_SMS_YML }}" > src/main/resources/application-sms.yml
 
     # 2-6. application-business.yml 파일 생성
-    - name: Create application-sms.yml
+    - name: Create application-business.yml
       run: |
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_BUSINESS_YML }}" > src/main/resources/application-business.yml
+
+    # 2-7. application-toss.yml 파일 생성
+    - name: Create application-toss.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_TOSS_YML }}" > src/main/resources/application-toss.yml
 
     # 3. Gradle 설정
     - name: Setup Gradle
