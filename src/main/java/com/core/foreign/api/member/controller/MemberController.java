@@ -306,46 +306,8 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
-    /**
-     *
-     * @deprecated
-     * @apiNote
-     * 인증 메일 전송에서 중북 확인을 같이합니다.
-     */
-    @Operation(
-            summary = "이메일 중복 확인 API",
-            description = "이메일 중복 확인하여 사용가능한 이메일인지 판단합니다." +
-                    " 지원 중단: 인증 메일 전송에서 중복 확인을 같이합니다."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 이메일입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 이메일입니다."),
-    })
-//    @PostMapping("/duplication/email")
-    public ResponseEntity<ApiResponse<Boolean>> isEmailDuplication(@RequestParam String email) {
-        boolean duplicateEmail = memberService.isDuplicateEmail(email);
 
-        return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicateEmail);
-    }
 
-    /**
-     * @deprecated
-     */
-
-    @Operation(
-            summary = "휴대폰 번호 중복 확인 API",
-            description = "휴대폰 번호 중복 확인하여 사용가능한지 판단합니다."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용가능한 휴대폰 번호입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사용할 수 없는 휴대폰 번호입니다."),
-    })
-//    @PostMapping("/duplication/phone-number")
-    public ResponseEntity<ApiResponse<Boolean>> isPhoneNumberDuplication(@RequestParam String phoneNumber) {
-        boolean duplicatePhoneNumber = memberService.isDuplicatePhoneNumber(phoneNumber);
-
-        return ApiResponse.success(SuccessStatus.SEND_EMAIL_DUPLICATION_SUCCESS, duplicatePhoneNumber);
-    }
 
     @Operation(
             summary = "고용주 업직종 수정 API",
@@ -464,9 +426,15 @@ public class MemberController {
     }
 
     @Operation(summary = "사업자등록 정보 진위 확인. API",
-            description = "사업자등록 정보의 진위 여부를 확인합니다." +
-                    "true: 성공" +
-                    "false: 사업자등록 정보가 잘못됨.)"
+            description = "사업자등록 정보의 진위 여부를 확인합니다.<br>" +
+                    "<p>" +
+                    "businessNo: 사업자등록번호<br>" +
+                    "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
+                    "representativeName: 대표자성명<br>" +
+                    "<p>" +
+                    "true: 성공<br>" +
+                    "false: 사업자등록 정보가 잘못됨.<br>"
+
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
@@ -484,7 +452,11 @@ public class MemberController {
     }
 
     @Operation(summary = "사업자번호 정보 변경. API",
-            description = "사업자번호 정보를 변경합니다."
+            description = "사업자번호 정보를 변경합니다.<br>"+
+                    "<p>" +
+                    "businessNo: 사업자등록번호<br>" +
+                    "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
+                    "representativeName: 대표자성명<br>"
 
     )
     @ApiResponses({
@@ -493,11 +465,11 @@ public class MemberController {
     })
     @PatchMapping(value="/employer/business-info")
     public ResponseEntity<ApiResponse<Void>> updateEmployerBusinessInfo(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                  @RequestParam String businessNo,
-                                                                  @RequestParam String startDate,
-                                                                  @RequestParam String representativeName) {
+                                                                        @RequestParam String businessNo,
+                                                                        @RequestParam String startDate,
+                                                                        @RequestParam String representativeName) {
 
-      memberService.updateEmployerBusinessInfo(securityMember.getId(), businessNo, startDate, representativeName);
+        memberService.updateEmployerBusinessInfo(securityMember.getId(), businessNo, startDate, representativeName);
 
 
         return ApiResponse.success_only(SEND_PROFILE_UPDATE_SUCCESS);
