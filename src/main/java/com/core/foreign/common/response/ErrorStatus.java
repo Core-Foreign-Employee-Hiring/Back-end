@@ -27,6 +27,8 @@ public enum ErrorStatus {
     ALEADY_PUBLISHED_RECRUIT_ARTICLE_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 퍼블리싱된 공고 입니다."),
     VALIDATION_PHONE_FORMAT_EXCEPTION(HttpStatus.BAD_REQUEST, "휴대폰 번호 형식이 올바르지 않습니다."),
     WRONG_SMS_VERIFICATION_CODE_EXCEPTION(HttpStatus.BAD_REQUEST,"SMS 인증코드가 올바르지 않습니다."),
+    MISSING_BUSINESS_REGISTRATION_VERIFICATION_EXCEPTION(HttpStatus.BAD_REQUEST, "사업자등록번호 인증을 진행해주세요."),
+
 
     /**
      * 401 UNAUTHORIZED

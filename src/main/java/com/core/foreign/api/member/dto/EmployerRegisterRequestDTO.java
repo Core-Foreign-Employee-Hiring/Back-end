@@ -27,6 +27,7 @@ public class EmployerRegisterRequestDTO {
     private String businessRegistrationNumber;
     private String companyName;
     private LocalDate establishedDate;
+    private String representativeName;
     private BusinessField businessField;   //
 
     private boolean termsOfServiceAgreement;
