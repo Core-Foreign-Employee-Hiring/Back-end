@@ -1,7 +1,7 @@
 package com.core.foreign.api.member.entity;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import com.core.foreign.api.recruit.entity.PremiumManage;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,9 @@ public class Employer extends Member {
 
     private String companyEmail;
     private String mainPhoneNumber;
+
+    @OneToOne(mappedBy = "employer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private PremiumManage premiumManage;
 
     public Employer(String userId,
                     String password,
@@ -46,6 +49,8 @@ public class Employer extends Member {
         this.establishedDate = establishedDate;
         this.companyEmail=email;
         this.mainPhoneNumber=phoneNumber;
+
+        this.premiumManage = new PremiumManage(this);
     }
 
     public void updateCompanyEmail(String companyEmail){
@@ -62,4 +67,5 @@ public class Employer extends Member {
         establishedDate = LocalDate.parse(startDate, formatter);
         companyName = representativeName;
     }
+
 }

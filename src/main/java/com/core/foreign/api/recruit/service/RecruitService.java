@@ -5,6 +5,7 @@ import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import com.core.foreign.api.recruit.entity.*;
+import com.core.foreign.api.recruit.repository.PremiumManageRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
 import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
@@ -27,6 +28,7 @@ public class RecruitService {
 
     private final RecruitRepository recruitRepository;
     private final MemberRepository memberRepository;
+    private final PremiumManageRepository premiumManageRepository;
     private final S3Service s3Service;
 
     // 일반 공고 등록
@@ -76,6 +78,15 @@ public class RecruitService {
             MultipartFile posterImage
     ) {
         Member employer = getEmployer(memberId);
+
+        // 프리미엄 공고 등록 가능 체크
+        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
+
+        if (premiumManage.getPremiumCount() == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
+        }
+
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
@@ -116,6 +127,10 @@ public class RecruitService {
 
         portfolios.forEach(premiumRecruit::addPortfolio);
         recruitRepository.save(premiumRecruit);
+
+        // 프리미엄 공고 등록 횟수 감소
+        PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
+        premiumManageRepository.save(updatedPremiumManage);
     }
 
     // 일반 공고 임시저장
@@ -169,6 +184,14 @@ public class RecruitService {
             MultipartFile posterImage
     ) {
         Member employer = getEmployer(memberId);
+
+        // 프리미엄 공고 등록 가능 체크
+        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
+
+        if (premiumManage.getPremiumCount() == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
+        }
 
         // 임시 저장 한 데이터 삭제
         deleteDraft(employer);
@@ -269,6 +292,14 @@ public class RecruitService {
         PremiumRecruit recruit = getPremiumRecruit(recruitId);
         validateDraftStatus(recruit);
 
+        // 프리미엄 공고 등록 가능 체크
+        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(recruit.getEmployer().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
+
+        if (premiumManage.getPremiumCount() == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
+        }
+
         // 이전 데이터 삭제
         recruitRepository.delete(recruit);
 
@@ -311,8 +342,11 @@ public class RecruitService {
                         .build())
                 .toList();
         portfolios.forEach(newRecruit::addPortfolio);
-
         recruitRepository.save(newRecruit);
+
+        // 프리미엄 공고 등록 횟수 감소
+        PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
+        premiumManageRepository.save(updatedPremiumManage);
     }
 
     // 사용자 임시저장 데이터 조회
@@ -408,4 +442,28 @@ public class RecruitService {
         return (PremiumRecruit) recruitRepository.findById(recruitId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
     }
+
+    // 등록 가능 공고 조회
+    @Transactional
+    public List<String> getAvailableRecruits(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USERID_NOT_FOUND_EXCEPTION.getMessage()));
+
+        List<String> availableRecruits = new ArrayList<>();
+        availableRecruits.add("일반 공고");
+
+        // 프리미엄 공고 등록 가능 여부 확인
+        Optional<PremiumManage> premiumManageOpt = premiumManageRepository.findByEmployerId(memberId);
+        if (premiumManageOpt.isPresent()) {
+            PremiumManage premiumManage = premiumManageOpt.get();
+
+            // premiumCount가 1 이상이면 프리미엄 공고 가능
+            if (premiumManage.getPremiumCount() > 0) {
+                availableRecruits.add("프리미엄 공고");
+            }
+        }
+
+        return availableRecruits;
+    }
+
 }

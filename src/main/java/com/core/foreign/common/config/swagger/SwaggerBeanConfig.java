@@ -1,4 +1,4 @@
-package com.core.foreign.common.config;
+package com.core.foreign.common.config.swagger;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
