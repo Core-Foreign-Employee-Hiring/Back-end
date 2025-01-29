@@ -130,6 +130,17 @@ public class MemberService {
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
+
+        // 사업자등록번호인증 확인
+
+        String startDate = employerRegisterRequestDTO.getEstablishedDate().toString().replace("-", ""); // "yyyy-MM-dd" -> "yyyyMMdd"
+        Optional<CompanyValidation> cv = companyValidationRepository.findByBusinessNoAndStartDateAndRepresentativeName(employerRegisterRequestDTO.getBusinessRegistrationNumber(), startDate, employerRegisterRequestDTO.getRepresentativeName());
+        if(cv.isEmpty()){
+            throw new BadRequestException(ErrorStatus.MISSING_BUSINESS_REGISTRATION_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        companyValidationRepository.delete(cv.get());
+
         Address address = new Address(
                 employerRegisterRequestDTO.getZipcode(),
                 employerRegisterRequestDTO.getAddress1(),

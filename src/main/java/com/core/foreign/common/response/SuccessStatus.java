@@ -30,6 +30,11 @@ public enum SuccessStatus {
     SEND_VERIFY_SMS_CODE_SUCCESS(HttpStatus.OK,"SMS 코드 인증 성공"),
     SEND_FIND_USERID_SUCCESS(HttpStatus.OK,"사용자 ID 찾기 성공"),
     SEND_COMPANY_VALIDATION_COMPLETED(HttpStatus.OK, "사업자등록 정보 진위 조회 완료"),
+    SEND_EMPLOYER_PORTFOLIO_SELECT_SUCCESS(HttpStatus.OK, "피고용인 포트폴리오 조회 성공"),
+    SEND_EMPLOYER_DRAFT_PORTFOLIO_SELECT_SUCCESS(HttpStatus.OK, "피고용인 임시 저장 포트폴리오 조회 성공"),
+    SEND_EMPLOYER_PORTFOLIO_UPDATE_SUCCESS(HttpStatus.OK, "피고용인 포트폴리오 수정 성공"),
+
+
 
 
 
@@ -39,6 +44,8 @@ public enum SuccessStatus {
      */
     CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 등록 성공"),
     CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 임시 저장 성공"),
+    CREATE_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 등록 성공"),
+    CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 임시 저장 성공"),
 
 
     ;
