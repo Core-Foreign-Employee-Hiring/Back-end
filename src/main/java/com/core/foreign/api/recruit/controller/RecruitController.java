@@ -20,7 +20,7 @@ import java.util.List;
 
 @Tag(name = "Recruit", description = "공고 관련 API 입니다.<br>" +
         "<p>" +
-        "[사용자 임시저장 데이터조회 API + 작성 가능 공고 조회 API(구현 예정) + 회사 정보 조회 API(구현 예정) -> 만약 임시저장 데이터 있다면 -> 해당 공고 퍼블리싱 API / 임시 저장 데이터가 없다면 -> 공고 등록 API")
+        "[사용자 임시저장 데이터조회 API + 작성 가능 공고 조회 API + 회사 정보 조회 API(마이페이지(고용주)-내 기업 정보) -> 만약 임시저장 데이터 있다면 -> 해당 공고 퍼블리싱 API / 임시 저장 데이터가 없다면 -> 공고 등록 API")
 @RestController
 @RequestMapping("/api/v1/recruit")
 @RequiredArgsConstructor
@@ -293,4 +293,21 @@ public class RecruitController {
         }
         return ApiResponse.success(SuccessStatus.SEND_DRAFT_SAVE_SUCCESS, drafts);
     }
+
+    @Operation(summary = "작성 가능 공고 조회 API",
+            description = "현재 회원이 작성할 수 있는 공고 유형을 조회합니다.<br>" +
+                    "프리미엄 공고가 가능한 경우 '일반 공고', '프리미엄 공고'를 반환합니다.<br>" +
+                    "프리미엄 공고가 불가능한 경우 '일반 공고'만 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "작성 가능 공고 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/publish-available")
+    public ResponseEntity<ApiResponse<List<String>>> getAvailableRecruits(
+            @AuthenticationPrincipal SecurityMember securityMember
+    ) {
+        List<String> availableRecruits = recruitService.getAvailableRecruits(securityMember.getId());
+        return ApiResponse.success(SuccessStatus.SEND_AVAILABLE_RECRUIT_SUCCESS, availableRecruits);
+    }
+
 }
