@@ -15,6 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByUserId(String userId);
     Optional<Member> findByNameAndPhoneNumber(String name, String phoneNumber);
 
 
@@ -22,5 +23,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("update Employer e set e.companyImageUrl = :companyImageUrl where e.id = :employerId")
     void updateCompanyImage(@Param("employerId") Long employerId, @Param("companyImageUrl") String companyImageUrl);
+
+    @Modifying
+    @Query("update Member m set m.userId=:userId where m.id=:memberId")
+    void updateUserId(@Param("memberId") Long memberId, @Param("userId") String userId);
 
 }

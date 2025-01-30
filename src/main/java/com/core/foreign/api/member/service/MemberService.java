@@ -18,6 +18,7 @@ import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class MemberService {
         if (memberRepository.findByUserId(employeeRegisterRequestDTO.getUserId()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }
-        // 이메일 중복 검증
+        /*// 이메일 중복 검증
         if (memberRepository.findByEmail(employeeRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
@@ -70,7 +71,7 @@ public class MemberService {
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-        }
+        }*/
 
         Address address = new Address(
                 employeeRegisterRequestDTO.getZipcode(),
@@ -405,6 +406,51 @@ public class MemberService {
 
         employer.updateBusinessInfo(businessNo, startDate, representativeName);
         companyValidationRepository.delete(cv.get());
+
+    }
+
+
+    public boolean checkPassword(Long memberId, String password){
+        Member member = memberRepository.findById(memberId).get();
+        String findPassword = member.getPassword();
+
+        // 비밀번호 검증
+        boolean matches = passwordEncoder.matches(password, member.getPassword());
+        return matches;
+
+
+    }
+
+    @Transactional
+    public void updateUserId(Long memberId, String userId){
+        Member member = memberRepository.findById(memberId).get();
+
+        try{
+            memberRepository.updateUserId(member.getId(), userId);
+        }catch(DataIntegrityViolationException e){
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Transactional
+    public void updateMemberPassword(Long memberId, String password){
+        Member member = memberRepository.findById(memberId).get();
+
+        // 이메일 인증 여부 체크
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(member.getEmail())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
+        if (!emailVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        emailVerificationRepository.delete(emailVerification);
+
+        String encode = passwordEncoder.encode(password);
+
+        member.updatePassword(encode);
 
     }
 

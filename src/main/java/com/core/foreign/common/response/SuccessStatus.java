@@ -36,6 +36,11 @@ public enum SuccessStatus {
     SEND_PAY_SUCCESS(HttpStatus.OK,"결제 승인 성공"),
     SEND_CANCELED_PAY_SUCCESS(HttpStatus.OK,"결제 취소 성공"),
     SEND_AVAILABLE_RECRUIT_SUCCESS(HttpStatus.OK,"작성 가능 공고 조회 성공"),
+    SEND_PASSWORD_VERIFICATION_COMPLETED(HttpStatus.OK, "비밀번호 확인 완료"),
+    SEND_UPDATE_USERID_SUCCESS(HttpStatus.OK, "아이디 변경 성공"),
+    SEND_UPDATE_USERID_PASSWORD(HttpStatus.OK, "비밀번호 변경 성공"),
+
+
 
     /**
      * 201
@@ -45,6 +50,7 @@ public enum SuccessStatus {
     CREATE_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 등록 성공"),
     CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 임시 저장 성공"),
     SEND_PAY_INFO_SAVE_SUCCESS(HttpStatus.CREATED,"결제 정보 등록 성공"),
+    UPLOAD_IMAGE_SUCCESS(HttpStatus.CREATED, "이미지 업로드 성공"),
 
     ;
 

@@ -19,6 +19,19 @@ public class FileService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
 
+    public void uploadOnlyS3(MultipartFile image, FileDirAndName fileDirAndName) {
+        if (image != null && !image.isEmpty()) {
+            try {
+                // S3에 업로드.
+                String url= s3Service.uploadImage(image, fileDirAndName);
+
+            } catch (IOException e) {
+                throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
+            }
+        }
+    }
+
+
     /**
      *
      *
@@ -29,7 +42,6 @@ public class FileService {
             try {
                 // S3에 업로드.
                 String url= s3Service.uploadImage(image, FileDirAndName.EmployerCompanyImage);
-                log.info("[uploadImage][after]");
 
                 // 고용주 정보 변경
                 memberRepository.updateCompanyImage(employerId, url);
@@ -37,8 +49,5 @@ public class FileService {
                 throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
             }
         }
-
-
-
     }
 }
