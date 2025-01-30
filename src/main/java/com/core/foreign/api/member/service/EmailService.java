@@ -71,10 +71,11 @@ public class EmailService {
         passwordResetRepository.save(passwordReset);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom(String.format("ForWork <%s>", serviceEmail));
         mailMessage.setTo(passwordResetRequest.getEmail());
         mailMessage.setSubject("ForWork 비밀번호 초기화 링크");
         mailMessage.setText("비밀번호를 재설정하려면 아래 링크를 클릭하세요:\n\n"
-                + "http://www.forwork.co.kr/password?code=" + resetCode + "\n\n"
+                + "https://www.forwork.co.kr/password?code=" + resetCode + "\n\n"
                 + "이 링크는 5분간 유효합니다.");
 
         mailSender.send(mailMessage);
