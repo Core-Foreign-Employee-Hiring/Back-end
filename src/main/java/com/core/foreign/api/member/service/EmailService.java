@@ -1,7 +1,12 @@
 package com.core.foreign.api.member.service;
 
+import com.core.foreign.api.member.dto.PasswordResetRequestDTO;
 import com.core.foreign.api.member.entity.EmailVerification;
+import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.entity.PasswordReset;
 import com.core.foreign.api.member.repository.EmailVerificationRepository;
+import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.member.repository.PasswordResetRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.UnauthorizedException;
 import com.core.foreign.common.response.ErrorStatus;
@@ -22,7 +27,9 @@ public class EmailService {
     private String serviceEmail;
 
     private final JavaMailSender mailSender;
+    private final MemberRepository memberRepository;
     private final EmailVerificationRepository emailVerificationRepository;
+    private final PasswordResetRepository passwordResetRepository;
 
     public void sendVerificationEmail(String email, LocalDateTime requestedAt) {
 
@@ -47,12 +54,47 @@ public class EmailService {
         mailSender.send(mailMessage);
     }
 
+    public void sendPasswordResetEmail(PasswordResetRequestDTO.PasswordResetRequest passwordResetRequest) {
+
+        Member member = memberRepository.findByUserIdAndEmailAndName(passwordResetRequest.getUserId(), passwordResetRequest.getEmail(), passwordResetRequest.getName())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        String resetCode = generateRandomCode();
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
+
+        PasswordReset passwordReset = PasswordReset.builder()
+                .email(passwordResetRequest.getEmail())
+                .code(resetCode)
+                .expirationTime(expirationTime)
+                .build();
+
+        passwordResetRepository.save(passwordReset);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(passwordResetRequest.getEmail());
+        mailMessage.setSubject("ForWork 비밀번호 초기화 링크");
+        mailMessage.setText("비밀번호를 재설정하려면 아래 링크를 클릭하세요:\n\n"
+                + "http://www.forwork.co.kr/password?code=" + resetCode + "\n\n"
+                + "이 링크는 5분간 유효합니다.");
+
+        mailSender.send(mailMessage);
+    }
+
+    private String generateRandomCode() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(10);
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
     private String generateSixDigitCode() {
         SecureRandom random = new SecureRandom();
         int number = random.nextInt(1000000); // 0 ~ 999999 범위
         return String.format("%06d", number); // 숫자 6자리
     }
-
 
     public void verifyEmail(String code, LocalDateTime requestedAt) {
         EmailVerification verification = emailVerificationRepository.findByCode(code)
