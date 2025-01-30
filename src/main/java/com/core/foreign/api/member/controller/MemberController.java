@@ -443,7 +443,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping(value = "/employer/company-validate")
+    @PostMapping(value = "/employer/company-validate")
     public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@RequestParam String businessNo,
                                                                   @RequestParam String startDate,
                                                                   @RequestParam String representativeName) {
@@ -667,6 +667,57 @@ public class MemberController {
         employeePortfolioService.updateEmployeePortfolio(securityMember.getId(), dto);
 
         return ApiResponse.success_only(SEND_EMPLOYER_PORTFOLIO_UPDATE_SUCCESS);
+    }
+
+    @Operation(summary = "비밀번호 확인 API",
+            description = "비밀번호 확인합니다.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 확인 완료."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/verify-password")
+    public ResponseEntity<ApiResponse<Boolean>> checkPassword(@AuthenticationPrincipal SecurityMember securityMember,
+                                                           @RequestBody PasswordDTO passwordDTO) {
+
+
+        boolean b = memberService.checkPassword(securityMember.getId(), passwordDTO.getPassword());
+
+        return ApiResponse.success(SEND_PASSWORD_VERIFICATION_COMPLETED, b);
+    }
+
+    @Operation(summary = "아이디 변경. API",
+            description = "아이디 변경합니다.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아이디 변경 완료."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/user-id")
+    public ResponseEntity<ApiResponse<Void>> updateUserId(@AuthenticationPrincipal SecurityMember securityMember,
+                                                              @RequestBody UserIdDTO userIdDTO) {
+
+
+         memberService.updateUserId(securityMember.getId(), userIdDTO.getUserId());
+
+        return ApiResponse.success_only(SEND_UPDATE_USERID_SUCCESS);
+    }
+
+    @Operation(summary = "비밀번호 변경. API",
+            description = "비밀번호 변경합니다.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 변경 완료."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/password")
+    public ResponseEntity<ApiResponse<Void>> upadtePassword(@AuthenticationPrincipal SecurityMember securityMember,
+                                                          @RequestBody PasswordDTO passwordDTO) {
+
+
+        memberService.updateMemberPassword(securityMember.getId(), passwordDTO.getPassword());
+
+        return ApiResponse.success_only(SEND_UPDATE_USERID_PASSWORD);
     }
 
 }

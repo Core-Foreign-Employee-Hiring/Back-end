@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum FileDirAndName {
     RecruitPostImage("recruit-post-image", "post_"),
-    EmployerCompanyImage("employer-company-image", "company_"),;
+    EmployerCompanyImage("employer-company-image", "company_"),
+    EmployeeEnrollmentCertificateImage("employee-portfolio-image", "enrollment_certificate_"),
+    EmployeeTranscriptImage("employee-portfolio-image", "transcript_"),
+    EmployeePartTimeWorkPermitImage("employee-portfolio-image", "part_time_work_permit_");
 
 
 

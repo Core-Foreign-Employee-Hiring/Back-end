@@ -19,10 +19,13 @@ public abstract class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;             // 엔티티 식별번호
 
+    @Column(unique = true)
     private String userId;       // 아이디
     private String password;     // 비밀번호
     private String name;         // 이름[대표자명]
+    @Column(unique = true)
     private String email;        // 이메일
+    @Column(unique = true)
     private String phoneNumber;  // 전화번호
     private String refreshToken; // 리프레시토큰
     private LocalDate birthday;  // 생년월일
@@ -107,6 +110,11 @@ public abstract class Member extends BaseTimeEntity {
 
     public void updateAddress(Address address){
         this.address=address;
+    }
+
+
+    public void updatePassword(String password){
+        this.password=password;
     }
 
 }
