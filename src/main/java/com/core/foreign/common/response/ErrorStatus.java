@@ -33,6 +33,7 @@ public enum ErrorStatus {
     ALREADY_DONE_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 승인된 결제입니다."),
     ALREADY_READY_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 등록된 주문입니다."),
     LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 공고 등록 가능 횟수가 부족합니다."),
+    INVALID_PASSWORD_RESET_CODE_EXCEPTION(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호 초기화 인증코드 입니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -41,6 +42,7 @@ public enum ErrorStatus {
     UNAUTHORIZED_REFRESH_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED,"유효하지 않은 리프레시 토큰입니다."),
     UNAUTHORIZED_EMAIL_VERIFICATION_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"이메일 인증코드가 만료되었습니다, 재인증 해주세요."),
     UNAUTHORIZED_SMS_VERIFICATION_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"SMS 인증코드가 만료되었습니다, 재인증 해주세요."),
+    EXPIRED_PASSWORD_RESET_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"비밀번호 초기화 인증코드가 만료되었습니다, 재인증 해주세요."),
 
     /**
      * 404 NOT_FOUND

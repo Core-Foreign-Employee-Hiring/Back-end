@@ -39,6 +39,7 @@ public enum SuccessStatus {
     SEND_PASSWORD_VERIFICATION_COMPLETED(HttpStatus.OK, "비밀번호 확인 완료"),
     SEND_UPDATE_USERID_SUCCESS(HttpStatus.OK, "아이디 변경 성공"),
     SEND_UPDATE_USERID_PASSWORD(HttpStatus.OK, "비밀번호 변경 성공"),
+    SEND_PASSWORD_RESET_LINK_SUCCESS(HttpStatus.OK,"비밀번호 초기화 링크 전송 성공"),
 
 
 
