@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -31,8 +32,8 @@ public class RecruitResponseDTO {
     private String workDaysOther;          // 근무 요일 기타 사항
     private String salary;                 // 급여 정보
     private String salaryType;             // 급여 형태 (월급, 시급 등)
-    private List<String> businessFields;   // 업직종 리스트
-    private List<String> applicationMethods; // 지원 방법
+    private Set<String> businessFields;   // 업직종 리스트
+    private Set<String> applicationMethods; // 지원 방법
     private String posterImageUrl;         // 포스터 이미지 URL
     private Double latitude;               // 위도
     private Double longitude;              // 경도

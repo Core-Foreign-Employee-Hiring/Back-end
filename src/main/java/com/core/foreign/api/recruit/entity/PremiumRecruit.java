@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "premium_recruit")
@@ -27,7 +28,7 @@ public class PremiumRecruit extends Recruit {
             String title,
             Member employer,
             Address address,
-            List<String> businessFields,
+            Set<String> businessFields,
             Double latitude,
             Double longitude,
             LocalDate recruitStartDate,
@@ -43,7 +44,7 @@ public class PremiumRecruit extends Recruit {
             String workDaysOther,
             String salary,
             String salaryType,
-            List<String> applicationMethods,
+            Set<String> applicationMethods,
             String posterImageUrl,
             RecruitPublishStatus recruitPublishStatus
     ) {

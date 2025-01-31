@@ -1,7 +1,7 @@
 package com.core.foreign.api.recruit.controller;
 
-import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
-import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
+import com.core.foreign.api.recruit.dto.*;
+import org.springframework.data.domain.Page;
 import com.core.foreign.api.recruit.service.RecruitService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.response.ApiResponse;
@@ -33,7 +33,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -71,7 +71,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -116,7 +116,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -154,7 +154,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -199,7 +199,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -237,7 +237,7 @@ public class RecruitController {
                     "<p>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
-                    "recruitEndDate : 모집 종료일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "recruitCount : 모집 인원<br>" +
                     "gender : 성별 (무관일시 null)<br>" +
                     "education : 학력 조건<br>" +
@@ -310,4 +310,37 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_AVAILABLE_RECRUIT_SUCCESS, availableRecruits);
     }
 
+    @Operation(summary = "공고 전체 조회 API",
+            description = "등록되어있는 공고들을 전체 조회 합니다.")
+    @GetMapping("/search")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 전체 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitListResponseDTO>>> getAllRecruits(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) List<String> businessFields,
+            @RequestParam(required = false) List<String> workDurations,
+            @RequestParam(required = false) List<String> workDays,
+            @RequestParam(required = false) List<String> workTimes,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String salaryType
+    ) {
+        // 검색조건 생성
+        RecruitSearchConditionDTO condition = RecruitSearchConditionDTO.builder()
+                .page(page)
+                .size(size)
+                .businessFields(businessFields)
+                .workDurations(workDurations)
+                .workDays(workDays)
+                .workTimes(workTimes)
+                .gender(gender)
+                .salaryType(salaryType)
+                .build();
+
+        Page<RecruitListResponseDTO> recruitPage = recruitService.getRecruitsWithFilters(condition);
+        PageResponseDTO<RecruitListResponseDTO> pageResponse = PageResponseDTO.of(recruitPage);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, pageResponse);
+    }
 }
