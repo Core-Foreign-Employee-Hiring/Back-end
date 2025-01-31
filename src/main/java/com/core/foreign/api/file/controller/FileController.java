@@ -28,50 +28,53 @@ public class FileController {
 
     @Operation(summary = "피고용인 재학증명서 업로드. API",
             description = "피고용인의 재학증명서를 업로드 합니다<br>." +
-                    "파일 저장소에만 저장합니다."
+                    "파일 저장소에만 저장합니다.<br>" +
+                    " 파일의 url 을 반환합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value="/employee/enrollment-certificate-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> uploadEnrollmentCertificateImage(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<String>> uploadEnrollmentCertificateImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "enrollmentCertificateImage", required = false) MultipartFile enrollmentCertificateImage) {
-        fileService.uploadOnlyS3(enrollmentCertificateImage, FileDirAndName.EmployeeEnrollmentCertificateImage);
+        String url = fileService.uploadOnlyS3(enrollmentCertificateImage, FileDirAndName.EmployeeEnrollmentCertificateImage);
 
-        return ApiResponse.success_only(SuccessStatus.UPLOAD_IMAGE_SUCCESS);
+        return ApiResponse.success(SuccessStatus.UPLOAD_IMAGE_SUCCESS, url);
     }
 
     @Operation(summary = "피고용인 성적증명서 업로드. API",
             description = "피고용인의 성적증명서를 업로드 합니다<br>." +
-                    "파일 저장소에만 저장합니다."
+                    "파일 저장소에만 저장합니다.<br>" +
+                    " 파일의 url 을 반환합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value="/employee/transcript-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> uploadTranscriptImage(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<String>> uploadTranscriptImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "transcriptImage", required = false) MultipartFile transcriptImage) {
-        fileService.uploadOnlyS3(transcriptImage, FileDirAndName.EmployeeTranscriptImage);
+        String url = fileService.uploadOnlyS3(transcriptImage, FileDirAndName.EmployeeTranscriptImage);
 
-        return ApiResponse.success_only(SuccessStatus.UPLOAD_IMAGE_SUCCESS);
+        return ApiResponse.success(SuccessStatus.UPLOAD_IMAGE_SUCCESS, url);
     }
 
     @Operation(summary = "피고용인 시간제근로 허가서 업로드. API",
             description = "피고용인의 시간제근로 허가서를 업로드 합니다<br>." +
-                    "파일 저장소에만 저장합니다."
+                    "파일 저장소에만 저장합니다.<br>" +
+                    " 파일의 url 을 반환합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value="/employee/part-time-work-permit-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> updatePartTimeWorkPermitImage(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<String>> updatePartTimeWorkPermitImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "partTimeWorkPermitImage", required = false) MultipartFile partTimeWorkPermitImage) {
-        fileService.uploadOnlyS3(partTimeWorkPermitImage, FileDirAndName.EmployeePartTimeWorkPermitImage);
+        String url = fileService.uploadOnlyS3(partTimeWorkPermitImage, FileDirAndName.EmployeePartTimeWorkPermitImage);
 
-        return ApiResponse.success_only(SuccessStatus.UPLOAD_IMAGE_SUCCESS);
+        return ApiResponse.success(SuccessStatus.UPLOAD_IMAGE_SUCCESS, url);
     }
 
 

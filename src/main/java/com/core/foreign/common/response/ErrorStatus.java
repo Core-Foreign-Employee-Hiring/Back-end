@@ -34,6 +34,11 @@ public enum ErrorStatus {
     ALREADY_READY_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 등록된 주문입니다."),
     LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 공고 등록 가능 횟수가 부족합니다."),
     INVALID_PASSWORD_RESET_CODE_EXCEPTION(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호 초기화 인증코드 입니다."),
+    THIRD_PARTY_CONSENT_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "개인정보 제3자 제공 동의가 필요합니다."),
+    REQUIRED_PORTFOLIO_MISSING_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 포트폴리오가 등록되지 않았습니다."),
+    INVALID_RECRUIT_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "공고 유형이 올바르지 않습니다."),
+
+
 
     /**
      * 401 UNAUTHORIZED

@@ -19,16 +19,20 @@ public class FileService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
 
-    public void uploadOnlyS3(MultipartFile image, FileDirAndName fileDirAndName) {
+    public String uploadOnlyS3(MultipartFile image, FileDirAndName fileDirAndName) {
+        String url = null;
         if (image != null && !image.isEmpty()) {
             try {
                 // S3에 업로드.
-                String url= s3Service.uploadImage(image, fileDirAndName);
+                url = s3Service.uploadImage(image, fileDirAndName);
+
 
             } catch (IOException e) {
                 throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
             }
         }
+
+        return url;
     }
 
 
