@@ -1,8 +1,12 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.member.entity.Employer;
+import com.core.foreign.api.recruit.dto.RecruitSearchConditionDTO;
+import org.springframework.data.jpa.domain.Specification;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.recruit.dto.RecruitListResponseDTO;
 import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
@@ -14,11 +18,13 @@ import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +52,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -62,7 +68,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
                 .build();
@@ -94,7 +100,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -110,7 +116,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
                 .build();
@@ -152,7 +158,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -168,7 +174,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
                 .build();
@@ -203,7 +209,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -219,7 +225,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
                 .build();
@@ -258,7 +264,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(recruit.getEmployer())
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -274,7 +280,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
                 .build();
@@ -310,7 +316,7 @@ public class RecruitService {
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(recruit.getEmployer())
-                .businessFields(new ArrayList<>(request.getBusinessFields()))
+                .businessFields(new HashSet<>(request.getBusinessFields()))
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -326,7 +332,7 @@ public class RecruitService {
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
-                .applicationMethods(new ArrayList<>(request.getApplicationMethods()))
+                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
                 .build();
@@ -464,6 +470,66 @@ public class RecruitService {
         }
 
         return availableRecruits;
+    }
+
+    // 필터를 통한 공고 전체 조회
+    public Page<RecruitListResponseDTO> getRecruitsWithFilters(RecruitSearchConditionDTO condition) {
+
+        int page = (condition.getPage() != null) ? condition.getPage() : 0;
+        int size = (condition.getSize() != null) ? condition.getSize() : 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // 조회 필터
+        Specification<Recruit> spec = Specification
+                .where(RecruitSpecifications.isPublished())  // PUBLISHED 상태만
+                .and(RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()))
+                .and(RecruitSpecifications.workDurationIn(condition.getWorkDurations()))
+                .and(RecruitSpecifications.workDaysIn(condition.getWorkDays()))
+                .and(RecruitSpecifications.workTimeIn(condition.getWorkTimes()))
+                .and(RecruitSpecifications.genderEq(condition.getGender()))
+                .and(RecruitSpecifications.salaryTypeEq(condition.getSalaryType()));
+
+        Page<Recruit> recruitPage = recruitRepository.findAll(spec, pageable);
+        return recruitPage.map(this::convertToRecruitListResponseDTO);
+    }
+
+    private RecruitListResponseDTO convertToRecruitListResponseDTO(Recruit recruit) {
+        // (employer가 Employer 타입이면 -> companyName, 아니면 Member.getName() 사용)
+        String companyName;
+        Member employer = recruit.getEmployer();
+        if (employer instanceof Employer emp) {
+            companyName = emp.getCompanyName();      // EMPLOYER 엔티티의 회사명
+        } else {
+            companyName = employer.getName();        // 그냥 Member라면 이름
+        }
+
+        // 모집 기간 문자열 : "2025-01-01 ~ 2025-12-31"
+        String recruitPeriod = null;
+        if (recruit.getRecruitStartDate() != null && recruit.getRecruitEndDate() != null) {
+            // 마감일이 2099-12-31일 경우 상시모집
+            if(recruit.getRecruitEndDate().toString().equals("2099-12-31")){
+                recruitPeriod = "상시모집";
+            }else{
+                recruitPeriod = recruit.getRecruitStartDate().toString()
+                        + " ~ " + recruit.getRecruitEndDate().toString();
+            }
+        }
+
+        return RecruitListResponseDTO.builder()
+                .recruitId(recruit.getId())
+                .companyName(companyName)
+                .title(recruit.getTitle())
+                .address(recruit.getAddress())
+                .workTime(recruit.getWorkTime())
+                .workDays(recruit.getWorkDays())
+                .workDuration(recruit.getWorkDuration())
+                .salary(recruit.getSalary())
+                .salaryType(recruit.getSalaryType())
+                .businessFields(recruit.getBusinessFields())
+                .recruitPeriod(recruitPeriod)
+                .applicationMethods(recruit.getApplicationMethods())
+                .recruitType(recruit.getRecruitType())
+                .build();
     }
 
 }
