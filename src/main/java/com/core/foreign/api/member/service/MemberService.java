@@ -8,12 +8,10 @@ import com.core.foreign.api.business_field.service.BusinessFieldUpdater;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
-import com.core.foreign.api.member.repository.CompanyValidationRepository;
-import com.core.foreign.api.member.repository.EmailVerificationRepository;
-import com.core.foreign.api.member.repository.MemberRepository;
-import com.core.foreign.api.member.repository.PhoneNumberVerificationRepository;
+import com.core.foreign.api.member.repository.*;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.NotFoundException;
+import com.core.foreign.common.exception.UnauthorizedException;
 import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +39,8 @@ public class MemberService {
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
     private final BusinessFieldUpdater businessFiledUpdater;
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
-    private final EmailService emailService;
     private final CompanyValidationRepository companyValidationRepository;
+    private final PasswordResetRepository passwordResetRepository;
 
     // 고용인 회원가입
     @Transactional
@@ -50,7 +49,7 @@ public class MemberService {
         if (memberRepository.findByUserId(employeeRegisterRequestDTO.getUserId()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }
-        /*// 이메일 중복 검증
+        // 이메일 중복 검증
         if (memberRepository.findByEmail(employeeRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
@@ -71,7 +70,7 @@ public class MemberService {
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-        }*/
+        }
 
         Address address = new Address(
                 employeeRegisterRequestDTO.getZipcode(),
@@ -172,7 +171,6 @@ public class MemberService {
 
         // 업집종 추가.
         businessFiledUpdater.updateBusinessFiledOfEmployer(savedEmployer.getId(), List.of(employerRegisterRequestDTO.getBusinessField()));
-
     }
 
     // 로그인
@@ -214,7 +212,6 @@ public class MemberService {
         return EmployerProfileResponseDTO.from(employer);
     }
 
-
     /**
      *
      * @implNote
@@ -228,7 +225,6 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).get();
         member.updateBasicInfo(name, birthday, isMale);
     }
-
 
     /**
      *
@@ -246,10 +242,7 @@ public class MemberService {
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
         member.updateAgreement(termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
-
     }
-
-
 
     @Transactional
     public void updateEmployerEmail(Long memberId, String email){
@@ -269,7 +262,6 @@ public class MemberService {
         }
 
         member.updateEmail(email);
-
     }
 
     @Transactional
@@ -290,7 +282,6 @@ public class MemberService {
         }
 
         employer.updateCompanyEmail(email);
-
     }
 
     @Transactional
@@ -310,9 +301,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
 
-
         member.updatePhoneNumber(phoneNumber);
-
     }
 
     @Transactional
@@ -332,11 +321,8 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
 
-
         employer.updateCompanyMainPhoneNumber(phoneNumber);
-
     }
-
 
     @Transactional
     public void updateEmployerAddress(Long memberId, String zipcode, String address1, String address2) {
@@ -347,29 +333,22 @@ public class MemberService {
                 address1,
                 address2
         );
-
         member.updateAddress(address);
     }
-
-
-
 
     @Transactional
     public void updateBusinessFiledOfEmployer(Long employerId, List<BusinessField> newFields){
         businessFiledUpdater.updateBusinessFiledOfEmployer(employerId, newFields);
     }
 
-
     public EmployerCompanyInfoResponseDTO getCompanyInfo(Long employerId){
         // 인증에서 이미 존재하는 거 검증.
         Employer employer = (Employer)memberRepository.findById(employerId).get();
-
 
         List<BusinessField> businessFields = businessFieldEntityRepository.findByTargetAndTargetId(BusinessFieldTarget.EMPLOYER, employerId)
                 .stream().map(BusinessFieldEntity::getBusinessField).toList();
 
         return EmployerCompanyInfoResponseDTO.from(employer, businessFields);
-
     }
 
     public EmployeeBasicResumeResponseDTO getEmployeeBasicResume(Long employeeId){
@@ -406,7 +385,6 @@ public class MemberService {
 
         employer.updateBusinessInfo(businessNo, startDate, representativeName);
         companyValidationRepository.delete(cv.get());
-
     }
 
 
@@ -417,8 +395,6 @@ public class MemberService {
         // 비밀번호 검증
         boolean matches = passwordEncoder.matches(password, member.getPassword());
         return matches;
-
-
     }
 
     @Transactional
@@ -447,11 +423,28 @@ public class MemberService {
         }
 
         emailVerificationRepository.delete(emailVerification);
-
         String encode = passwordEncoder.encode(password);
-
         member.updatePassword(encode);
+    }
 
+    // 비밀번호 초기화
+    @Transactional
+    public void resetPassword(PasswordResetRequestDTO.PasswordResetConfirm passwordResetConfirm) {
+
+        PasswordReset passwordReset = passwordResetRepository.findByCode(passwordResetConfirm.getCode())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.INVALID_PASSWORD_RESET_CODE_EXCEPTION.getMessage()));
+
+        if (LocalDateTime.now().isAfter(passwordReset.getExpirationTime())) {
+            throw new UnauthorizedException(ErrorStatus.EXPIRED_PASSWORD_RESET_CODE_EXCEPTION.getMessage());
+        }
+
+        Member member = memberRepository.findByEmail(passwordReset.getEmail())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        member.updatePassword(passwordEncoder.encode(passwordResetConfirm.getNewPassword()));
+        memberRepository.save(member);
+
+        passwordResetRepository.delete(passwordReset);
     }
 
 }

@@ -6,6 +6,7 @@ import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.CompanyValidationService;
+import com.core.foreign.api.member.service.EmailService;
 import com.core.foreign.api.member.service.EmployeePortfolioService;
 import com.core.foreign.api.member.service.MemberService;
 import com.core.foreign.common.SecurityMember;
@@ -39,6 +40,7 @@ public class MemberController {
     private final FileService fileService;
     private final CompanyValidationService companyValidationService;
     private final EmployeePortfolioService employeePortfolioService;
+    private final EmailService emailService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
@@ -179,7 +181,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<EmployerProfileResponseDTO>> getEmployerProfile(@AuthenticationPrincipal SecurityMember securityMember) {
 
         EmployerProfileResponseDTO responseDTO = memberService.getEmployerProfile(securityMember.getId());
-
         return ApiResponse.success(SuccessStatus.SEND_SELECT_EMPLOYER_SUCCESS, responseDTO);
     }
 
@@ -197,11 +198,10 @@ public class MemberController {
                                                                      @RequestParam LocalDate birthday,
                                                                      @RequestParam boolean isMaie,
                                                                      @AuthenticationPrincipal SecurityMember securityMember) {
-        memberService.updateEmployerBasicInfo(securityMember.getId(), name, birthday, isMaie);
 
+        memberService.updateEmployerBasicInfo(securityMember.getId(), name, birthday, isMaie);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
-
 
     @Operation(
             summary = "고용주 이메일 수정 API",
@@ -213,8 +213,8 @@ public class MemberController {
     })
     @PatchMapping("/employer/profile/email")
     public ResponseEntity<ApiResponse<Void>> updateEmployerEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
-        memberService.updateEmployerEmail(securityMember.getId(), email);
 
+        memberService.updateEmployerEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -228,8 +228,8 @@ public class MemberController {
     })
     @PatchMapping("/employer/profile/company-email")
     public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
-        memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
 
+        memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -245,7 +245,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployerPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
 
         memberService.updateEmployerPhoneNumber(securityMember.getId(), phoneNumber);
-
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -261,7 +260,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
 
         memberService.updateEmployerCompanyPhoneNumber(securityMember.getId(), phoneNumber);
-
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -278,8 +276,8 @@ public class MemberController {
                                                                    @RequestParam String address1,
                                                                    @RequestParam String address2,
                                                                    @AuthenticationPrincipal SecurityMember securityMember) {
-        memberService.updateEmployerAddress(securityMember.getId(), zipcode, address1, address2);
 
+        memberService.updateEmployerAddress(securityMember.getId(), zipcode, address1, address2);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -308,9 +306,6 @@ public class MemberController {
         memberService.updateEmployerAgreement(securityMember.getId(), termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSnsMms, adInfoAgreementEmail);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
-
-
-
 
     @Operation(
             summary = "고용주 업직종 수정 API",
@@ -360,7 +355,6 @@ public class MemberController {
 
         ResponseEntity<ApiResponse<EmployerCompanyInfoResponseDTO>> success = ApiResponse.success(SEND_SELECT_EMPLOYER_COMPANY_INFO_SUCCESS, companyInfo);
         return success;
-
     }
 
     @Operation(
@@ -377,7 +371,6 @@ public class MemberController {
 
         ResponseEntity<ApiResponse<EmployeeBasicResumeResponseDTO>> success = ApiResponse.success(SEND_SELECT_EMPLOYEE_BASIC_RESUME_SUCCESS, employeeBasicResume);
         return success;
-
     }
 
     @Operation(
@@ -397,7 +390,6 @@ public class MemberController {
 
         ResponseEntity<ApiResponse<Void>> success = ApiResponse.success_only(SEND_EMPLOYEE_BASIC_RESUME_UPDATE_SUCCESS);
         return success;
-
     }
 
     @Operation(
@@ -423,8 +415,8 @@ public class MemberController {
     @PatchMapping(value="/employer/company-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> updateCompanyImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "companyImage", required = false) MultipartFile companyImage) {
-        fileService.uploadCompanyImage(securityMember.getId(), companyImage);
 
+        fileService.uploadCompanyImage(securityMember.getId(), companyImage);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -437,7 +429,6 @@ public class MemberController {
                     "<p>" +
                     "true: 성공<br>" +
                     "false: 사업자등록 정보가 잘못됨.<br>"
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
@@ -449,8 +440,6 @@ public class MemberController {
                                                                   @RequestParam String representativeName) {
 
         boolean companyValidate = companyValidationService.isCompanyValidate(businessNo, startDate, representativeName);
-
-
         return ApiResponse.success(SuccessStatus.SEND_COMPANY_VALIDATION_COMPLETED, companyValidate);
     }
 
@@ -460,7 +449,6 @@ public class MemberController {
                     "businessNo: 사업자등록번호<br>" +
                     "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
                     "representativeName: 대표자성명<br>"
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 변경 성공."),
@@ -473,8 +461,6 @@ public class MemberController {
                                                                         @RequestParam String representativeName) {
 
         memberService.updateEmployerBusinessInfo(securityMember.getId(), businessNo, startDate, representativeName);
-
-
         return ApiResponse.success_only(SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -499,9 +485,6 @@ public class MemberController {
                     "<p>" +
                     "awardName: 상장명<br>" +
                     "awardDate: 수상날짜 <br>"
-
-
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 등록 성공."),
@@ -511,9 +494,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> createEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                         @RequestBody EmployeePortfolioDTO dto) {
 
-
         employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.COMPLETED);
-
         return ApiResponse.success_only(CREATE_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
@@ -538,9 +519,6 @@ public class MemberController {
                     "<p>" +
                     "awardName: 상장명<br>" +
                     "awardDate: 수상날짜 <br>"
-
-
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 등록 성공."),
@@ -550,9 +528,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> createTempEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                      @RequestBody EmployeePortfolioDTO dto) {
 
-
         employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.TEMPORARY);
-
         return ApiResponse.success_only(CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
@@ -578,7 +554,6 @@ public class MemberController {
                     "awardName: 상장명<br>" +
                     "awardDate: 수상날짜 <br>" +
                     "조회 성공 시 data 가 없을 경우, 피고용인이 포트폴리오를 아직 작성하지 않음."
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 조회 성공."),
@@ -587,9 +562,7 @@ public class MemberController {
     @GetMapping("/employee/portfolio")
     public ResponseEntity<ApiResponse<EmployeePortfolioDTO>> getEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember) {
 
-
         EmployeePortfolioDTO employeePortfolio = employeePortfolioService.getEmployeePortfolio(securityMember.getId(), EmployeePortfolioStatus.COMPLETED);
-
         return ApiResponse.success(SEND_EMPLOYER_PORTFOLIO_SELECT_SUCCESS, employeePortfolio);
     }
 
@@ -615,7 +588,6 @@ public class MemberController {
                     "awardName: 상장명<br>" +
                     "awardDate: 수상날짜 <br>" +
                     "조회 성공 시 data 가 없을 경우, 피고용인이 포트폴리오를 아직 작성하지 않음."
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 임시 저장 포트폴리오 조회 성공."),
@@ -624,9 +596,7 @@ public class MemberController {
     @GetMapping("/employee/temp-portfolio")
     public ResponseEntity<ApiResponse<EmployeePortfolioDTO>> getTempEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember) {
 
-
         EmployeePortfolioDTO employeePortfolio = employeePortfolioService.getEmployeePortfolio(securityMember.getId(), EmployeePortfolioStatus.TEMPORARY);
-
         return ApiResponse.success(SEND_EMPLOYER_DRAFT_PORTFOLIO_SELECT_SUCCESS, employeePortfolio);
     }
 
@@ -651,9 +621,6 @@ public class MemberController {
                     "<p>" +
                     "awardName: 상장명<br>" +
                     "awardDate: 수상날짜 <br>"
-
-
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 수정 성공."),
@@ -663,9 +630,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                   @RequestBody EmployeePortfolioDTO dto) {
 
-
         employeePortfolioService.updateEmployeePortfolio(securityMember.getId(), dto);
-
         return ApiResponse.success_only(SEND_EMPLOYER_PORTFOLIO_UPDATE_SUCCESS);
     }
 
@@ -680,9 +645,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Boolean>> checkPassword(@AuthenticationPrincipal SecurityMember securityMember,
                                                            @RequestBody PasswordDTO passwordDTO) {
 
-
         boolean b = memberService.checkPassword(securityMember.getId(), passwordDTO.getPassword());
-
         return ApiResponse.success(SEND_PASSWORD_VERIFICATION_COMPLETED, b);
     }
 
@@ -697,9 +660,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateUserId(@AuthenticationPrincipal SecurityMember securityMember,
                                                               @RequestBody UserIdDTO userIdDTO) {
 
-
          memberService.updateUserId(securityMember.getId(), userIdDTO.getUserId());
-
         return ApiResponse.success_only(SEND_UPDATE_USERID_SUCCESS);
     }
 
@@ -714,10 +675,37 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> upadtePassword(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @RequestBody PasswordDTO passwordDTO) {
 
-
         memberService.updateMemberPassword(securityMember.getId(), passwordDTO.getPassword());
-
         return ApiResponse.success_only(SEND_UPDATE_USERID_PASSWORD);
+    }
+
+    @Operation(
+            summary = "비밀번호 초기화 요청 API",
+            description = "[비밀번호 찾기 기능] 이메일로 비밀번호 초기화 링크를 보냅니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 초기화 링크 전송 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/reset-password/request")
+    public ResponseEntity<ApiResponse<Void>> requestPasswordReset(@RequestBody PasswordResetRequestDTO.PasswordResetRequest passwordResetRequest) {
+
+        emailService.sendPasswordResetEmail(passwordResetRequest);
+        return ApiResponse.success_only(SuccessStatus.SEND_PASSWORD_RESET_LINK_SUCCESS);
+    }
+
+    @Operation(
+            summary = "비밀번호 초기화 API",
+            description = "[비밀번호 찾기 기능] 비밀번호 초기화 링크에서 받은 코드를 이용해 비밀번호를 변경합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 초기화 인증코드 입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "비밀번호 초기화 인증코드가 만료되었습니다, 재인증 해주세요."),
+    })
+    @PostMapping("/reset-password/confirm")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody PasswordResetRequestDTO.PasswordResetConfirm passwordResetConfirm) {
+
+        memberService.resetPassword(passwordResetConfirm);
+        return ApiResponse.success_only(SuccessStatus.SEND_UPDATE_USERID_PASSWORD);
     }
 
 }
