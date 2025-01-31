@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "general_recruit")
@@ -22,7 +23,7 @@ public class GeneralRecruit extends Recruit {
             String title,
             Member employer,
             Address address,
-            List<String> businessFields,
+            Set<String> businessFields,
             Double latitude,
             Double longitude,
             LocalDate recruitStartDate,
@@ -38,7 +39,7 @@ public class GeneralRecruit extends Recruit {
             String workDaysOther,
             String salary,
             String salaryType,
-            List<String> applicationMethods,
+            Set<String> applicationMethods,
             String posterImageUrl,
             RecruitPublishStatus recruitPublishStatus
     ) {

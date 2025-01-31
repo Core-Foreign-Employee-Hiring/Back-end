@@ -70,6 +70,9 @@ public class SecurityConfig {
                                 "/api/v1/member/verification-email-code","/api/v1/member/verify-userid","/api/v1/member/verify-phone",
                                 "/api/v1/member/verification-phone-code", "/api/v1/member/find-user-id", "/api/v1/member/employer/company-validate"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증, 사업자등록 번호 인증 허가
+                        .requestMatchers(
+                                "/api/v1/recruit/search"
+                        ).permitAll() // 공고 전체 조회 인증 허가
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

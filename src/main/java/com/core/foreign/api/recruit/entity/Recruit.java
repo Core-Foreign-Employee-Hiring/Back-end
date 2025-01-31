@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -44,7 +45,7 @@ public abstract class Recruit extends BaseTimeEntity {
     @ElementCollection
     @CollectionTable(name = "recruit_business_fields", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "business_field", length = 100)
-    protected List<String> businessFields; // 업직종 리스트
+    protected Set<String> businessFields; // 업직종 리스트
 
     @ElementCollection
     @CollectionTable(name = "recruit_preferred_conditions", joinColumns = @JoinColumn(name = "recruit_id"))
@@ -54,7 +55,7 @@ public abstract class Recruit extends BaseTimeEntity {
     @ElementCollection
     @CollectionTable(name = "recruit_application_methods", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "method", length = 50)
-    protected List<String> applicationMethods; // 지원 방법 리스트
+    protected Set<String> applicationMethods; // 지원 방법 리스트
 
     protected String workDuration; // 근무 기간
     protected String workTime; // 근무 시간
@@ -73,7 +74,7 @@ public abstract class Recruit extends BaseTimeEntity {
     protected Recruit(String title,
                       Member employer,
                       Address address,
-                      List<String> businessFields,
+                      Set<String> businessFields,
                       Double latitude,
                       Double longitude,
                       LocalDate recruitStartDate,
@@ -89,7 +90,7 @@ public abstract class Recruit extends BaseTimeEntity {
                       String workDaysOther,
                       String salary,
                       String salaryType,
-                      List<String> applicationMethods,
+                      Set<String> applicationMethods,
                       RecruitType recruitType,
                       String posterImageUrl,
                       RecruitPublishStatus recruitPublishStatus
