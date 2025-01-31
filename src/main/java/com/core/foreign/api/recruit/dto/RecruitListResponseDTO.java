@@ -15,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class RecruitListResponseDTO {
 
+    private Long recruitId;                    // 공고 ID
     private String companyName;                // 기업명
     private String title;                      // 모집제목
     private Address address;                   // 주소

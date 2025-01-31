@@ -516,6 +516,7 @@ public class RecruitService {
         }
 
         return RecruitListResponseDTO.builder()
+                .recruitId(recruit.getId())
                 .companyName(companyName)
                 .title(recruit.getTitle())
                 .address(recruit.getAddress())
