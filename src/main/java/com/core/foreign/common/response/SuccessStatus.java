@@ -51,6 +51,7 @@ public enum SuccessStatus {
     CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 임시 저장 성공"),
     SEND_PAY_INFO_SAVE_SUCCESS(HttpStatus.CREATED,"결제 정보 등록 성공"),
     UPLOAD_IMAGE_SUCCESS(HttpStatus.CREATED, "이미지 업로드 성공"),
+    APPLY_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 지원 성공"),
 
     ;
 

@@ -2,7 +2,12 @@ package com.core.foreign.api.recruit.controller;
 
 import com.core.foreign.api.recruit.dto.*;
 import org.springframework.data.domain.Page;
+import com.core.foreign.api.recruit.dto.GeneralResumeRequestDTO;
+import com.core.foreign.api.recruit.dto.PremiumResumeRequestDTO;
+import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
+import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
 import com.core.foreign.api.recruit.service.RecruitService;
+import com.core.foreign.api.recruit.service.ResumeService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.response.ApiResponse;
 import com.core.foreign.common.response.SuccessStatus;
@@ -27,6 +32,7 @@ import java.util.List;
 public class RecruitController {
 
     private final RecruitService recruitService;
+    private final ResumeService resumeService;
 
     @Operation(summary = "일반 공고 등록 API",
             description = "일반 공고를 등록합니다.<br>" +
@@ -308,6 +314,36 @@ public class RecruitController {
     ) {
         List<String> availableRecruits = recruitService.getAvailableRecruits(securityMember.getId());
         return ApiResponse.success(SuccessStatus.SEND_AVAILABLE_RECRUIT_SUCCESS, availableRecruits);
+    }
+
+    @Operation(summary = "일반 채용 지원하기. API",
+            description = "피고용인이 일반 채용을 지원합니다..")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "일반 채용 지원 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/general/{recruit-id}/apply")
+    public ResponseEntity<ApiResponse<Void>> applyGeneralRecruit(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                       @PathVariable("recruit-id") Long recruitId,
+                                                                       @RequestBody GeneralResumeRequestDTO dto) {
+        resumeService.applyResume(securityMember.getId(), recruitId,dto);
+
+        return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
+    }
+
+    @Operation(summary = "프리미엄 채용 지원하기. API",
+            description = "피고용인이 프리미엄 채용을 지원합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프리미엄 채용 지원 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/premium/{recruit-id}/apply")
+    public ResponseEntity<ApiResponse<Void>> applyGeneralRecruit(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                 @PathVariable("recruit-id") Long recruitId,
+                                                                 @RequestBody PremiumResumeRequestDTO dto) {
+        resumeService.applyPremiumResume(securityMember.getId(), recruitId,dto);
+
+        return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
     @Operation(summary = "공고 전체 조회 API",
