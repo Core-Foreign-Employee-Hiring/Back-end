@@ -2,16 +2,13 @@ package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.recruit.dto.RecruitSearchConditionDTO;
+import com.core.foreign.api.recruit.dto.*;
 import org.springframework.data.jpa.domain.Specification;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
-import com.core.foreign.api.recruit.dto.RecruitListResponseDTO;
-import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
-import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
@@ -530,6 +527,16 @@ public class RecruitService {
                 .applicationMethods(recruit.getApplicationMethods())
                 .recruitType(recruit.getRecruitType())
                 .build();
+    }
+
+
+    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page){
+        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.DESC, "id"));
+        Page<MyRecruitResponseDTO> map = recruitRepository.findAll(employerId, pageable)
+                .map(MyRecruitResponseDTO::from);
+
+        return map;
+
     }
 
 }

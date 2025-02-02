@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -26,4 +28,8 @@ public interface RecruitRepository
     })
     Page<Recruit> findAll(Specification<Recruit> spec, Pageable pageable);
 
+
+    @Query("select r from Recruit r" +
+            " where r.employer.id=:employerId")
+    Page<Recruit> findAll(@Param("employerId")Long employerId, Pageable pageable);
 }
