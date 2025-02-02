@@ -38,8 +38,6 @@ public enum ErrorStatus {
     REQUIRED_PORTFOLIO_MISSING_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 포트폴리오가 등록되지 않았습니다."),
     INVALID_RECRUIT_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "공고 유형이 올바르지 않습니다."),
 
-
-
     /**
      * 401 UNAUTHORIZED
      */

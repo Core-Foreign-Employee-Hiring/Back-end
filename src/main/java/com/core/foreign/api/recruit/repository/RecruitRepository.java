@@ -28,6 +28,15 @@ public interface RecruitRepository
     })
     Page<Recruit> findAll(Specification<Recruit> spec, Pageable pageable);
 
+    @Query("select r from Recruit r " +
+            "left join fetch r.preferredConditions " +
+            "left join fetch r.businessFields " +
+            "left join fetch r.applicationMethods " +
+            "join fetch r.employer " +
+            "where r.id = :recruitId")
+    Optional<Recruit> findByIdFetchJoin(@Param("recruitId") Long recruitId);
+
+
 
     @Query("select r from Recruit r" +
             " where r.employer.id=:employerId")

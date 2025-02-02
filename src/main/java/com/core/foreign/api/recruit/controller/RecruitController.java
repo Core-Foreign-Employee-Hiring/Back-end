@@ -379,4 +379,26 @@ public class RecruitController {
         PageResponseDTO<RecruitListResponseDTO> pageResponse = PageResponseDTO.of(recruitPage);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, pageResponse);
     }
+
+    @Operation(summary = "공고 상세 조회 API",
+            description = "공고 ID를 받아 해당 공고의 상세 정보를 반환합니다.<br>" +
+                    "반환 정보: 회사(점포) 명, 회사 아이콘 이미지, 공고 제목, 급여(시급) 정보 등 공고 등록된 모든 정보를 포함합니다.<br>"+
+                    "<p>" +
+                    "employerAddress : 회사 주소<br>"+
+                    "employerContact : 연락처<br>"+
+                    "representative : 담당자명<br>"+
+                    "employerEmail : 이메일<br>" +
+                    "businessRegistrationNumber : 사업자등록번호<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상세 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 공고를 찾을 수 없습니다.")
+    })
+    @GetMapping(value = "/view", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<RecruitDetailResponseDTO>> getRecruitDetail(@RequestParam Long recruitId) {
+
+        RecruitDetailResponseDTO detailDTO = recruitService.getRecruitDetail(recruitId);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUIT_DETAIL_SUCCESS, detailDTO);
+    }
 }
