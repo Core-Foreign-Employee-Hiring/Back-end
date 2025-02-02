@@ -83,14 +83,14 @@ public class RecruitService {
     ) {
         Member employer = getEmployer(memberId);
 
-        // 프리미엄 공고 등록 가능 체크
+        /*// 프리미엄 공고 등록 가능 체크
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-
+*/
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
@@ -132,9 +132,9 @@ public class RecruitService {
         portfolios.forEach(premiumRecruit::addPortfolio);
         recruitRepository.save(premiumRecruit);
 
-        // 프리미엄 공고 등록 횟수 감소
+      /*  // 프리미엄 공고 등록 횟수 감소
         PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
-        premiumManageRepository.save(updatedPremiumManage);
+        premiumManageRepository.save(updatedPremiumManage);*/
     }
 
     // 일반 공고 임시저장
@@ -594,9 +594,13 @@ public class RecruitService {
     }
 
 
-    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page){
-        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.DESC, "id"));
-        Page<MyRecruitResponseDTO> map = recruitRepository.findAll(employerId, pageable)
+    /**
+     * @implNote
+     * 상단 노출 필터링은 나중에
+     */
+    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, RecruitType recruitType){
+        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "id"));
+        Page<MyRecruitResponseDTO> map = recruitRepository.findAll(employerId, recruitType, pageable)
                 .map(MyRecruitResponseDTO::from);
 
         return map;

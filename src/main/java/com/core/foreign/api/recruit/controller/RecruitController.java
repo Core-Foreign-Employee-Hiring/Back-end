@@ -1,6 +1,7 @@
 package com.core.foreign.api.recruit.controller;
 
 import com.core.foreign.api.recruit.dto.*;
+import com.core.foreign.api.recruit.entity.RecruitType;
 import org.springframework.data.domain.Page;
 import com.core.foreign.api.recruit.dto.GeneralResumeRequestDTO;
 import com.core.foreign.api.recruit.dto.PremiumResumeRequestDTO;
@@ -400,5 +401,31 @@ public class RecruitController {
 
         RecruitDetailResponseDTO detailDTO = recruitService.getRecruitDetail(recruitId);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_DETAIL_SUCCESS, detailDTO);
+    }
+
+    @Operation(summary = "고용인의 내 공고 조회 API",
+            description = "고용주의 내가 등록했던 공고 글을 확인할 수 있는 화면입니다.<br>" +
+                    "<p>" +
+                    "title : 공고 제목<br>" +
+                    "recruitStartDate : 모집 시작일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
+                    "workDuration : 근무 기간<br>" +
+                    "workTime : 근무 시간(직접 선택시 '시작시간~종료시간'<br>" +
+                    "workDays : 근무 요일<br>" +
+                    "recruitType: 공고 유형<br> " +
+                    "isUp: 상단 노출<br>" +
+                    "<p>" +
+                    "상단 노출 필터링 같은 경우 추후 진행 예정."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/my")
+    public ResponseEntity<ApiResponse<Page<MyRecruitResponseDTO>>> getMyRecruit(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                @RequestParam("page") Integer page,
+                                                                                @RequestParam("recruitType") RecruitType recruitType) {
+        Page<MyRecruitResponseDTO> myRecruits = recruitService.getMyRecruits(securityMember.getId(), page, recruitType);
+        return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, myRecruits);
     }
 }

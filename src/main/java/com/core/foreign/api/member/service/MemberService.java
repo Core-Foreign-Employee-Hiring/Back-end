@@ -104,7 +104,7 @@ public class MemberService {
     // 고용주 회원가입
     @Transactional
     public void registerEmployer(EmployerRegisterRequestDTO employerRegisterRequestDTO) {
-        // 사용자ID 중복 검증
+        /*// 사용자ID 중복 검증
         if (memberRepository.findByUserId(employerRegisterRequestDTO.getUserId()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }
@@ -139,7 +139,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.MISSING_BUSINESS_REGISTRATION_VERIFICATION_EXCEPTION.getMessage());
         }
 
-        companyValidationRepository.delete(cv.get());
+        companyValidationRepository.delete(cv.get());*/
 
         Address address = new Address(
                 employerRegisterRequestDTO.getZipcode(),
