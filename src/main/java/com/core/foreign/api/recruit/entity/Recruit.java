@@ -49,7 +49,7 @@ public abstract class Recruit extends BaseTimeEntity {
 
     @ElementCollection
     @CollectionTable(name = "recruit_preferred_conditions", joinColumns = @JoinColumn(name = "recruit_id"))
-    @Column(name = "condition", length = 100)
+    @Column(name = "preferred_condition", length = 100)
     protected List<String> preferredConditions; // 우대 조건 리스트
 
     @ElementCollection
