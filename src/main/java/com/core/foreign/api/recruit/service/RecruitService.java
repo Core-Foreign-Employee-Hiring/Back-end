@@ -1,22 +1,20 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.recruit.dto.RecruitSearchConditionDTO;
+import com.core.foreign.api.recruit.dto.*;
 import org.springframework.data.jpa.domain.Specification;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
-import com.core.foreign.api.recruit.dto.RecruitListResponseDTO;
-import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
-import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -356,7 +354,7 @@ public class RecruitService {
     }
 
     // 사용자 임시저장 데이터 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<RecruitResponseDTO> getDrafts(Long memberId) {
         Member employer = getEmployer(memberId);
         Optional<Recruit> drafts = recruitRepository.findAllByEmployerAndRecruitPublishStatus(employer, RecruitPublishStatus.DRAFT);
@@ -450,7 +448,7 @@ public class RecruitService {
     }
 
     // 등록 가능 공고 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<String> getAvailableRecruits(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USERID_NOT_FOUND_EXCEPTION.getMessage()));
@@ -473,6 +471,7 @@ public class RecruitService {
     }
 
     // 필터를 통한 공고 전체 조회
+    @Transactional(readOnly = true)
     public Page<RecruitListResponseDTO> getRecruitsWithFilters(RecruitSearchConditionDTO condition) {
 
         int page = (condition.getPage() != null) ? condition.getPage() : 0;
@@ -529,6 +528,68 @@ public class RecruitService {
                 .recruitPeriod(recruitPeriod)
                 .applicationMethods(recruit.getApplicationMethods())
                 .recruitType(recruit.getRecruitType())
+                .build();
+    }
+
+    // 공고 상세 조회
+    @Transactional(readOnly = true)
+    public RecruitDetailResponseDTO getRecruitDetail(Long recruitId) {
+
+        Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        String companyName;
+        String companyIconImage;
+        Address employerAddress = null;
+        String employerContact = null;
+        String representative = null;
+        String employerEmail = null;
+        String businessRegistrationNumber = null;
+
+        Member employer = recruit.getEmployer();
+        if (employer instanceof Employer employerEntity) {
+            companyName = employerEntity.getCompanyName();
+            companyIconImage = employerEntity.getCompanyImageUrl();
+            employerAddress = employerEntity.getAddress();
+            employerContact = employerEntity.getMainPhoneNumber();
+            representative = employerEntity.getName();
+            employerEmail = employerEntity.getCompanyEmail();
+            businessRegistrationNumber = employerEntity.getBusinessRegistrationNumber();
+        } else {
+            companyName = employer.getName();
+            companyIconImage = null;
+        }
+
+        return RecruitDetailResponseDTO.builder()
+                .recruitId(recruit.getId())
+                .companyName(companyName)
+                .companyIconImage(companyIconImage)
+                .title(recruit.getTitle())
+                .address(recruit.getAddress())
+                .recruitStartDate(recruit.getRecruitStartDate())
+                .recruitEndDate(recruit.getRecruitEndDate())
+                .recruitCount(recruit.getRecruitCount())
+                .gender(recruit.getGender())
+                .education(recruit.getEducation())
+                .otherConditions(recruit.getOtherConditions())
+                .preferredConditions(recruit.getPreferredConditions())
+                .businessFields(recruit.getBusinessFields())
+                .applicationMethods(recruit.getApplicationMethods())
+                .workDuration(recruit.getWorkDuration())
+                .workTime(recruit.getWorkTime())
+                .workDays(recruit.getWorkDays())
+                .workDaysOther(recruit.getWorkDaysOther())
+                .salary(recruit.getSalary())
+                .salaryType(recruit.getSalaryType())
+                .latitude(recruit.getLatitude())
+                .longitude(recruit.getLongitude())
+                .posterImageUrl(recruit.getPosterImageUrl())
+                .recruitType(recruit.getRecruitType())
+                .employerAddress(employerAddress)
+                .employerContact(employerContact)
+                .representative(representative)
+                .employerEmail(employerEmail)
+                .businessRegistrationNumber(businessRegistrationNumber)
                 .build();
     }
 
