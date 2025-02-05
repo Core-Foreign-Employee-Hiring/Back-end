@@ -40,6 +40,14 @@ public interface RecruitRepository
 
 
     @Query("select r from Recruit r" +
-            " where r.employer.id=:employerId and r.recruitType=:recruitType")
-    Page<Recruit> findAll(@Param("employerId")Long employerId, @Param("recruitType")RecruitType recruitType, Pageable pageable);
+            " where r.employer.id=:employerId and r.recruitType=:recruitType and r.recruitPublishStatus='PUBLISHED'")
+    Page<Recruit> findByEmployerIdAndRecruitType(@Param("employerId")Long employerId, @Param("recruitType")RecruitType recruitType, Pageable pageable);
+
+
+    @Query("select r from Recruit r" +
+            " where r.employer.id=:employerId ")
+    Page<Recruit> findByEmployerId(Long employerId, Pageable pageable);
+
+
+
 }

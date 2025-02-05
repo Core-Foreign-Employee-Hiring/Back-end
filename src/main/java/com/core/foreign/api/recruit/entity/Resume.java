@@ -41,4 +41,9 @@ public class Resume {
 
     @Enumerated(STRING)
     private ContractStatus contractStatus;
+
+
+    public void updateRecruitmentStatus(RecruitmentStatus recruitmentStatus) {
+        this.recruitmentStatus = recruitmentStatus;
+    }
 }

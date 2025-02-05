@@ -3,6 +3,7 @@ package com.core.foreign.api.payment.service;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.payment.dto.ApprovalRequestDTO;
+import com.core.foreign.api.payment.dto.PaymentHistoryResponseDTO;
 import com.core.foreign.api.payment.dto.PaymentRequestDTO;
 import com.core.foreign.api.payment.dto.PaymentResponseDTO;
 import com.core.foreign.api.payment.entity.Payment;
@@ -17,6 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -297,5 +302,15 @@ public class PaymentService {
     // 토스 API 요청 헤더 생성
     private String getAuthorizations() {
         return "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
+    }
+
+
+    public Page<PaymentHistoryResponseDTO> getPaymentHistory(Long memberId, Integer page){
+        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<PaymentHistoryResponseDTO> response= paymentRepository.findAllByMemberId(memberId, pageable)
+                .map(PaymentHistoryResponseDTO::from);
+
+        return response;
     }
 }

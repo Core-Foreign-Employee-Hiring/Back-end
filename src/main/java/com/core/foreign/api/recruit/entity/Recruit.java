@@ -34,6 +34,12 @@ public abstract class Recruit extends BaseTimeEntity {
     protected LocalDate recruitStartDate; // 모집 시작일
     protected LocalDate recruitEndDate; // 모집 종료일
 
+
+    /**
+     * 모집 인원과 현재 모집된 인원 관리를 위한 테이블을 하나 만들어야 햠.
+     * 모집인원에 제한이 있어 동시성 이슈 발생 가능.
+     *
+     */
     protected Integer recruitCount; // 모집 인원
     protected String gender; // 지원자 성별 조건
     protected String education; // 학력 조건
