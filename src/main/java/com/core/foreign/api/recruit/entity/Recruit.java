@@ -40,7 +40,7 @@ public abstract class Recruit extends BaseTimeEntity {
      * 모집인원에 제한이 있어 동시성 이슈 발생 가능.
      *
      */
-    protected Integer recruitCount; // 모집 인원
+//    protected Integer recruitCount; // 모집 인원
     protected String gender; // 지원자 성별 조건
     protected String education; // 학력 조건
     protected String otherConditions; // 기타 조건
@@ -85,7 +85,6 @@ public abstract class Recruit extends BaseTimeEntity {
                       Double longitude,
                       LocalDate recruitStartDate,
                       LocalDate recruitEndDate,
-                      Integer recruitCount,
                       String gender,
                       String education,
                       String otherConditions,
@@ -109,7 +108,6 @@ public abstract class Recruit extends BaseTimeEntity {
         this.longitude = longitude;
         this.recruitStartDate = recruitStartDate;
         this.recruitEndDate = recruitEndDate;
-        this.recruitCount = recruitCount;
         this.gender = gender;
         this.education = education;
         this.otherConditions = otherConditions;
