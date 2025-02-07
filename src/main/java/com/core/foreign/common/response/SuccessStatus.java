@@ -42,6 +42,16 @@ public enum SuccessStatus {
     SEND_RECRUIT_ALL_LIST_SUCCESS(HttpStatus.OK,"공고 전체 조회 성공"),
     SEND_PASSWORD_RESET_LINK_SUCCESS(HttpStatus.OK,"비밀번호 초기화 링크 전송 성공"),
     SEND_RECRUIT_DETAIL_SUCCESS(HttpStatus.OK,"공고 상세 조회 성공"),
+    SEND_EMPLOYER_RECRUIT_LIST_SUCCESS(HttpStatus.OK, "고용인의 공고 목록 조회 성공"),
+    SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS(HttpStatus.OK, "지원 현황 조회 성공"),
+    SEND_APPLICANT_RESUME_SUCCESS(HttpStatus.OK, "지원자의 이력서 조회 성공"),
+    SEND_APPLICANTS_FOR_RECRUIT_SUCCESS(HttpStatus.OK, "공고에 지원한 피고용인 목록 조회 성공"),
+    UPDATE_RECRUITMENT_STATUS_SUCCESS(HttpStatus.OK, "모집 상태 변경 성공"),
+    SEND_PAYMENT_HISTORY_SUCCESS(HttpStatus.OK, "결제 내역 조회 성공"),
+
+
+
+
 
     /**
      * 201

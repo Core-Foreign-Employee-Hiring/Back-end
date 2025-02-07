@@ -3,6 +3,7 @@ package com.core.foreign.api.recruit.repository;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.RecruitPublishStatus;
+import com.core.foreign.api.recruit.entity.RecruitType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,6 +36,18 @@ public interface RecruitRepository
             "join fetch r.employer " +
             "where r.id = :recruitId")
     Optional<Recruit> findByIdFetchJoin(@Param("recruitId") Long recruitId);
+
+
+
+    @Query("select r from Recruit r" +
+            " where r.employer.id=:employerId and r.recruitType=:recruitType and r.recruitPublishStatus='PUBLISHED'")
+    Page<Recruit> findByEmployerIdAndRecruitType(@Param("employerId")Long employerId, @Param("recruitType")RecruitType recruitType, Pageable pageable);
+
+
+    @Query("select r from Recruit r" +
+            " where r.employer.id=:employerId ")
+    Page<Recruit> findByEmployerId(Long employerId, Pageable pageable);
+
 
 
 }

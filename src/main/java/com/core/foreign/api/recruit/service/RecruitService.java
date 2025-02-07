@@ -3,28 +3,29 @@ package com.core.foreign.api.recruit.service;
 import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.recruit.dto.*;
-import org.springframework.data.jpa.domain.Specification;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
+import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class RecruitService {
     private final MemberRepository memberRepository;
     private final PremiumManageRepository premiumManageRepository;
     private final S3Service s3Service;
+    private final ResumeRepository resumeRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -83,14 +85,14 @@ public class RecruitService {
     ) {
         Member employer = getEmployer(memberId);
 
-        // 프리미엄 공고 등록 가능 체크
+        /*// 프리미엄 공고 등록 가능 체크
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-
+*/
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
@@ -132,9 +134,9 @@ public class RecruitService {
         portfolios.forEach(premiumRecruit::addPortfolio);
         recruitRepository.save(premiumRecruit);
 
-        // 프리미엄 공고 등록 횟수 감소
+      /*  // 프리미엄 공고 등록 횟수 감소
         PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
-        premiumManageRepository.save(updatedPremiumManage);
+        premiumManageRepository.save(updatedPremiumManage);*/
     }
 
     // 일반 공고 임시저장
@@ -591,6 +593,40 @@ public class RecruitService {
                 .employerEmail(employerEmail)
                 .businessRegistrationNumber(businessRegistrationNumber)
                 .build();
+    }
+
+
+    /**
+     * @implNote
+     * 상단 노출 필터링은 나중에
+     */
+    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, RecruitType recruitType){
+        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "id"));
+        Page<MyRecruitResponseDTO> map = recruitRepository.findByEmployerIdAndRecruitType(employerId, recruitType, pageable)
+                .map(MyRecruitResponseDTO::from);
+
+        return map;
+
+    }
+
+    public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
+        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Recruit> byEmployerId = recruitRepository.findByEmployerId(employerId, pageable);
+        List<Long> recruitIds=new ArrayList<>();
+        List<Recruit> content = byEmployerId.getContent();
+        for (Recruit recruit : content) {
+            recruitIds.add(recruit.getId());
+        }
+        List<RecruitWithResumeCountDTO> recruitWithResumeCount = resumeRepository.findRecruitWithResumeCount(recruitIds);
+        HashMap<Long, Long> resumeCount=new HashMap<>();
+        for (RecruitWithResumeCountDTO recruitWithResumeCountDTO : recruitWithResumeCount) {
+            resumeCount.put(recruitWithResumeCountDTO.getRecruitId(), recruitWithResumeCountDTO.getResumeCount());
+        }
+
+        Page<RecruitmentApplyStatusDTO> map = byEmployerId.map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId())));
+
+        return map;
     }
 
 }

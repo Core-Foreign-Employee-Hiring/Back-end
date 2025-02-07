@@ -134,14 +134,13 @@ public class MemberService {
         // 사업자등록번호인증 확인
 
         String startDate = employerRegisterRequestDTO.getEstablishedDate().toString().replace("-", ""); // "yyyy-MM-dd" -> "yyyyMMdd"
-        log.info("사업자 등록 번호= {}", employerRegisterRequestDTO.getBusinessRegistrationNumber());
-        log.info("startDate= {}", startDate);
-        log.info("대표자명= {}", employerRegisterRequestDTO.getRepresentativeName());
-        Optional<CompanyValidation> cv = companyValidationRepository.findByBusinessNoAndStartDateAndRepresentativeName(employerRegisterRequestDTO.getBusinessRegistrationNumber(), startDate, employerRegisterRequestDTO.getRepresentativeName());
-        log.info("CompanyValidation= {}", cv);
 
+        Optional<CompanyValidation> cv = companyValidationRepository.findByBusinessNoAndStartDateAndRepresentativeName(employerRegisterRequestDTO.getBusinessRegistrationNumber(), startDate, employerRegisterRequestDTO.getRepresentativeName());
         if(cv.isEmpty()){
             log.error("사업자 인증 안 됨.");
+            log.info("사업자 등록 번호= {}", employerRegisterRequestDTO.getBusinessRegistrationNumber());
+            log.info("startDate= {}", startDate);
+            log.info("대표자명= {}", employerRegisterRequestDTO.getRepresentativeName());
             throw new BadRequestException(ErrorStatus.MISSING_BUSINESS_REGISTRATION_VERIFICATION_EXCEPTION.getMessage());
         }
 

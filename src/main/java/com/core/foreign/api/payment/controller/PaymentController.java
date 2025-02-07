@@ -1,9 +1,6 @@
 package com.core.foreign.api.payment.controller;
 
-import com.core.foreign.api.payment.dto.ApprovalRequestDTO;
-import com.core.foreign.api.payment.dto.CancelRequestDTO;
-import com.core.foreign.api.payment.dto.PaymentRequestDTO;
-import com.core.foreign.api.payment.dto.PaymentResponseDTO;
+import com.core.foreign.api.payment.dto.*;
 import com.core.foreign.api.payment.service.PaymentService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.InternalServerException;
@@ -14,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -94,5 +92,22 @@ public class PaymentController {
             throw new InternalServerException(ErrorStatus.FAIL_PAY_CANCEL_EXCEPTION.getMessage());
         }
         return ApiResponse.success_only(SuccessStatus.SEND_CANCELED_PAY_SUCCESS);
+    }
+
+    @Operation(
+            summary = "결제 내역 조회. API",
+            description = "결제 내역을 확인할 수 있습니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<Page<PaymentHistoryResponseDTO>>> getPaymentHistory(@AuthenticationPrincipal SecurityMember securityMember,
+                                                           @RequestParam("page") Integer page) {
+
+        Page<PaymentHistoryResponseDTO> paymentHistory = paymentService.getPaymentHistory(securityMember.getId(), page);
+
+        return ApiResponse.success(SuccessStatus.SEND_PAYMENT_HISTORY_SUCCESS, paymentHistory);
     }
 }

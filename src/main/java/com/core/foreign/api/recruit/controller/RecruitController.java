@@ -1,11 +1,9 @@
 package com.core.foreign.api.recruit.controller;
 
 import com.core.foreign.api.recruit.dto.*;
-import org.springframework.data.domain.Page;
-import com.core.foreign.api.recruit.dto.GeneralResumeRequestDTO;
-import com.core.foreign.api.recruit.dto.PremiumResumeRequestDTO;
-import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
-import com.core.foreign.api.recruit.dto.RecruitResponseDTO;
+import com.core.foreign.api.recruit.entity.ContractStatus;
+import com.core.foreign.api.recruit.entity.RecruitType;
+import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.service.RecruitService;
 import com.core.foreign.api.recruit.service.ResumeService;
 import com.core.foreign.common.SecurityMember;
@@ -15,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -401,4 +400,120 @@ public class RecruitController {
         RecruitDetailResponseDTO detailDTO = recruitService.getRecruitDetail(recruitId);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_DETAIL_SUCCESS, detailDTO);
     }
+
+    @Operation(summary = "고용인의 내 공고 조회 API",
+            description = "고용인의 내가 등록했던 공고 글을 확인할 수 있는 화면입니다.<br>" +
+                    "<p>" +
+                    "title : 공고 제목<br>" +
+                    "recruitStartDate : 모집 시작일<br>" +
+                    "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
+                    "workDuration : 근무 기간<br>" +
+                    "workTime : 근무 시간(직접 선택시 '시작시간~종료시간'<br>" +
+                    "workDays : 근무 요일<br>" +
+                    "recruitType: 공고 유형<br> " +
+                    "isUp: 상단 노출<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/my")
+    public ResponseEntity<ApiResponse<Page<MyRecruitResponseDTO>>> getMyRecruit(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                @RequestParam("page") Integer page,
+                                                                                @RequestParam("recruitType") RecruitType recruitType) {
+        Page<MyRecruitResponseDTO> myRecruits = recruitService.getMyRecruits(securityMember.getId(), page, recruitType);
+        return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, myRecruits);
+    }
+
+    @Operation(summary = "고용인 지원현황 조회 API",
+            description = "고용인이 등록한 공고의 지원현황을 조회합니다.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "지원 현황 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/apply-status")
+    public ResponseEntity<ApiResponse<Page<RecruitmentApplyStatusDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                @RequestParam("page") Integer page) {
+        Page<RecruitmentApplyStatusDTO> recruitmentApplyStatus = recruitService.getRecruitmentApplyStatus(securityMember.getId(), page);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
+    }
+
+
+    @Operation(summary = "지원자 이력서 보기 API",
+            description = "지원자의 이력서를 조회합니다.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "지원자 이력서 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/resumes/{resume-id}")
+    public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                        @PathVariable("resume-id") Long resumeId) {
+        ApplicationResumeResponseDTO resume = resumeService.getResume(resumeId);
+        return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
+    }
+
+    @Operation(summary = "공고에 지원한 피고용인들 조회 API",
+            description = "공고에 지원한 피고용인들 조회.<br>" +
+                    "<p>" +
+                    "name: 이름<br>" +
+                    "isMail: 성별<br>" +
+                    "birthday: 생년월일<br>" +
+                    "지원 방법은 전부 온라인? <br>" +
+                    "phoneNumber: 연락처<br>" +
+                    "recruitmentStatus: 모집상태<br>" +
+                    "evaluationStatus: 평가상태<br>" +
+                    "contractStatus: 계약서상태<br>"
+
+
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고에 지원한 피고용인들 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/{recruit-id}/resumes/")
+    public ResponseEntity<ApiResponse<Page<ApplicationResumePreviewResponseDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                  @PathVariable("recruit-id") Long recruitId,
+                                                                                                                  @RequestParam(value = "keyword", required = false) String keyword,
+                                                                                                                  @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
+                                                                                                                  @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
+                                                                                                                  @RequestParam("page") Integer page) {
+
+
+        Page<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+        return ApiResponse.success(SuccessStatus.SEND_APPLICANTS_FOR_RECRUIT_SUCCESS, responseDTOS);
+    }
+
+    @Operation(summary = "지원서 거절 API",
+            description = "지원서 거절.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "지원서 거절 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping(value = "/resumes/{resume-id}/reject")
+    public ResponseEntity<ApiResponse<Void>> rejectResume(@AuthenticationPrincipal SecurityMember securityMember,
+                                                          @PathVariable("resume-id") Long resumeId
+    ) {
+        resumeService.rejectResume(resumeId);
+        return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
+    }
+
+    @Operation(summary = "지원서 승인 API",
+            description = "지원서 승인.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "지원서 승인 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping(value = "/resumes/{resume-id}/approve")
+    public ResponseEntity<ApiResponse<Void>> rejectApprove(@AuthenticationPrincipal SecurityMember securityMember,
+                                                          @PathVariable("resume-id") Long resumeId
+    ) {
+        resumeService.approveResume(resumeId);
+        return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
+    }
+
+
 }

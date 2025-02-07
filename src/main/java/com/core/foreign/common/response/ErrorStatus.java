@@ -57,6 +57,8 @@ public enum ErrorStatus {
     PAYMENT_INFO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 결제 정보를 찾을 수 없습니다."),
     CANCEL_INFO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 취소 정보를 찾을 수 없습니다."),
     PREMIUM_MANAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"프리미엄 관리 정보가 없습니다."),
+    RESUME_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 이력서를 찾을 수 없습니다."),
+
 
     /**
      * 500 SERVER_ERROR
