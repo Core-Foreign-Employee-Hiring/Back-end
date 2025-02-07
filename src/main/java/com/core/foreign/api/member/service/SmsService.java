@@ -46,7 +46,7 @@ public class SmsService {
     public void sendVerificationSms(String phoneNumber, LocalDateTime requestedAt) {
 
         // 핸드폰번호 중복 등록 검증
-        if (memberRepository.findByEmail(phoneNumber).isPresent()) {
+        if (memberRepository.findByPhoneNumber(phoneNumber).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
