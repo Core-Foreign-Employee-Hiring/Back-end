@@ -1,6 +1,8 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
+import com.core.foreign.api.recruit.entity.ApplyMethod;
 import com.core.foreign.api.recruit.entity.RecruitType;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +26,11 @@ public class RecruitDetailResponseDTO {
     private String education;                // 학력 조건
     private String otherConditions;          // 기타 조건
     private List<String> preferredConditions;// 우대 조건 리스트
-    private Set<String> businessFields;      // 업직종 리스트
-    private Set<String> applicationMethods;  // 지원 방법 리스트
-    private String workDuration;             // 근무 기간
-    private String workTime;                 // 근무 시간
-    private String workDays;                 // 근무 요일
+    private Set<BusinessField> businessFields;      // 업직종 리스트
+    private Set<ApplyMethod> applicationMethods;  // 지원 방법 리스트
+    private List<String> workDuration;      // 근무 기간 목록
+    private List<String> workTime;          // 근무 시간 목록
+    private List<String> workDays;           // 근무 요일
     private String workDaysOther;            // 근무 요일 기타 사항
     private String salary;                   // 급여 정보 (예: 시급)
     private String salaryType;               // 급여 형태 (월급, 시급 등)

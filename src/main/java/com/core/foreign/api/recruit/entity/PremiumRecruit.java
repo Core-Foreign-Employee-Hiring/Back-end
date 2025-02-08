@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.entity;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Member;
 import jakarta.persistence.*;
@@ -28,7 +29,7 @@ public class PremiumRecruit extends Recruit {
             String title,
             Member employer,
             Address address,
-            Set<String> businessFields,
+            Set<BusinessField> businessFields,
             Double latitude,
             Double longitude,
             LocalDate recruitStartDate,
@@ -38,16 +39,15 @@ public class PremiumRecruit extends Recruit {
             String education,
             String otherConditions,
             List<String> preferredConditions,
-            String workDuration,
-            String workTime,
-            String workDays,
+            List<String> workDuration,
+            List<String> workTime,
+            List<String> workDays,
             String workDaysOther,
             String salary,
             String salaryType,
-            Set<String> applicationMethods,
+            Set<ApplyMethod> applicationMethods,
             String posterImageUrl,
-            RecruitPublishStatus recruitPublishStatus
-    ) {
+            RecruitPublishStatus recruitPublishStatus) {
         super(
                 title,
                 employer,

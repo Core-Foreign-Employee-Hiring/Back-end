@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.service;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.RecruitPublishStatus;
 import jakarta.persistence.criteria.Join;
@@ -18,12 +19,12 @@ public class RecruitSpecifications {
     }
 
     // 업직종 필터
-    public static Specification<Recruit> businessFieldsIn(List<String> fields) {
+    public static Specification<Recruit> businessFieldsIn(List<BusinessField> fields) {
         return (root, query, cb) -> {
             if (fields == null || fields.isEmpty()) {
-                return cb.conjunction(); // 필터가 없으면 무조건 true
+                return cb.conjunction();
             }
-            Join<Recruit, String> join = root.join("businessFields", JoinType.LEFT);
+            Join<Recruit, BusinessField> join = root.join("businessFields", JoinType.LEFT);
             return join.in(fields);
         };
     }
@@ -34,7 +35,8 @@ public class RecruitSpecifications {
             if (durations == null || durations.isEmpty()) {
                 return cb.conjunction();
             }
-            return root.get("workDuration").in(durations);
+            Join<Recruit, String> join = root.join("workDurations", JoinType.LEFT);
+            return join.in(durations);
         };
     }
 
@@ -44,7 +46,8 @@ public class RecruitSpecifications {
             if (days == null || days.isEmpty()) {
                 return cb.conjunction();
             }
-            return root.get("workDays").in(days);
+            Join<Recruit, String> join = root.join("workDays", JoinType.LEFT);
+            return join.in(days);
         };
     }
 
@@ -54,7 +57,8 @@ public class RecruitSpecifications {
             if (times == null || times.isEmpty()) {
                 return cb.conjunction();
             }
-            return root.get("workTime").in(times);
+            Join<Recruit, String> join = root.join("workTimes", JoinType.LEFT);
+            return join.in(times);
         };
     }
 

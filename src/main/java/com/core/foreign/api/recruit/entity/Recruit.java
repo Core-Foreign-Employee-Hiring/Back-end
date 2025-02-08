@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.entity;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.common.entity.BaseTimeEntity;
@@ -44,24 +45,42 @@ public abstract class Recruit extends BaseTimeEntity {
     @Embedded
     protected Address address; // 주소
 
-    @ElementCollection
+    @ElementCollection(targetClass = BusinessField.class)
+    @Enumerated(EnumType.STRING)
     @CollectionTable(name = "recruit_business_fields", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "business_field", length = 100)
-    protected Set<String> businessFields; // 업직종 리스트
+    protected Set<BusinessField> businessFields; // 업직종 리스트
 
     @ElementCollection
+    @OrderColumn(name = "order_index")
     @CollectionTable(name = "recruit_preferred_conditions", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "preferred_condition", length = 100)
     protected List<String> preferredConditions; // 우대 조건 리스트
 
-    @ElementCollection
+    @ElementCollection(targetClass = ApplyMethod.class)
+    @Enumerated(EnumType.STRING)
     @CollectionTable(name = "recruit_application_methods", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "method", length = 50)
-    protected Set<String> applicationMethods; // 지원 방법 리스트
+    protected Set<ApplyMethod> applicationMethods; // 지원 방법 리스트
 
-    protected String workDuration; // 근무 기간
-    protected String workTime; // 근무 시간
-    protected String workDays; // 근무 요일
+    @ElementCollection
+    @OrderColumn(name = "order_index")
+    @CollectionTable(name = "recruit_work_durations", joinColumns = @JoinColumn(name = "recruit_id"))
+    @Column(name = "work_duration", length = 100)
+    protected List<String> workDuration; // 근무 기간
+
+    @ElementCollection
+    @OrderColumn(name = "order_index")
+    @CollectionTable(name = "recruit_work_times", joinColumns = @JoinColumn(name = "recruit_id"))
+    @Column(name = "work_time", length = 100)
+    protected List<String> workTime; // 근무 시간
+
+    @ElementCollection
+    @OrderColumn(name = "order_index")
+    @CollectionTable(name = "recruit_work_days", joinColumns = @JoinColumn(name = "recruit_id"))
+    @Column(name = "work_day", length = 100)
+    protected List<String> workDays; // 근무 요일
+
     protected String workDaysOther; // 근무 요일 기타 사항 (추가 조건)
     protected String salary; // 급여 정보
     protected String salaryType; // 급여 형태 (월급, 시급 등)
@@ -76,7 +95,7 @@ public abstract class Recruit extends BaseTimeEntity {
     protected Recruit(String title,
                       Member employer,
                       Address address,
-                      Set<String> businessFields,
+                      Set<BusinessField> businessFields,
                       Double latitude,
                       Double longitude,
                       LocalDate recruitStartDate,
@@ -86,17 +105,16 @@ public abstract class Recruit extends BaseTimeEntity {
                       String education,
                       String otherConditions,
                       List<String> preferredConditions,
-                      String workDuration,
-                      String workTime,
-                      String workDays,
+                      List<String> workDuration,
+                      List<String> workTime,
+                      List<String> workDays,
                       String workDaysOther,
                       String salary,
                       String salaryType,
-                      Set<String> applicationMethods,
+                      Set<ApplyMethod> applicationMethods,
                       RecruitType recruitType,
                       String posterImageUrl,
-                      RecruitPublishStatus recruitPublishStatus
-    ) {
+                      RecruitPublishStatus recruitPublishStatus) {
         this.title = title;
         this.employer = employer;
         this.address = address;
@@ -105,8 +123,8 @@ public abstract class Recruit extends BaseTimeEntity {
         this.longitude = longitude;
         this.recruitStartDate = recruitStartDate;
         this.recruitEndDate = recruitEndDate;
-        this.recruitCount= recruitCount;
-        this.currentRecruitCount=0;
+        this.recruitCount = recruitCount;
+        this.currentRecruitCount = 0;
         this.gender = gender;
         this.education = education;
         this.otherConditions = otherConditions;
