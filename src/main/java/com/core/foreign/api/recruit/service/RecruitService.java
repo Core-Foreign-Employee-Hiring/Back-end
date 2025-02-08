@@ -360,54 +360,66 @@ public class RecruitService {
         premiumManageRepository.save(updatedPremiumManage);
     }
 
-    // 사용자 임시저장 데이터 조회
+    // 사용자 임시저장 공고 존재 여부 확인
     @Transactional(readOnly = true)
-    public List<RecruitResponseDTO> getDrafts(Long memberId) {
+    public boolean hasDrafts(Long memberId) {
         Member employer = getEmployer(memberId);
-        Optional<Recruit> drafts = recruitRepository.findAllByEmployerAndRecruitPublishStatus(employer, RecruitPublishStatus.DRAFT);
+        Optional<Recruit> draft = recruitRepository.findAllByEmployerAndRecruitPublishStatus(employer, RecruitPublishStatus.DRAFT);
+        return draft.isPresent();
+    }
 
-        return drafts.stream()
-                .map(draft -> {
-                    List<RecruitResponseDTO.PortfolioDTO> portfolioDTOs = new ArrayList<>();
-                    if (draft instanceof PremiumRecruit premiumRecruit) {
-                        portfolioDTOs = premiumRecruit.getPortfolios().stream()
-                                .map(portfolio -> RecruitResponseDTO.PortfolioDTO.builder()
-                                        .title(portfolio.getTitle())
-                                        .type(portfolio.getType())
-                                        .isRequired(portfolio.isRequired())
-                                        .maxFileCount(portfolio.getMaxFileCount())
-                                        .maxFileSize(portfolio.getMaxFileSize())
-                                        .build())
-                                .toList();
-                    }
+    // 임시 저장 공고 데이터 조회
+    @Transactional(readOnly = true)
+    public RecruitResponseDTO getDraftById(Long recruitId, Long memberId) {
+        Recruit draft = recruitRepository.findById(recruitId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        if (!RecruitPublishStatus.DRAFT.equals(draft.getRecruitPublishStatus())) {
+            throw new BadRequestException(ErrorStatus.NOT_DRAFT_RECRUIT_EXCEPTION.getMessage());
+        }
+        if (!draft.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.INVALID_USER_EXCEPTION.getMessage());
+        }
+        return convertDraftToResponseDTO(draft);
+    }
 
-                    return RecruitResponseDTO.builder()
-                            .id(draft.getId())
-                            .title(draft.getTitle())
-                            .address(draft.getAddress())
-                            .recruitType(draft.getRecruitType())
-                            .recruitStartDate(draft.getRecruitStartDate())
-                            .recruitEndDate(draft.getRecruitEndDate())
-                            .recruitCount(draft.getRecruitCount())
-                            .gender(draft.getGender())
-                            .education(draft.getEducation())
-                            .otherConditions(draft.getOtherConditions())
-                            .preferredConditions(draft.getPreferredConditions())
-                            .workDuration(draft.getWorkDuration())
-                            .workTime(draft.getWorkTime())
-                            .workDays(draft.getWorkDays())
-                            .workDaysOther(draft.getWorkDaysOther())
-                            .salary(draft.getSalary())
-                            .salaryType(draft.getSalaryType())
-                            .businessFields(draft.getBusinessFields())
-                            .applicationMethods(draft.getApplicationMethods())
-                            .posterImageUrl(draft.getPosterImageUrl())
-                            .latitude(draft.getLatitude())
-                            .longitude(draft.getLongitude())
-                            .portfolios(portfolioDTOs)
-                            .build();
-                })
-                .toList();
+    private RecruitResponseDTO convertDraftToResponseDTO(Recruit draft) {
+        List<RecruitResponseDTO.PortfolioDTO> portfolioDTOs = new ArrayList<>();
+        if (draft instanceof PremiumRecruit premiumRecruit) {
+            portfolioDTOs = premiumRecruit.getPortfolios().stream()
+                    .map(portfolio -> RecruitResponseDTO.PortfolioDTO.builder()
+                            .title(portfolio.getTitle())
+                            .type(portfolio.getType())
+                            .isRequired(portfolio.isRequired())
+                            .maxFileCount(portfolio.getMaxFileCount())
+                            .maxFileSize(portfolio.getMaxFileSize())
+                            .build())
+                    .toList();
+        }
+        return RecruitResponseDTO.builder()
+                .id(draft.getId())
+                .title(draft.getTitle())
+                .address(draft.getAddress())
+                .recruitType(draft.getRecruitType())
+                .recruitStartDate(draft.getRecruitStartDate())
+                .recruitEndDate(draft.getRecruitEndDate())
+                .recruitCount(draft.getRecruitCount())
+                .gender(draft.getGender())
+                .education(draft.getEducation())
+                .otherConditions(draft.getOtherConditions())
+                .preferredConditions(new ArrayList<>(draft.getPreferredConditions()))
+                .workDuration(new ArrayList<>(draft.getWorkDuration()))
+                .workTime(new ArrayList<>(draft.getWorkTime()))
+                .workDays(new ArrayList<>(draft.getWorkDays()))
+                .workDaysOther(draft.getWorkDaysOther())
+                .salary(draft.getSalary())
+                .salaryType(draft.getSalaryType())
+                .businessFields(new HashSet<>(draft.getBusinessFields()))
+                .applicationMethods(new HashSet<>(draft.getApplicationMethods()))
+                .posterImageUrl(draft.getPosterImageUrl())
+                .latitude(draft.getLatitude())
+                .longitude(draft.getLongitude())
+                .portfolios(portfolioDTOs)
+                .build();
     }
 
     // 사용자 조회
