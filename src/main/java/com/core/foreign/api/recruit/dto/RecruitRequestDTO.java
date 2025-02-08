@@ -28,11 +28,14 @@ public class RecruitRequestDTO {
         private String otherConditions;
         private List<String> preferredConditions;
         private List<String> workDuration;
+        private String workDurationOther;
         private List<String> workTime;
+        private String workTimeOther;
         private List<String> workDays;
         private String workDaysOther;
         private String salary;
         private String salaryType;
+        private String salaryOther;
         private List<ApplyMethod> applicationMethods;
     }
 
@@ -52,11 +55,14 @@ public class RecruitRequestDTO {
         private String otherConditions;
         private List<String> preferredConditions;
         private List<String> workDuration;
+        private String workDurationOther;
         private List<String> workTime;
+        private String workTimeOther;
         private List<String> workDays;
         private String workDaysOther;
         private String salary;
         private String salaryType;
+        private String salaryOther;
         private List<ApplyMethod> applicationMethods;
 
         private List<PortfolioRequest> portfolios;

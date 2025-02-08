@@ -68,22 +68,26 @@ public abstract class Recruit extends BaseTimeEntity {
     @CollectionTable(name = "recruit_work_durations", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "work_duration", length = 100)
     protected List<String> workDuration; // 근무 기간
+    protected String workDurationOther; // 근무 기간 기타 사항 (추가 조건)
 
     @ElementCollection
     @OrderColumn(name = "order_index")
     @CollectionTable(name = "recruit_work_times", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "work_time", length = 100)
     protected List<String> workTime; // 근무 시간
+    protected String workTimeOther; // 근무 시간 기타 사항 (추가 조건)
 
     @ElementCollection
     @OrderColumn(name = "order_index")
     @CollectionTable(name = "recruit_work_days", joinColumns = @JoinColumn(name = "recruit_id"))
     @Column(name = "work_day", length = 100)
     protected List<String> workDays; // 근무 요일
-
     protected String workDaysOther; // 근무 요일 기타 사항 (추가 조건)
+
     protected String salary; // 급여 정보
     protected String salaryType; // 급여 형태 (월급, 시급 등)
+    protected String salaryOther; // 급여 기타 사항 (추가 조건)
+
     protected String posterImageUrl; // 포스터 이미지 URL
 
     @Enumerated(EnumType.STRING)
@@ -106,11 +110,14 @@ public abstract class Recruit extends BaseTimeEntity {
                       String otherConditions,
                       List<String> preferredConditions,
                       List<String> workDuration,
+                      String workDurationOther,
                       List<String> workTime,
+                      String workTimeOther,
                       List<String> workDays,
                       String workDaysOther,
                       String salary,
                       String salaryType,
+                      String salaryOther,
                       Set<ApplyMethod> applicationMethods,
                       RecruitType recruitType,
                       String posterImageUrl,
@@ -130,11 +137,14 @@ public abstract class Recruit extends BaseTimeEntity {
         this.otherConditions = otherConditions;
         this.preferredConditions = preferredConditions;
         this.workDuration = workDuration;
+        this.workDurationOther = workDurationOther;
         this.workTime = workTime;
+        this.workTimeOther = workTimeOther;
         this.workDays = workDays;
         this.workDaysOther = workDaysOther;
         this.salary = salary;
         this.salaryType = salaryType;
+        this.salaryOther = salaryOther;
         this.applicationMethods = applicationMethods;
         this.recruitType = recruitType;
         this.posterImageUrl = posterImageUrl;
