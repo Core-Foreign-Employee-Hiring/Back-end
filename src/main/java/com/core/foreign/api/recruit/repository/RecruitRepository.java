@@ -24,7 +24,10 @@ public interface RecruitRepository
     @EntityGraph(attributePaths = {
             "businessFields",       // @ElementCollection
             "preferredConditions",  // @ElementCollection
-            "applicationMethods",   // @ElementCollection
+            "applicationMethods",
+            "workDuration",       // @ElementCollection
+            "workTime",  // @ElementCollection
+            "workDays",   // @ElementCollection
             "employer"             // @ManyToOne(LAZY)
     })
     Page<Recruit> findAll(Specification<Recruit> spec, Pageable pageable);
@@ -33,6 +36,9 @@ public interface RecruitRepository
             "left join fetch r.preferredConditions " +
             "left join fetch r.businessFields " +
             "left join fetch r.applicationMethods " +
+            "left join fetch r.workDuration " +
+            "left join fetch r.workTime " +
+            "left join fetch r.workDays " +
             "join fetch r.employer " +
             "where r.id = :recruitId")
     Optional<Recruit> findByIdFetchJoin(@Param("recruitId") Long recruitId);

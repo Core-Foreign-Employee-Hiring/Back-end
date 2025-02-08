@@ -1,6 +1,8 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
+import com.core.foreign.api.recruit.entity.ApplyMethod;
 import com.core.foreign.api.recruit.entity.PortfolioType;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class RecruitRequestDTO {
     public static class GeneralRecruitRequest {
         private String title;
         private Address address;
-        private List<String> businessFields;
+        private List<BusinessField> businessFields;
         private Double latitude;
         private Double longitude;
         private LocalDate recruitStartDate;
@@ -25,13 +27,13 @@ public class RecruitRequestDTO {
         private String education;
         private String otherConditions;
         private List<String> preferredConditions;
-        private String workDuration;
-        private String workTime;
-        private String workDays;
+        private List<String> workDuration;
+        private List<String> workTime;
+        private List<String> workDays;
         private String workDaysOther;
         private String salary;
         private String salaryType;
-        private List<String> applicationMethods;
+        private List<ApplyMethod> applicationMethods;
     }
 
     @Getter
@@ -39,7 +41,7 @@ public class RecruitRequestDTO {
     public static class PremiumRecruitRequest {
         private String title;
         private Address address;
-        private List<String> businessFields;
+        private List<BusinessField> businessFields;
         private Double latitude;
         private Double longitude;
         private LocalDate recruitStartDate;
@@ -49,13 +51,13 @@ public class RecruitRequestDTO {
         private String education;
         private String otherConditions;
         private List<String> preferredConditions;
-        private String workDuration;
-        private String workTime;
-        private String workDays;
+        private List<String> workDuration;
+        private List<String> workTime;
+        private List<String> workDays;
         private String workDaysOther;
         private String salary;
         private String salaryType;
-        private List<String> applicationMethods;
+        private List<ApplyMethod> applicationMethods;
 
         private List<PortfolioRequest> portfolios;
 
