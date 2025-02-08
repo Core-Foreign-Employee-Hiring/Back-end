@@ -25,7 +25,7 @@ import java.util.List;
 
 @Tag(name = "Recruit", description = "공고 관련 API 입니다.<br>" +
         "<p>" +
-        "[사용자 임시저장 데이터조회 API + 작성 가능 공고 조회 API + 회사 정보 조회 API(마이페이지(고용주)-내 기업 정보) -> 만약 임시저장 데이터 있다면 -> 해당 공고 퍼블리싱 API / 임시 저장 데이터가 없다면 -> 공고 등록 API")
+        "[임시 저장된 공고 존재 여부 조회 API + 작성 가능 공고 조회 API + 회사 정보 조회 API(마이페이지(고용주)-내 기업 정보) -> 만약 임시저장 데이터 있다면 -> 해당 공고 퍼블리싱 API / 임시 저장 데이터가 없다면 -> 공고 등록 API")
 @RestController
 @RequestMapping("/api/v1/recruit")
 @RequiredArgsConstructor
@@ -439,21 +439,33 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "사용자 임시저장 데이터 조회 API",
-            description = "임시 저장한 데이터가 있는지 조회합니다.")
+    @Operation(summary = "임시 저장된 공고 존재 여부 조회 API",
+            description = "현재 사용자가 임시 저장한 공고가 존재하는지 여부를 확인합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "임시 저장된 공고 조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "임시 저장된 공고 여부 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
     })
-    @GetMapping("/drafts")
-    public ResponseEntity<ApiResponse<List<RecruitResponseDTO>>> getDrafts(
+    @GetMapping("/drafts/exist")
+    public ResponseEntity<ApiResponse<Boolean>> checkDraftExistence(
             @AuthenticationPrincipal SecurityMember securityMember
     ) {
-        List<RecruitResponseDTO> drafts = recruitService.getDrafts(securityMember.getId());
-        if (drafts.isEmpty()) {
-            return ApiResponse.success(SuccessStatus.SEND_NO_DRAFT_SAVE_SUCCESS, List.of());
-        }
-        return ApiResponse.success(SuccessStatus.SEND_DRAFT_SAVE_SUCCESS, drafts);
+        boolean exists = recruitService.hasDrafts(securityMember.getId());
+        return ApiResponse.success(exists ? SuccessStatus.SEND_DRAFT_SAVE_SUCCESS : SuccessStatus.SEND_NO_DRAFT_SAVE_SUCCESS, exists);
+    }
+
+    @Operation(summary = "임시 저장된 공고 내용 조회 API",
+            description = "해당 임시 공고의 ID를 받아 임시 저장된 공고의 상세 데이터를 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "임시 저장된 공고 내용 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/drafts/{recruitId}")
+    public ResponseEntity<ApiResponse<RecruitResponseDTO>> getDraftById(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable("recruitId") Long recruitId
+    ) {
+        RecruitResponseDTO draft = recruitService.getDraftById(recruitId, securityMember.getId());
+        return ApiResponse.success(SuccessStatus.SEND_DRAFT_DETAIL_SUCCESS, draft);
     }
 
     @Operation(summary = "작성 가능 공고 조회 API",

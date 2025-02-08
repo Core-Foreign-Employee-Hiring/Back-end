@@ -23,7 +23,6 @@ public enum ErrorStatus {
     MISSING_EMAIL_VERIFICATION_EXCEPTION(HttpStatus.BAD_REQUEST,"이메일 인증을 진행해주세요."),
     MISSING_PHONENUMBER_VERIFICATION_EXCEPTION(HttpStatus.BAD_REQUEST,"전화번호 인증을 진행해주세요."),
     ONLY_ADD_RECRUIT_ARTICLE_EMPLOYER_EXCEPTION(HttpStatus.BAD_REQUEST,"고용주만 공고 등록이 가능합니다."),
-    NOT_ENOUGH_PREMIUM_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 공고 등록 가능 횟수가 부족합니다."),
     ALEADY_PUBLISHED_RECRUIT_ARTICLE_EXCEPTION(HttpStatus.BAD_REQUEST,"이미 퍼블리싱된 공고 입니다."),
     VALIDATION_PHONE_FORMAT_EXCEPTION(HttpStatus.BAD_REQUEST, "휴대폰 번호 형식이 올바르지 않습니다."),
     WRONG_SMS_VERIFICATION_CODE_EXCEPTION(HttpStatus.BAD_REQUEST,"SMS 인증코드가 올바르지 않습니다."),
@@ -41,10 +40,7 @@ public enum ErrorStatus {
     EXCEEDED_RECRUIT_CAPACITY_EXCEPTION(HttpStatus.BAD_REQUEST, "모집 인원을 초과할 수 없습니다."),
     ALREADY_APPROVED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 승인된 이력서입니다."),
     ALREADY_REJECTED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 거절된 이력서입니다."),
-
-
-
-
+    NOT_DRAFT_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 임시 저장 상태가 아닙니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -54,6 +50,7 @@ public enum ErrorStatus {
     UNAUTHORIZED_EMAIL_VERIFICATION_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"이메일 인증코드가 만료되었습니다, 재인증 해주세요."),
     UNAUTHORIZED_SMS_VERIFICATION_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"SMS 인증코드가 만료되었습니다, 재인증 해주세요."),
     EXPIRED_PASSWORD_RESET_CODE_EXCEPTION(HttpStatus.UNAUTHORIZED,"비밀번호 초기화 인증코드가 만료되었습니다, 재인증 해주세요."),
+    INVALID_USER_EXCEPTION(HttpStatus.UNAUTHORIZED,"해당 시스템에 접근할 권한이 없습니다."),
 
     /**
      * 404 NOT_FOUND
