@@ -46,11 +46,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +
@@ -107,11 +110,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +
@@ -175,11 +181,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +
@@ -236,11 +245,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +
@@ -304,11 +316,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +
@@ -365,11 +380,14 @@ public class RecruitController {
                     "otherConditions : 기타 조건 - String <br>" +
                     "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
                     "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
                     "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
                     "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
                     "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
                     "salary : 급여 정보 - String (ex 14000)<br>" +
                     "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
                     "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
                     "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
                     "latitude : 위도 - Double (ex 36.215556)<br>" +

@@ -29,11 +29,14 @@ public class RecruitDetailResponseDTO {
     private Set<BusinessField> businessFields;      // 업직종 리스트
     private Set<ApplyMethod> applicationMethods;  // 지원 방법 리스트
     private List<String> workDuration;      // 근무 기간 목록
+    private String workDurationOther;      // 근무 기간 기타 사항
     private List<String> workTime;          // 근무 시간 목록
+    private String workTimeOther;          // 근무 시간 기타 사항
     private List<String> workDays;           // 근무 요일
     private String workDaysOther;            // 근무 요일 기타 사항
     private String salary;                   // 급여 정보 (예: 시급)
     private String salaryType;               // 급여 형태 (월급, 시급 등)
+    private String salaryOther;            // 급여 기타 사항
     private Double latitude;                 // 위도
     private Double longitude;                // 경도
     private String posterImageUrl;           // 포스터 이미지 URL
