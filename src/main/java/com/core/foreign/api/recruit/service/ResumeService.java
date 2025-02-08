@@ -38,9 +38,6 @@ public class ResumeService {
     private final ResumePortfolioRepository resumePortfolioRepository;
     private final EmployeePortfolioRepository employeePortfolioRepository;
 
-
-
-
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
         Recruit recruit = recruitRepository.findById(recruitId).orElseThrow(() -> new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
