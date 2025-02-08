@@ -448,7 +448,7 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/resumes/{resume-id}")
-    public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                         @PathVariable("resume-id") Long resumeId) {
         ApplicationResumeResponseDTO resume = resumeService.getResume(resumeId);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
@@ -472,8 +472,8 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고에 지원한 피고용인들 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping(value = "/{recruit-id}/resumes/")
-    public ResponseEntity<ApiResponse<Page<ApplicationResumePreviewResponseDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+    @GetMapping(value = "/{recruit-id}/resumes")
+    public ResponseEntity<ApiResponse<Page<ApplicationResumePreviewResponseDTO>>> searchApplicationResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                   @PathVariable("recruit-id") Long recruitId,
                                                                                                                   @RequestParam(value = "keyword", required = false) String keyword,
                                                                                                                   @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
@@ -508,11 +508,76 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value = "/resumes/{resume-id}/approve")
-    public ResponseEntity<ApiResponse<Void>> rejectApprove(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<Void>> approveApprove(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @PathVariable("resume-id") Long resumeId
     ) {
         resumeService.approveResume(resumeId);
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
+    }
+
+
+    @Operation(summary = "피고용인 작성한 이력서 리스트 조회 API",
+            description = "피고용인 작성한 이력서 리스트 조회.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "이력서 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/my-resumes")
+    public ResponseEntity<ApiResponse<Page<EmployeeApplicationStatusResponseDTO>>> getMyResumes(@AuthenticationPrincipal SecurityMember securityMember,
+                                                           @RequestParam("page") Integer page) {
+        Page<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page);
+
+        return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, response);
+
+    }
+
+    @Operation(summary = "피고용인 자신이 작성한 이력서 삭제. API",
+            description = "피고용인 자신이 작성한 이력서 삭제.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "이력서 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @DeleteMapping(value = "/my-resumes/{resume-id}/remove")
+    public ResponseEntity<ApiResponse<Void>> removeMyResume(@AuthenticationPrincipal SecurityMember securityMember,
+                                                            @PathVariable("resume-id") Long resumeId) {
+        resumeService.removeMyResume(securityMember.getId(), resumeId);
+
+        return ApiResponse.success_only(SuccessStatus.DELETE_MY_RESUME_SUCCESS);
+
+    }
+
+    @Operation(summary = "공고 찜하기 상태 변경. API",
+            description = "공고 찜하기 상태 변경.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "찜하기 상태 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping(value = "/{recruit-id}/bookmark")
+    public ResponseEntity<ApiResponse<Void>> flipRecruitBookmark(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                 @PathVariable("recruit-id") Long recruitId) {
+        recruitService.flipRecruitBookmark(securityMember.getId(), recruitId);
+
+        return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS);
+
+    }
+
+    @Operation(summary = "찜한 공고 조회. API",
+            description = "찜한 공고 조회하기.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "찜한 공고 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/bookmarks")
+    public ResponseEntity<ApiResponse<Page<RecruitBookmarkResponseDTO>>> getRecruitBookmarks(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                 @RequestParam(value = "page", defaultValue = "0") Integer  page) {
+        Page<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page);
+
+        return ApiResponse.success(SuccessStatus.SEND_BOOKMARKED_RECRUITS_SUCCESS, response);
+
     }
 
 

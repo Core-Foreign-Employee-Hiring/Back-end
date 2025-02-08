@@ -2,6 +2,8 @@ package com.core.foreign.api.recruit.repository;
 
 import com.core.foreign.api.recruit.entity.RecruitWithResumeCountDTO;
 import com.core.foreign.api.recruit.entity.Resume;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +24,22 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " join fetch r.recruit" +
             " where r.id=:resumeId")
     Optional<Resume>findResumeWithEmployeeAndRecruit(@Param("resumeId")Long resumeId);
+
+    @Query("select r from Resume r" +
+            " join fetch r.recruit" +
+            " where r.id=:resumeId")
+    Optional<Resume> findByResumeIdWithRecruit(@Param("resumeId")Long resumeId);
+
+
+    @Query("select r from Resume r" +
+            " join fetch r.recruit re" +
+            " join fetch re.employer" +
+            " where r.employee.id=:employeeId")
+    Page<Resume> findResumeByEmployeeId(@Param("employeeId")Long employeeId, Pageable pageable);
+
+
+
+
+
 
 }

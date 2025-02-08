@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.recruit.entity.ApplyMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,5 +9,6 @@ import lombok.Getter;
 public class GeneralResumeRequestDTO {
     private String messageToEmployer;
     private boolean thirdPartyConsent;
+    private ApplyMethod applyMethod;
 }
 

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -197,7 +198,7 @@ public class ResumeService {
                 .messageToEmployer(dto.getMessageToEmployer())
                 .recruit(recruit)
                 .employee(employee)
-                .applyMethod(ApplyMethod.ONLINE)
+                .applyMethod(dto.getApplyMethod())
                 .recruitmentStatus(RecruitmentStatus.PENDING)
                 .evaluationStatus(EvaluationStatus.NOT_EVALUATED)
                 .contractStatus(ContractStatus.NOT_WRITTEN)
@@ -222,15 +223,67 @@ public class ResumeService {
     @Transactional
     public void rejectResume(Long resumeId){
         Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage()));
-        resume.updateRecruitmentStatus(RecruitmentStatus.REJECTED);
+        resume.reject();
     }
 
     @Transactional
     public void approveResume(Long resumeId){
-        Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage()));
+        Resume resume = resumeRepository.findByResumeIdWithRecruit(resumeId)
+                .orElseThrow(() -> {
+                    log.error("이력서 없음 resumeId= {}", resumeId);
+                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
-        // 모집인원 관련 예외 처리 추가할 것. 이거는 모집인원 관리 테이블 추가 후 진행 예정
+        Recruit recruit = resume.getRecruit();
 
-        resume.updateRecruitmentStatus(RecruitmentStatus.APPROVED);
+        if(resume.getRecruitmentStatus().equals(RecruitmentStatus.APPROVED)){
+            log.error("이미 승인된 이력서 resumeId= {}", resumeId);
+            throw new BadRequestException(ALREADY_APPROVED_RESUME_EXCEPTION.getMessage());
+        }
+
+        if(resume.getRecruitmentStatus().equals(RecruitmentStatus.REJECTED)){
+            log.error("이미 거절된 이력서 resumeId= {}", resumeId);
+            throw new BadRequestException(ALREADY_REJECTED_RESUME_EXCEPTION.getMessage());
+        }
+
+
+        if(recruit.getRecruitCount()<=recruit.getCurrentRecruitCount()){
+            throw new BadRequestException(EXCEEDED_RECRUIT_CAPACITY_EXCEPTION.getMessage());
+        }
+
+        recruit.increaseCurrentRecruitCount();
+        resume.approve();
     }
+
+
+    public Page<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
+        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+        Page<EmployeeApplicationStatusResponseDTO> response = resumeRepository.findResumeByEmployeeId(employeeId, pageable)
+                .map(EmployeeApplicationStatusResponseDTO::from);
+
+        return response;
+    }
+
+
+
+    @Transactional
+    public void removeMyResume(Long employeeId, Long resumeId){
+        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
+                .orElseThrow(() -> {
+                    log.error("이력서 없음. resumeId= {}", resumeId);
+                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        Employee employee = resume.getEmployee();
+
+        if(!Objects.equals(employeeId, employee.getId())){
+            log.error("다름 사람 이력서 삭세 시도.");
+            throw new BadRequestException(UNAUTHORIZED_RESUME_DELETE_EXCEPTION.getMessage());
+        }
+
+
+        resumeRepository.delete(resume);
+    }
+
 }

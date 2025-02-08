@@ -37,6 +37,14 @@ public enum ErrorStatus {
     THIRD_PARTY_CONSENT_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "개인정보 제3자 제공 동의가 필요합니다."),
     REQUIRED_PORTFOLIO_MISSING_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 포트폴리오가 등록되지 않았습니다."),
     INVALID_RECRUIT_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "공고 유형이 올바르지 않습니다."),
+    UNAUTHORIZED_RESUME_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, "다른 사용자의 이력서를 삭제할 수 없습니다."),
+    EXCEEDED_RECRUIT_CAPACITY_EXCEPTION(HttpStatus.BAD_REQUEST, "모집 인원을 초과할 수 없습니다."),
+    ALREADY_APPROVED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 승인된 이력서입니다."),
+    ALREADY_REJECTED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 거절된 이력서입니다."),
+
+
+
+
 
     /**
      * 401 UNAUTHORIZED
