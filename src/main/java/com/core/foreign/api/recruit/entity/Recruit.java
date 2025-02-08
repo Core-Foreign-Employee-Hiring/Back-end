@@ -34,13 +34,9 @@ public abstract class Recruit extends BaseTimeEntity {
     protected LocalDate recruitStartDate; // 모집 시작일
     protected LocalDate recruitEndDate; // 모집 종료일
 
+    protected Integer recruitCount; // 모집 인원
+    protected Integer currentRecruitCount; // 현재 모집 인원
 
-    /**
-     * 모집 인원과 현재 모집된 인원 관리를 위한 테이블을 하나 만들어야 햠.
-     * 모집인원에 제한이 있어 동시성 이슈 발생 가능.
-     *
-     */
-//    protected Integer recruitCount; // 모집 인원
     protected String gender; // 지원자 성별 조건
     protected String education; // 학력 조건
     protected String otherConditions; // 기타 조건
@@ -85,6 +81,7 @@ public abstract class Recruit extends BaseTimeEntity {
                       Double longitude,
                       LocalDate recruitStartDate,
                       LocalDate recruitEndDate,
+                      Integer recruitCount,
                       String gender,
                       String education,
                       String otherConditions,
@@ -108,6 +105,8 @@ public abstract class Recruit extends BaseTimeEntity {
         this.longitude = longitude;
         this.recruitStartDate = recruitStartDate;
         this.recruitEndDate = recruitEndDate;
+        this.recruitCount= recruitCount;
+        this.currentRecruitCount=0;
         this.gender = gender;
         this.education = education;
         this.otherConditions = otherConditions;
@@ -123,4 +122,9 @@ public abstract class Recruit extends BaseTimeEntity {
         this.posterImageUrl = posterImageUrl;
         this.recruitPublishStatus = recruitPublishStatus;
     }
+
+    public void increaseCurrentRecruitCount() {
+        this.currentRecruitCount++;
+    }
+
 }

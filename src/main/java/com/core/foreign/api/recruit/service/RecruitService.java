@@ -8,6 +8,7 @@ import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
+import com.core.foreign.api.recruit.repository.RecruitBookmarkRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.common.exception.BadRequestException;
@@ -15,6 +16,7 @@ import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
+import static com.core.foreign.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecruitService {
 
     private final RecruitRepository recruitRepository;
@@ -36,6 +41,7 @@ public class RecruitService {
     private final PremiumManageRepository premiumManageRepository;
     private final S3Service s3Service;
     private final ResumeRepository resumeRepository;
+    private final RecruitBookmarkRepository recruitBookmarkRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -57,6 +63,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -103,6 +110,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -160,6 +168,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -210,6 +219,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -264,6 +274,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -315,6 +326,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -376,6 +388,7 @@ public class RecruitService {
                             .recruitType(draft.getRecruitType())
                             .recruitStartDate(draft.getRecruitStartDate())
                             .recruitEndDate(draft.getRecruitEndDate())
+                            .recruitCount(draft.getRecruitCount())
                             .gender(draft.getGender())
                             .education(draft.getEducation())
                             .otherConditions(draft.getOtherConditions())
@@ -432,13 +445,13 @@ public class RecruitService {
     // 일반 공고 조회
     private GeneralRecruit getGeneralRecruit(Long recruitId) {
         return (GeneralRecruit) recruitRepository.findById(recruitId)
-                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
     }
 
     // 프리미엄 공고 조회
     private PremiumRecruit getPremiumRecruit(Long recruitId) {
         return (PremiumRecruit) recruitRepository.findById(recruitId)
-                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
     }
 
     // 등록 가능 공고 조회
@@ -530,7 +543,7 @@ public class RecruitService {
     public RecruitDetailResponseDTO getRecruitDetail(Long recruitId) {
 
         Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
-                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
 
         String companyName;
         String companyIconImage;
@@ -562,6 +575,7 @@ public class RecruitService {
                 .address(recruit.getAddress())
                 .recruitStartDate(recruit.getRecruitStartDate())
                 .recruitEndDate(recruit.getRecruitEndDate())
+                .recruitCount(recruit.getRecruitCount())
                 .gender(recruit.getGender())
                 .education(recruit.getEducation())
                 .otherConditions(recruit.getOtherConditions())
@@ -592,7 +606,7 @@ public class RecruitService {
      * 상단 노출 필터링은 나중에
      */
     public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, RecruitType recruitType){
-        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
         Page<MyRecruitResponseDTO> map = recruitRepository.findByEmployerIdAndRecruitType(employerId, recruitType, pageable)
                 .map(MyRecruitResponseDTO::from);
 
@@ -601,7 +615,7 @@ public class RecruitService {
     }
 
     public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
-        Pageable pageable = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Recruit> byEmployerId = recruitRepository.findByEmployerId(employerId, pageable);
         List<Long> recruitIds=new ArrayList<>();
@@ -618,6 +632,42 @@ public class RecruitService {
         Page<RecruitmentApplyStatusDTO> map = byEmployerId.map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId())));
 
         return map;
+    }
+
+
+    @Transactional
+    public void flipRecruitBookmark(Long memberId, Long recruitId){
+        Optional<RecruitBookmark> findBookmark = recruitBookmarkRepository.findByRecruitIdAndMemberId(recruitId, memberId);
+
+        if(findBookmark.isPresent()){
+            RecruitBookmark recruitBookmark = findBookmark.get();
+
+            recruitBookmarkRepository.delete(recruitBookmark);
+        }
+        else{
+            Member member = memberRepository.findById(memberId).get();
+            Recruit recruit = recruitRepository.findById(recruitId)
+                    .orElseThrow(() -> {
+                        log.error("공고 없음. recruitId= {}", recruitId);
+                        return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+
+            RecruitBookmark recruitBookmark = new RecruitBookmark(recruit, member);
+
+            recruitBookmarkRepository.save(recruitBookmark);
+        }
+    }
+
+
+    public Page<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page){
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+
+
+        Page<RecruitBookmarkResponseDTO> response = recruitBookmarkRepository.findByMemberId(memberId, pageable)
+                .map(RecruitBookmarkResponseDTO::from);
+
+        return response;
     }
 
 }

@@ -42,8 +42,11 @@ public class Resume {
     @Enumerated(STRING)
     private ContractStatus contractStatus;
 
+    public void approve() {
+        this.recruitmentStatus = RecruitmentStatus.APPROVED;
+    }
 
-    public void updateRecruitmentStatus(RecruitmentStatus recruitmentStatus) {
-        this.recruitmentStatus = recruitmentStatus;
+    public void reject(){
+        this.recruitmentStatus=RecruitmentStatus.REJECTED;
     }
 }
