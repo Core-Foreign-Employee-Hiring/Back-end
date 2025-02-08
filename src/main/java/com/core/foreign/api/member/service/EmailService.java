@@ -33,6 +33,11 @@ public class EmailService {
 
     public void sendVerificationEmail(String email, LocalDateTime requestedAt) {
 
+        // 이메일 중복 등록 검증
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
+        }
+
         //기존에 있는 Email 삭제
         emailVerificationRepository.findByEmail(email)
                 .ifPresent(emailVerification -> emailVerificationRepository.delete(emailVerification));

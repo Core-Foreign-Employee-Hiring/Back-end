@@ -1,6 +1,7 @@
 package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.member.entity.PhoneNumberVerification;
+import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.repository.PhoneNumberVerificationRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 public class SmsService {
 
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
+    private final MemberRepository memberRepository;
 
     // 설정값 주입
     @Value("${coolsms.api.key}")
@@ -42,6 +44,12 @@ public class SmsService {
     }
 
     public void sendVerificationSms(String phoneNumber, LocalDateTime requestedAt) {
+
+        // 핸드폰번호 중복 등록 검증
+        if (memberRepository.findByPhoneNumber(phoneNumber).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
+
         initializeMessageService(); // 메시지 서비스 초기화
 
         // 기존 인증코드 삭제

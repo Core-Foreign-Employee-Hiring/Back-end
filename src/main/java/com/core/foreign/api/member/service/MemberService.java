@@ -54,7 +54,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
         // 핸드폰번호 중복 검증
-        if (memberRepository.findByEmail(employeeRegisterRequestDTO.getPhoneNumber()).isPresent()) {
+        if (memberRepository.findByPhoneNumber(employeeRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
@@ -113,7 +113,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
         // 핸드폰번호 중복 검증
-        if (memberRepository.findByEmail(employerRegisterRequestDTO.getPhoneNumber()).isPresent()) {
+        if (memberRepository.findByPhoneNumber(employerRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
