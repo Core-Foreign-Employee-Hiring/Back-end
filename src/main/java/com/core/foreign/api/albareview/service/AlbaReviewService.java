@@ -56,6 +56,9 @@ public class AlbaReviewService {
     @Transactional
     public AlbaReviewDetailDTO getAlbaReviewDetail(Long reviewId, Long MemberId) {
 
+        // 조회수 업데이트
+        albaReviewRepository.incrementReadCount(reviewId);
+
         // 알바 후기 조회
         AlbaReview review = albaReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.ALBAREVIEW_NOT_FOUND_EXCEPTION.getMessage()));
@@ -65,10 +68,6 @@ public class AlbaReviewService {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedCreatedAt = review.getCreatedAt().format(formatter);
-
-        // 조회 수 증가
-        AlbaReview updatedReview = review.incrementReadCount();
-        albaReviewRepository.save(updatedReview);
 
         return AlbaReviewDetailDTO.builder()
                 .id(review.getId())

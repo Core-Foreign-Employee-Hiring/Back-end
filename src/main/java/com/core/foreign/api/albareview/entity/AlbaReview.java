@@ -34,10 +34,4 @@ public class AlbaReview extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // 후기를 작성한 멤버
 
-    // 조회 수 증가
-    public AlbaReview incrementReadCount() {
-        return this.toBuilder()
-                .readCount(this.readCount + 1)
-                .build();
-    }
 }
