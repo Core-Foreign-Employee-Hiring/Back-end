@@ -4,6 +4,7 @@ import com.core.foreign.common.config.jwt.JwtConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -72,6 +73,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/recruit/search","/api/v1/recruit/view"
                         ).permitAll() // 공고 전체 조회, 공고 상세 조회 인증 허가
+                        .requestMatchers(
+                                HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview"
+                        ).permitAll() // 알바 후기 조회 관련 API
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

@@ -45,6 +45,7 @@ public class MemberService {
     // 고용인 회원가입
     @Transactional
     public void registerEmployee(EmployeeRegisterRequestDTO employeeRegisterRequestDTO) {
+        /*
         // 사용자ID 중복 검증
         if (memberRepository.findByUserId(employeeRegisterRequestDTO.getUserId()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
@@ -71,7 +72,7 @@ public class MemberService {
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
-
+*/
         Address address = new Address(
                 employeeRegisterRequestDTO.getZipcode(),
                 employeeRegisterRequestDTO.getAddress1(),

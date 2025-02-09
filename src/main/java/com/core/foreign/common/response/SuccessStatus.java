@@ -53,7 +53,10 @@ public enum SuccessStatus {
     DELETE_MY_RESUME_SUCCESS(HttpStatus.OK, "내 이력서 삭제 성공"),
     UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS(HttpStatus.OK, "찜하기 상태 변경 성공"),
     SEND_BOOKMARKED_RECRUITS_SUCCESS(HttpStatus.OK, "찜한 공고 조회 성공"),
-
+    ALBA_REVIEW_DETAIL_SUCCESS(HttpStatus.OK,"알바 후기 상세조회 성공"),
+    ALBA_REVIEW_LIST_SUCCESS(HttpStatus.OK,"알바 후기 전체조회 성공"),
+    ALBA_REVIEW_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 수정 성공"),
+    ALBA_REVIEW_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 삭제 성공"),
 
     /**
      * 201
@@ -65,6 +68,7 @@ public enum SuccessStatus {
     SEND_PAY_INFO_SAVE_SUCCESS(HttpStatus.CREATED,"결제 정보 등록 성공"),
     UPLOAD_IMAGE_SUCCESS(HttpStatus.CREATED, "이미지 업로드 성공"),
     APPLY_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 지원 성공"),
+    ALBA_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"알바 후기 작성 성공"),
 
     ;
 
