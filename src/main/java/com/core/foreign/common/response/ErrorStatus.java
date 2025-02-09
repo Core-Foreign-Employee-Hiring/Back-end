@@ -41,6 +41,7 @@ public enum ErrorStatus {
     ALREADY_APPROVED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 승인된 이력서입니다."),
     ALREADY_REJECTED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 거절된 이력서입니다."),
     NOT_DRAFT_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 임시 저장 상태가 아닙니다."),
+    DONT_HAVE_PERMISSION_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 요청을 수행할 권한이 없습니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -56,6 +57,7 @@ public enum ErrorStatus {
      * 404 NOT_FOUND
      */
 
+    NOT_LOGIN_EXCEPTION(HttpStatus.NOT_FOUND,"로그인이 팔요합니다."),
     USERID_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 아이디를 찾을 수 없습니다."),
     RECRUIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다."),
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
@@ -63,7 +65,7 @@ public enum ErrorStatus {
     CANCEL_INFO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 취소 정보를 찾을 수 없습니다."),
     PREMIUM_MANAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"프리미엄 관리 정보가 없습니다."),
     RESUME_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 이력서를 찾을 수 없습니다."),
-
+    ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR
