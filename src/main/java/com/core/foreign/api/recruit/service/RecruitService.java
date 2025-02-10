@@ -637,17 +637,23 @@ public class RecruitService {
     }
 
 
-    /**
-     * @implNote
-     * 상단 노출 필터링은 나중에
-     */
-    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, RecruitType recruitType){
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        Page<MyRecruitResponseDTO> map = recruitRepository.findByEmployerIdAndRecruitType(employerId, recruitType, pageable)
+    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, Integer size, RecruitType recruitType, boolean excludeExpired){
+        Pageable pageable= PageRequest.of(page, size);
+
+        Page<MyRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, recruitType, RecruitPublishStatus.PUBLISHED, excludeExpired, pageable)
                 .map(MyRecruitResponseDTO::from);
 
-        return map;
 
+        return response;
+    }
+
+    public Page<MyDraftRecruitResponseDTO> getMyDraftRecruits(Long employerId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size);
+
+        Page<MyDraftRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, null , RecruitPublishStatus.DRAFT, false, pageable)
+                .map(MyDraftRecruitResponseDTO::from);
+
+        return response;
     }
 
     public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
