@@ -243,12 +243,6 @@ public class ResumeService {
             throw new BadRequestException(ALREADY_REJECTED_RESUME_EXCEPTION.getMessage());
         }
 
-
-        if(recruit.getRecruitCount()<=recruit.getCurrentRecruitCount()){
-            throw new BadRequestException(EXCEEDED_RECRUIT_CAPACITY_EXCEPTION.getMessage());
-        }
-
-        recruit.increaseCurrentRecruitCount();
         resume.approve();
     }
 
