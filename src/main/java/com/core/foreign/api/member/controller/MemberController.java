@@ -4,11 +4,9 @@ import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
+import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
-import com.core.foreign.api.member.service.CompanyValidationService;
-import com.core.foreign.api.member.service.EmailService;
-import com.core.foreign.api.member.service.EmployeePortfolioService;
-import com.core.foreign.api.member.service.MemberService;
+import com.core.foreign.api.member.service.*;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ApiResponse;
@@ -41,6 +39,7 @@ public class MemberController {
     private final CompanyValidationService companyValidationService;
     private final EmployeePortfolioService employeePortfolioService;
     private final EmailService emailService;
+    private final EvaluationService evaluationService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
@@ -706,6 +705,88 @@ public class MemberController {
 
         memberService.resetPassword(passwordResetConfirm);
         return ApiResponse.success_only(SuccessStatus.SEND_UPDATE_USERID_PASSWORD);
+    }
+
+
+    @Operation(
+            summary = "고용인이 피고용인 평가 API",
+            description = "고용인이 피고용인을 평가합니다."+
+            "<p>" +
+            "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
+            "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
+            "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
+            "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
+            "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/evaluations/employer-to-employee")
+    public ResponseEntity<ApiResponse<Void>> evaluateEmployee(@AuthenticationPrincipal SecurityMember securityMember,
+                                                              @RequestBody EmployerToEmployeeEvaluationRequestDTO dto) {
+
+        if(dto.getEvaluationCategory().isEmpty()){
+            throw new BadRequestException(ErrorStatus.EVALUATION_CATEGORY_IS_EMPTY_EXCEPTION.getMessage());
+        }
+
+        evaluationService.evaluateEmployee(dto.getResumeId(), dto.getEvaluationCategory());
+        return ApiResponse.success_only(SuccessStatus.EVALUATE_EMPLOYEE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "피고용인이 고용인 평가. API",
+            description = "피고용인이 고용인을 평가합니다." +
+                    "<p>" +
+                    "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
+                    "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
+                    "RESPECTS_EMPLOYEES: 알바생을 존중해줘요.<br>" +
+                    "FRIENDLY_BOSS: 사장님이 친절해요.<br>" +
+                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping("/evaluations/employee-to-employer")
+    public ResponseEntity<ApiResponse<Void>> evaluateEmployer(@AuthenticationPrincipal SecurityMember securityMember,
+                                                              @RequestBody EmployeeToEmployerEvaluationRequestDTO dto) {
+
+        if (dto.getEvaluationCategory().isEmpty()) {
+            throw new BadRequestException(ErrorStatus.EVALUATION_CATEGORY_IS_EMPTY_EXCEPTION.getMessage());
+        }
+
+        evaluationService.evaluateEmployer(securityMember.getId(), dto.getRecruitId(), dto.getEvaluationCategory());
+        return ApiResponse.success_only(SuccessStatus.EVALUATE_EMPLOYEE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "평가보기. API",
+            description = "평가보기입니다."+
+                    "<p>" +
+                    "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
+                    "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
+                    "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
+                    "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
+                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"+
+                    "<p>" +
+                    "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
+                    "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
+                    "RESPECTS_EMPLOYEES: 알바생을 존중해줘요.<br>" +
+                    "FRIENDLY_BOSS: 사장님이 친절해요.<br>" +
+                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>"
+
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 보기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/evaluations/")
+    public ResponseEntity<ApiResponse<List<EvaluationCategory>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                               @RequestParam("resumeId")Long resumeId) {
+
+        List<EvaluationCategory> evaluation = evaluationService.getEvaluation(securityMember.getId(), resumeId);
+        return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
     }
 
 }

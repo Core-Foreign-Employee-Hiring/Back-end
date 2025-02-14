@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ResumeRepositoryQueryDSL {
-    public Page<Resume> searchResumedByRecruitId(Long recruitId,
+    Page<Resume> searchResumedByRecruitId(Long recruitId,
                                           String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                           Pageable pageable);
 }

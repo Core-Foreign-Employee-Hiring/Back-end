@@ -556,7 +556,14 @@ public class RecruitController {
                     "employerContact : 연락처<br>"+
                     "representative : 담당자명<br>"+
                     "employerEmail : 이메일<br>" +
-                    "businessRegistrationNumber : 사업자등록번호<br>"
+                    "businessRegistrationNumber : 사업자등록번호<br>"+
+                    "paysOnTime: 약속된 급여를 제때 줘요 (개수)<br>" +
+                    "keepsContractDates: 계약된 날짜를 잘 지켰어요 (개수)<br>" +
+                    "respectsEmployees: 알바생을 존중해줘요 (개수)<br>" +
+                    "friendlyBoss: 사장님이 친절해요 (개수)<br>" +
+                    "fairWorkload: 업무 강도가 적당해요 (개수)<br>" +
+                    "joinCount: 평가에 참여수"
+
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상세 조회 성공"),
@@ -595,7 +602,7 @@ public class RecruitController {
     @GetMapping(value = "/resumes/{resume-id}")
     public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                         @PathVariable("resume-id") Long resumeId) {
-        ApplicationResumeResponseDTO resume = resumeService.getResume(resumeId);
+        ApplicationResumeResponseDTO resume = resumeService.getResume(securityMember.getId(), resumeId);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
     }
 

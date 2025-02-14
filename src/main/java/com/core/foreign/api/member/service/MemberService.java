@@ -41,6 +41,7 @@ public class MemberService {
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
     private final CompanyValidationRepository companyValidationRepository;
     private final PasswordResetRepository passwordResetRepository;
+    private final EvaluationCreator evaluationCreator;
 
     // 고용인 회원가입
     @Transactional
@@ -100,6 +101,8 @@ public class MemberService {
         );
 
         memberRepository.save(employee);
+
+        evaluationCreator.initializeEmployeeEvaluation(employee);
     }
 
     // 고용주 회원가입
@@ -178,6 +181,8 @@ public class MemberService {
 
         // 업집종 추가.
         businessFiledUpdater.updateBusinessFiledOfEmployer(savedEmployer.getId(), List.of(employerRegisterRequestDTO.getBusinessField()));
+
+        evaluationCreator.initializeEmployerEvaluation(savedEmployer);
     }
 
     // 로그인
