@@ -25,9 +25,14 @@ public class RecruitmentApplyStatusDTO {
         dto.title = recruit.getTitle();
         dto.recruitStartDate=recruit.getRecruitStartDate();
         dto.recruitEndDate=recruit.getRecruitEndDate();
-        dto.workDuration = recruit.getWorkDuration();
+       /* dto.workDuration = recruit.getWorkDuration();
         dto.workDays = recruit.getWorkDays();
-        dto.workTime = recruit.getWorkTime();
+        dto.workTime = recruit.getWorkTime();*/
+
+        dto.workDuration = null;
+        dto.workDays = null;
+        dto.workTime = null;
+
         dto.resumeCount = (resumeCount==null)?0L: resumeCount;
 
         return dto;

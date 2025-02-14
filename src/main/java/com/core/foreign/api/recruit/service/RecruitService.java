@@ -1,10 +1,12 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
@@ -42,6 +44,7 @@ public class RecruitService {
     private final S3Service s3Service;
     private final ResumeRepository resumeRepository;
     private final RecruitBookmarkRepository recruitBookmarkRepository;
+    private final EvaluationReader evaluationReader;
 
     // 일반 공고 등록
     @Transactional
@@ -580,6 +583,7 @@ public class RecruitService {
         String businessRegistrationNumber = null;
 
         Member employer = recruit.getEmployer();
+        EmployerEvaluationCountDTO employerEvaluationCountDTO=evaluationReader.getEmployerEvaluation(employer.getId());
         if (employer instanceof Employer employerEntity) {
             companyName = employerEntity.getCompanyName();
             companyIconImage = employerEntity.getCompanyImageUrl();
@@ -625,6 +629,7 @@ public class RecruitService {
                 .representative(representative)
                 .employerEmail(employerEmail)
                 .businessRegistrationNumber(businessRegistrationNumber)
+                .employerEvaluationCountDTO(employerEvaluationCountDTO)
                 .build();
     }
 

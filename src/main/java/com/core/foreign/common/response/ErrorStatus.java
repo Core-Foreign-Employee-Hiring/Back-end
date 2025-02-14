@@ -42,6 +42,17 @@ public enum ErrorStatus {
     ALREADY_REJECTED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 거절된 이력서입니다."),
     NOT_DRAFT_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 임시 저장 상태가 아닙니다."),
     DONT_HAVE_PERMISSION_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 요청을 수행할 권한이 없습니다."),
+    EVALUATION_NOT_ALLOWED_BEFORE_APPROVAL_DATE(HttpStatus.BAD_REQUEST, "모집 승인 30일 이후부터 평가하기가 가능합니다."),
+    EVALUATION_NOT_ALLOWED_FOR_USER_EXCEPTION(HttpStatus.BAD_REQUEST, "평가할 수 없는 유저입니다."),
+    EVALUATION_CATEGORY_IS_EMPTY_EXCEPTION(HttpStatus.BAD_REQUEST, "평가 항목이 비어 있습니다."),
+    EVALUATION_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 평가를 완료했습니다."),
+    DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "중복 지원은 불가합니다."),
+    EVALUATION_TYPE_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "평가 타입이 일치하지 않습니다."),
+
+
+
+
+
 
     /**
      * 401 UNAUTHORIZED
@@ -57,7 +68,7 @@ public enum ErrorStatus {
      * 404 NOT_FOUND
      */
 
-    NOT_LOGIN_EXCEPTION(HttpStatus.NOT_FOUND,"로그인이 팔요합니다."),
+    NOT_LOGIN_EXCEPTION(HttpStatus.NOT_FOUND,"로그인이 필요합니다."),
     USERID_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 아이디를 찾을 수 없습니다."),
     RECRUIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다."),
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),

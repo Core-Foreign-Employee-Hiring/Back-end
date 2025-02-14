@@ -1,6 +1,7 @@
 package com.core.foreign.api.recruit.dto;
 
 import com.core.foreign.api.business_field.BusinessField;
+import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.recruit.entity.ApplyMethod;
 import com.core.foreign.api.recruit.entity.RecruitType;
@@ -45,4 +46,5 @@ public class RecruitDetailResponseDTO {
     private String representative;           // 대표자 (고용주의 name 필드)
     private String employerEmail;            // 회사 이메일
     private String businessRegistrationNumber; // 사업자 등록번호
+    private EmployerEvaluationCountDTO employerEvaluationCountDTO;
 }

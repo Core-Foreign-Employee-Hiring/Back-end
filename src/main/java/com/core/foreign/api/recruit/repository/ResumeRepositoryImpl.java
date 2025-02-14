@@ -36,6 +36,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
                 .from(resume)
                 .innerJoin(resume.employee).fetchJoin()
                 .where(
+                        resume.isDeleted.eq(false),
                         resume.recruit.id.eq(recruitId),
                         (resume.employee.name.lower().contains(keyword)).or(resume.employee.phoneNumber.like(keyword)),
                         statusEq(recruitmentStatus, contractStatus)
@@ -51,6 +52,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
                 .select(resume.count())
                 .from(resume)
                 .where(
+                        resume.isDeleted.eq(false),
                         resume.recruit.id.eq(recruitId),
                         (resume.employee.name.lower().contains(keyword)).or(resume.employee.phoneNumber.contains(keyword)),
                         statusEq(recruitmentStatus, contractStatus)
