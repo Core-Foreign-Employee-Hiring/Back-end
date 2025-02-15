@@ -1,9 +1,7 @@
 package com.core.foreign.api.recruit.service;
 
-import com.core.foreign.api.member.dto.EmployeeBasicResumeResponseDTO;
-import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
+import com.core.foreign.api.member.dto.TagResponseDTO;
 import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.EmployeePortfolio;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
@@ -18,15 +16,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
 
-import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.COMPLETED;
 import static com.core.foreign.common.response.ErrorStatus.*;
 
 @Service
@@ -39,6 +33,7 @@ public class ResumeService {
     private final PremiumRecruitRepository  premiumRecruitRepository;
     private final ResumePortfolioRepository resumePortfolioRepository;
     private final EmployeePortfolioRepository employeePortfolioRepository;
+    private final ResumeReader resumeReader;
 
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
@@ -48,8 +43,8 @@ public class ResumeService {
             throw  new BadRequestException(INVALID_RECRUIT_TYPE_EXCEPTION.getMessage());
         }
 
-        Long l = doApplyResume(employeeId, recruit, dto);
-        return l;
+        Resume resume = doApplyResume(employeeId, recruit, dto);
+        return resume.getId();
     }
 
 
@@ -72,19 +67,20 @@ public class ResumeService {
 
         // 일단 이력서 저장.
 
-        Long resumeId = doApplyResume(employeeId, premiumRecruit, dto.getGeneralResumeRequestDTO());
+        Resume resume = doApplyResume(employeeId, premiumRecruit, dto.getGeneralResumeRequestDTO());
+        if (dto.isPublic()) {resume.makePublic();}
+        else {resume.makePrivate();}
 
 
         // 이력서에 딸린 포트폴리오 저장.
 
-        Resume resume = resumeRepository.findById(resumeId).get();
 
         List<ResumePortfolio> resumePortfolioEntities = resumePortfolios.stream().map((p) -> p.toEntity(resume)).toList();
 
 
         resumePortfolioRepository.saveAll(resumePortfolioEntities);
 
-        return resumeId;
+        return resume.getId();
     }
 
 
@@ -129,63 +125,6 @@ public class ResumeService {
      *   계약서 작성하기 또는 보기
      */
     public ApplicationResumeResponseDTO getResume(Long memberId, Long resumeId) {
-        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
-                .orElseThrow(() -> {
-                    log.error("이력서 없음. resumeId= {}", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
-                });
-
-
-        List<ResumePortfolioTestResponseDTO> texts = new ArrayList<>();
-        List<ResumePortfolioFileResponseDTO> files = new ArrayList<>();
-
-        // Premium 이면 ResumePortfolio 갖고 와야 함.
-        Recruit recruit = resume.getRecruit();
-        if(recruit.getRecruitType()==RecruitType.PREMIUM){
-            List<ResumePortfolio> resumePortfolios = resumePortfolioRepository.findByResumeId(resume.getId());
-
-
-            /**
-             * ResumePortfolio 에 외래키 제약 조건을 추가 고려.
-             * title 로 할 시 데이터 일관성 불안함.
-             */
-            Map<String ,List<String>> fileMap=new HashMap<>();  // key: title, value: urls
-
-            for (ResumePortfolio resumePortfolio : resumePortfolios) {
-                PortfolioType portfolioType = resumePortfolio.getPortfolioType();
-                String title = resumePortfolio.getTitle();
-                String content = resumePortfolio.getContent();
-
-                if(portfolioType==PortfolioType.FILE_UPLOAD){
-                    if (fileMap.containsKey(title)) {
-                        fileMap.get(title).add(content);
-                    } else {
-                        fileMap.put(title, new ArrayList<>(List.of(content)));
-                    }
-
-                }
-                else if(portfolioType==PortfolioType.LONG_TEXT || portfolioType==PortfolioType.SHORT_TEXT){
-                    texts.add(ResumePortfolioTestResponseDTO.from(resumePortfolio));
-                }
-            }
-
-            for (String title : fileMap.keySet()) {
-                List<String> urls = fileMap.get(title);
-
-                files.add(new ResumePortfolioFileResponseDTO(PortfolioType.FILE_UPLOAD, title, urls));
-            }
-        }
-
-        Employee employee = resume.getEmployee();
-
-        EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO = EmployeeBasicResumeResponseDTO.from(employee);
-        Optional<EmployeePortfolio> find= employeePortfolioRepository.findByEmployeeId(employee.getId(), COMPLETED);
-        EmployeePortfolioDTO employeePortfolioDTO=null;
-        if(find.isPresent()){
-            employeePortfolioDTO = EmployeePortfolioDTO.from(find.get());
-        }else{
-            log.warn("완성된 포트폴리오가 없음");
-        }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
@@ -193,12 +132,15 @@ public class ResumeService {
                     return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        ApplicationResumeResponseDTO response = new ApplicationResumeResponseDTO(member.getRole(), resume, employeeBasicResumeResponseDTO,employeePortfolioDTO, resume.getMessageToEmployer(), texts, files);
+        ApplicationResumeResponseDTO response = resumeReader.getResume(resumeId);
+
+        response.setRole(member.getRole());
+
         return response;
     }
 
 
-    private Long doApplyResume(Long employeeId, Recruit recruit, GeneralResumeRequestDTO dto){
+    private Resume doApplyResume(Long employeeId, Recruit recruit, GeneralResumeRequestDTO dto){
         if(!dto.isThirdPartyConsent()){throw new BadRequestException(THIRD_PARTY_CONSENT_REQUIRED_EXCEPTION.getMessage());}
 
         Optional<Resume> findResume = resumeRepository.findByEmployeeIdAndRecruitId(employeeId, recruit.getId());
@@ -218,24 +160,25 @@ public class ResumeService {
                 .employee(employee)
                 .applyMethod(dto.getApplyMethod())
                 .recruitmentStatus(RecruitmentStatus.PENDING)
-                .evaluationStatus(EvaluationStatus.NOT_EVALUATED)
                 .contractStatus(ContractStatus.NOT_WRITTEN)
                 .isDeleted(false)
-                .isEmployeeEvaluatedByEmployer(false)
-                .isEmployerEvaluatedByEmployee(false)
+                .isEmployeeEvaluatedByEmployer(EvaluationStatus.NONE)
+                .isEmployerEvaluatedByEmployee(EvaluationStatus.NONE)
                 .approvedAt(LocalDate.MAX)
                 .build();
 
-        return resumeRepository.save(build).getId();
+        // IDENTITY 전략이라 바로 사용해도 상관 x
+        Resume response = resumeRepository.save(build);
+
+        return response;
     }
 
     public Page<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
                                                                              String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                                                              Integer page){
-        Pageable pageable = PageRequest.of(page, 5);
 
-        Page<Resume> resumes = resumeRepository.searchResumedByRecruitId(recruitId, keyword, recruitmentStatus, contractStatus, pageable);
-        Page<ApplicationResumePreviewResponseDTO> response = resumes.map(ApplicationResumePreviewResponseDTO::from);
+        Page<ApplicationResumePreviewResponseDTO> response = resumeReader.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+
         return response;
     }
 
@@ -272,9 +215,8 @@ public class ResumeService {
 
 
     public Page<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<EmployeeApplicationStatusResponseDTO> response = resumeRepository.findResumeByEmployeeId(employeeId, pageable)
-                .map(EmployeeApplicationStatusResponseDTO::from);
+
+        Page<EmployeeApplicationStatusResponseDTO> response = resumeReader.getMyResumes(employeeId, page);
 
         return response;
     }
@@ -297,6 +239,17 @@ public class ResumeService {
 
 
         resume.delete();
+    }
+
+
+    public Page<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
+        if(evaluationStatus==EvaluationStatus.NONE){
+            log.error("평가 상태= {}", evaluationStatus);
+           throw new BadRequestException(TAG_EVALUATION_STATUS_CANNOT_BE_NONE.getMessage());
+        }
+        Page<TagResponseDTO> response = resumeReader.getTags(employerId, evaluationStatus, page, size);
+
+        return response;
     }
 
 }

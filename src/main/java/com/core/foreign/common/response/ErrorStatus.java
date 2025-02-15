@@ -48,6 +48,8 @@ public enum ErrorStatus {
     EVALUATION_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 평가를 완료했습니다."),
     DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "중복 지원은 불가합니다."),
     EVALUATION_TYPE_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "평가 타입이 일치하지 않습니다."),
+    TAG_EVALUATION_STATUS_CANNOT_BE_NONE(HttpStatus.BAD_REQUEST, "태그의 평가 상태는 NONE 일 수 없습니다."),
+
 
 
 
@@ -77,6 +79,7 @@ public enum ErrorStatus {
     PREMIUM_MANAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"프리미엄 관리 정보가 없습니다."),
     RESUME_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 이력서를 찾을 수 없습니다."),
     ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
+    PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 포트폴리오를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR

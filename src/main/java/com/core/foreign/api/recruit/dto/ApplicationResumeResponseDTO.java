@@ -20,11 +20,10 @@ public class ApplicationResumeResponseDTO {
     private List<ResumePortfolioFileResponseDTO> files;
 
     private Role role;
-    private EvaluationStatus evaluationStatus;
     private ContractStatus contractStatus;
-    private boolean isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
+    private EvaluationStatus isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
 
-    public ApplicationResumeResponseDTO(Role role, Resume resume, EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO,
+    public ApplicationResumeResponseDTO(Resume resume, EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO,
                                         EmployeePortfolioDTO employeePortfolioDTO,
                                         String messageToEmployer, List<ResumePortfolioTestResponseDTO> texts, List<ResumePortfolioFileResponseDTO> files) {
         this.resumeId = resume.getId();
@@ -34,9 +33,16 @@ public class ApplicationResumeResponseDTO {
         this.texts = texts;
         this.files = files;
 
-        this.role=role;
-        this.evaluationStatus = resume.getEvaluationStatus();
+        this.isEmployeeEvaluatedByEmployer = resume.getIsEmployeeEvaluatedByEmployer();
         this.contractStatus = resume.getContractStatus();
-        this.isEmployeeEvaluatedByEmployer = resume.isEmployeeEvaluatedByEmployer();
+    }
+
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Long getEmployeeId(){
+        return employeeBasicResumeResponseDTO.getEmployeeId();
     }
 }

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 public class EmployeeBasicResumeResponseDTO {
+    private Long employeeId;
     private String name;
     private String nationality;
     private String education;
@@ -22,6 +23,7 @@ public class EmployeeBasicResumeResponseDTO {
 
     public static EmployeeBasicResumeResponseDTO from(Employee employee) {
         EmployeeBasicResumeResponseDTO dto = new EmployeeBasicResumeResponseDTO();
+        dto.employeeId = employee.getId();
         dto.name = employee.getName();
         dto.nationality = employee.getNationality();
         dto.education = employee.getEducation();

@@ -2,6 +2,7 @@ package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.*;
+import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
@@ -43,7 +44,7 @@ public class EvaluationService {
 
         validateApprovalStatus(resume);
 
-        if(resume.isEmployeeEvaluatedByEmployer()){
+        if(resume.getIsEmployeeEvaluatedByEmployer()== EvaluationStatus.COMPLETED){
             log.error("고용인이 피고용인을 이미 평가했음. resumeId= {}", resume.getId());
             throw new BadRequestException(EVALUATION_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
@@ -75,6 +76,7 @@ public class EvaluationService {
 
         resumeEvaluationRepository.saveAll(resumeEvaluations);
 
+        memberRepository.increaseEvaluationJoinCount(employee.getId());
         resume.evaluateEmployee();
     }
 
@@ -94,7 +96,7 @@ public class EvaluationService {
 
         validateApprovalStatus(resume);
 
-        if(resume.isEmployerEvaluatedByEmployee()){
+        if(resume.getIsEmployerEvaluatedByEmployee()==EvaluationStatus.COMPLETED){
             log.error("피고용인이 고용인을 이미 평가했음. resumeId= {}", resume.getId());
             throw new BadRequestException(EVALUATION_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
@@ -128,6 +130,7 @@ public class EvaluationService {
 
         resumeEvaluationRepository.saveAll(resumeEvaluations);
 
+        memberRepository.increaseEvaluationJoinCount(employer.getId());
         resume.evaluateEmployer();
     }
 

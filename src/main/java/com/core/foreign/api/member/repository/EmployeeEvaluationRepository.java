@@ -19,4 +19,11 @@ public interface EmployeeEvaluationRepository extends JpaRepository<EmployeeEval
             " where ee.employee.id=:employeeId")
     List<EmployeeEvaluation> findByEmployeeId(@Param("employeeId") Long employeeId);
 
+
+    @Query("select ee from EmployeeEvaluation ee" +
+            " join fetch ee.evaluation" +
+            " join fetch ee.employee" +
+            " where ee.employee.id in :ids")
+    List<EmployeeEvaluation> findByEmployeeIds(@Param("ids") List<Long> ids);
+
 }

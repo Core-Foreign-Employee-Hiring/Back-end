@@ -44,6 +44,8 @@ public abstract class Member extends BaseTimeEntity {
     @Embedded
     private Address address;     // 주소[회사/점포 주소]
 
+    private int evaluationJoinCount;
+
     protected Member(String userId,
                      String password,
                      String name,
@@ -72,6 +74,7 @@ public abstract class Member extends BaseTimeEntity {
         this.personalInfoAgreement = personalInfoAgreement;
         this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
         this.adInfoAgreementEmail = adInfoAgreementEmail;
+        this.evaluationJoinCount = 0;
 
     }
 

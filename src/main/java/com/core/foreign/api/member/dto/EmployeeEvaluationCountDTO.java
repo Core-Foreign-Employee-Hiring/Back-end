@@ -13,4 +13,5 @@ public class EmployeeEvaluationCountDTO {
     private int politeAndFriendly;
     private int goodCustomerService;
     private int skilledAtWork;
+    private int joinCount;
 }

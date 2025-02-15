@@ -506,7 +506,7 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping("/premium/{recruit-id}/apply")
-    public ResponseEntity<ApiResponse<Void>> applyGeneralRecruit(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<Void>> applyPremiumResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @PathVariable("recruit-id") Long recruitId,
                                                                  @RequestBody PremiumResumeRequestDTO dto) {
         resumeService.applyPremiumResume(securityMember.getId(), recruitId,dto);

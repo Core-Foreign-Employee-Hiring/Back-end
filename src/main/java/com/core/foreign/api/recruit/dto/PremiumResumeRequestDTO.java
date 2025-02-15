@@ -11,4 +11,11 @@ public class PremiumResumeRequestDTO {
     private GeneralResumeRequestDTO generalResumeRequestDTO;
 
     private List<ResumePortfolioRequestDTO> resumePortfolios;
+
+    private boolean isPublic;
+
+
+    public boolean isPublic() {
+        return isPublic;
+    }
 }

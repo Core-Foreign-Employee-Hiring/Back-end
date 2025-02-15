@@ -7,6 +7,8 @@ import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
+import com.core.foreign.api.recruit.entity.EvaluationStatus;
+import com.core.foreign.api.recruit.service.ResumeService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ApiResponse;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,6 +43,7 @@ public class MemberController {
     private final EmployeePortfolioService employeePortfolioService;
     private final EmailService emailService;
     private final EvaluationService evaluationService;
+    private final ResumeService resumeService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
@@ -781,12 +785,31 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 보기 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping("/evaluations/")
+    @GetMapping("/evaluations")
     public ResponseEntity<ApiResponse<List<EvaluationCategory>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                @RequestParam("resumeId")Long resumeId) {
 
         List<EvaluationCategory> evaluation = evaluationService.getEvaluation(securityMember.getId(), resumeId);
         return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
+    }
+
+
+    @Operation(
+            summary = "태그 조회. API",
+            description = "태크 조회입니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "태그 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/tags")
+    public ResponseEntity<ApiResponse<Page<TagResponseDTO>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                           @RequestParam("evaluationStatus") EvaluationStatus evaluationStatus,
+                                                                           @RequestParam("page") Integer page,
+                                                                           @RequestParam("size") Integer size) {
+
+        Page<TagResponseDTO> tags = resumeService.getTags(securityMember.getId(), evaluationStatus, page, size);
+        return ApiResponse.success(SuccessStatus.TAG_VIEW_SUCCESS, tags);
     }
 
 }

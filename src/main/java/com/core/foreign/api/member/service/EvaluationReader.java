@@ -2,16 +2,17 @@ package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
-import com.core.foreign.api.member.entity.EmployeeEvaluation;
-import com.core.foreign.api.member.entity.EmployerEvaluation;
-import com.core.foreign.api.member.entity.EvaluationCategory;
+import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.EmployeeEvaluationRepository;
 import com.core.foreign.api.member.repository.EmployerEvaluationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -57,9 +58,46 @@ public class EvaluationReader {
         return dto;
     }
 
-    public EmployeeEvaluationCountDTO getEmployeeEvaluation(Long employeeId) {
-        List<EmployeeEvaluation> evaluations = employeeEvaluationRepository.findByEmployeeId(employeeId);
+    public EmployeeEvaluationCountDTO getEmployeeEvaluation(Employee employee) {
+        List<EmployeeEvaluation> evaluations = employeeEvaluationRepository.findByEmployeeId(employee.getId());
 
+        EmployeeEvaluationCountDTO response = getEmployeeEvaluationCountDTO(employee, evaluations);
+
+        return response;
+    }
+
+
+    public Map<Long,EmployeeEvaluationCountDTO> getEmployeeEvaluations(List<Employee> employees){
+        List<Long> employeeIds = employees.stream().map(Employee::getId).toList();
+
+        List<EmployeeEvaluation> byEmployeeIds = employeeEvaluationRepository.findByEmployeeIds(employeeIds);
+        Map<Employee, List<EmployeeEvaluation>> map=new HashMap<>();
+
+        for (EmployeeEvaluation byEmployeeId : byEmployeeIds) {
+            Employee employee = byEmployeeId.getEmployee();
+            map.put(employee, new ArrayList<>());
+        }
+
+        for (EmployeeEvaluation byEmployeeId : byEmployeeIds) {
+            map.get(byEmployeeId.getEmployee()).add(byEmployeeId);
+        }
+
+        Map<Long, EmployeeEvaluationCountDTO> response=new HashMap<>();
+
+
+        for (Employee employee : map.keySet()) {
+            List<EmployeeEvaluation> employeeEvaluations = map.get(employee);
+
+            EmployeeEvaluationCountDTO employeeEvaluationCountDTO = getEmployeeEvaluationCountDTO(employee, employeeEvaluations);
+
+            response.put(employee.getId(), employeeEvaluationCountDTO);
+        }
+
+        return response;
+
+    }
+
+    private EmployeeEvaluationCountDTO getEmployeeEvaluationCountDTO(Employee employee, List<EmployeeEvaluation> evaluations) {
         EmployeeEvaluationCountDTO dto = new EmployeeEvaluationCountDTO();
 
         for (EmployeeEvaluation employeeEvaluation : evaluations) {
@@ -86,6 +124,8 @@ public class EvaluationReader {
                     break;
             }
         }
+
+        dto.setJoinCount(employee.getEvaluationJoinCount());
 
         return dto;
     }
