@@ -58,7 +58,7 @@ public class EmployeePortfolioService {
 
         saveEmployeePortfolioBusinessFieldInfo(portfolio, dto);
 
-        if(dto.isPublic()){employee.publicizePortfolio();}
+        if(dto.isPortfolioPublic()){employee.publicizePortfolio();}
         else{employee.privatizePortfolio();}
 
     }
@@ -94,7 +94,7 @@ public class EmployeePortfolioService {
 
         Employee employee = employeePortfolio.getEmployee();
 
-        if(dto.isPublic()){employee.publicizePortfolio();}
+        if(dto.isPortfolioPublic()){employee.publicizePortfolio();}
         else{employee.privatizePortfolio();}
 
         // 업종별 정보 수정  그냥 싹 지우고 새로 insert. 수정 판단하기 힘들 것 같음.

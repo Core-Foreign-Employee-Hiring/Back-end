@@ -2,6 +2,7 @@ package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.member.dto.TagResponseDTO;
 import com.core.foreign.api.member.entity.Employee;
+import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
@@ -64,6 +65,17 @@ public class ResumeService {
 
         checkRequiredPortfolio(premiumRecruit, resumePortfolios);
 
+        // 파일 개수 확인.
+        Map<Long, Integer> map=new HashMap<>();  // key: portfolioId value: maxFileCount();
+        Map<Long, Portfolio> map3=new HashMap<>();
+        List<Portfolio> portfolios = premiumRecruit.getPortfolios();
+        for (Portfolio portfolio : portfolios) {
+            map3.put(portfolio.getId(), portfolio);
+            if(portfolio.getType().equals(PortfolioType.FILE_UPLOAD)){
+                map.put(portfolio.getId(), portfolio.getMaxFileCount());
+            }
+        }
+
 
         // 일단 이력서 저장.
 
@@ -73,9 +85,29 @@ public class ResumeService {
 
 
         // 이력서에 딸린 포트폴리오 저장.
-
-
         List<ResumePortfolio> resumePortfolioEntities = resumePortfolios.stream().map((p) -> p.toEntity(resume)).toList();
+        Map<Long, Integer> map2=new HashMap<>();
+        for (ResumePortfolio resumePortfolioEntity : resumePortfolioEntities) {
+            map2.merge(resumePortfolioEntity.getRecruitPortfolioId(), 1, Integer::sum);
+        }
+
+        for (Long portfolioId : map.keySet()) {
+            if(!map2.containsKey(portfolioId)){map2.put(portfolioId,0);}
+
+            Integer request = map2.get(portfolioId);
+            Integer required = map.get(portfolioId);
+            if(!Objects.equals(request, required)){
+                log.error("portfolioId= {}: 파일 개수 안 맞음. 필요= {}, 요청= {}", portfolioId, required, request);
+
+
+                // 필수면 예외 터트림.
+                if(map3.get(portfolioId).isRequired()){
+                    log.error("필수라 예외 터트린다.");
+                    throw new BadRequestException(FILE_COUNT_MISMATCH_EXCEPTION.getMessage());
+                }
+                log.warn("파일 개수 안 맞는데 필수는 아니라서 그냥 넘어간다.");
+            }
+        }
 
 
         resumePortfolioRepository.saveAll(resumePortfolioEntities);
@@ -104,6 +136,7 @@ public class ResumeService {
         // requires 가 requests 의 부분 집합이면 성공.
 
         if (!new HashSet<>(requests).containsAll(requires)){
+            log.error("필수 포트폴리오 없음.");
             throw new BadRequestException(REQUIRED_PORTFOLIO_MISSING_EXCEPTION.getMessage());
         }
 
@@ -143,6 +176,14 @@ public class ResumeService {
     private Resume doApplyResume(Long employeeId, Recruit recruit, GeneralResumeRequestDTO dto){
         if(!dto.isThirdPartyConsent()){throw new BadRequestException(THIRD_PARTY_CONSENT_REQUIRED_EXCEPTION.getMessage());}
 
+        Member member =  memberRepository.findById(employeeId).get();
+        if(member instanceof Employer){
+            log.error("고용인이 공고 지원 신청. memberId= {}", employeeId);
+            throw new BadRequestException(EMPLOYER_CANNOT_APPLY_EXCEPTION.getMessage());
+        }
+
+        Employee employee = (Employee) member;
+
         Optional<Resume> findResume = resumeRepository.findByEmployeeIdAndRecruitId(employeeId, recruit.getId());
 
         if(findResume.isPresent()){
@@ -152,7 +193,7 @@ public class ResumeService {
         }
 
 
-        Employee employee = (Employee) memberRepository.findById(employeeId).get();
+
 
         Resume build = Resume.builder()
                 .messageToEmployer(dto.getMessageToEmployer())

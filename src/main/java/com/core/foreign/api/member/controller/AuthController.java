@@ -4,6 +4,7 @@ import com.core.foreign.api.member.dto.EmailRequestDTO;
 import com.core.foreign.api.member.dto.SmsRequestDTO;
 import com.core.foreign.api.member.service.EmailService;
 import com.core.foreign.api.member.service.SmsService;
+import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ApiResponse;
 import com.core.foreign.common.response.ErrorStatus;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,5 +104,20 @@ public class AuthController {
         LocalDateTime requestedAt = LocalDateTime.now();
         smsService.verifyCode(request.getCode(), requestedAt);
         return ApiResponse.success_only(SuccessStatus.SEND_VERIFY_SMS_CODE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "내 이메일 인증코드 발송 API",
+            description = "내 이메일 인증코드를 발송합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이메일 인증코드 발송 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "올바른 이메일 형식이 아닙니다."),
+    })
+    @PostMapping("/verify-my-email")
+    public ResponseEntity<ApiResponse<Void>> getMyEmailVerification(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        emailService.sendVerificationMyEmail(securityMember.getId());
+        return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_VERIFICATION_CODE_SUCCESS);
     }
 }

@@ -9,10 +9,7 @@ import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
-import com.core.foreign.api.recruit.repository.PremiumManageRepository;
-import com.core.foreign.api.recruit.repository.RecruitBookmarkRepository;
-import com.core.foreign.api.recruit.repository.RecruitRepository;
-import com.core.foreign.api.recruit.repository.ResumeRepository;
+import com.core.foreign.api.recruit.repository.*;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
@@ -45,6 +42,7 @@ public class RecruitService {
     private final ResumeRepository resumeRepository;
     private final RecruitBookmarkRepository recruitBookmarkRepository;
     private final EvaluationReader evaluationReader;
+    private final PortfolioRepository portfolioRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -204,7 +202,6 @@ public class RecruitService {
     ) {
         Member employer = getEmployer(memberId);
 
-        /*
         // 프리미엄 공고 등록 가능 체크
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
@@ -212,7 +209,6 @@ public class RecruitService {
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-*/
         // 임시 저장 한 데이터 삭제
         deleteDraft(employer);
 
@@ -672,13 +668,15 @@ public class RecruitService {
 
 
     @Transactional
-    public void flipRecruitBookmark(Long memberId, Long recruitId){
+    public boolean flipRecruitBookmark(Long memberId, Long recruitId){
         Optional<RecruitBookmark> findBookmark = recruitBookmarkRepository.findByRecruitIdAndMemberId(recruitId, memberId);
 
         if(findBookmark.isPresent()){
             RecruitBookmark recruitBookmark = findBookmark.get();
 
             recruitBookmarkRepository.delete(recruitBookmark);
+
+            return false;
         }
         else{
             Member member = memberRepository.findById(memberId).get();
@@ -692,6 +690,8 @@ public class RecruitService {
             RecruitBookmark recruitBookmark = new RecruitBookmark(recruit, member);
 
             recruitBookmarkRepository.save(recruitBookmark);
+
+            return true;
         }
     }
 
@@ -702,6 +702,13 @@ public class RecruitService {
 
         Page<RecruitBookmarkResponseDTO> response = recruitBookmarkRepository.findByMemberId(memberId, pageable)
                 .map(RecruitBookmarkResponseDTO::from);
+
+        return response;
+    }
+
+    public List<PortfolioResponseDTO> getPortfolios(Long recruitId){
+        List<PortfolioResponseDTO> response = portfolioRepository.findByRecruitId(recruitId).stream()
+                .map(PortfolioResponseDTO::from).toList();
 
         return response;
     }

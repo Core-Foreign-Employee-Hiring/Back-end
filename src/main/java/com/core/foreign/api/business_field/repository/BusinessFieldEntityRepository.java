@@ -1,6 +1,6 @@
 package com.core.foreign.api.business_field.repository;
 
-import com.core.foreign.api.business_field.BusinessFieldTarget;
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.business_field.entity.BusinessFieldEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,10 +11,9 @@ import java.util.List;
 
 public interface BusinessFieldEntityRepository extends JpaRepository<BusinessFieldEntity, Long> {
 
-
-    @Query("select b from BusinessFieldEntity b" +
-            " where b.target=:target and b.targetId=:targetId")
-    List<BusinessFieldEntity> findByTargetAndTargetId(@Param("target") BusinessFieldTarget target, @Param("targetId")Long targetId);
+    @Query("select f from BusinessFieldEntity f" +
+            " where f.businessField in :fields")
+    List<BusinessFieldEntity> findByBusinessFields(@Param("fields") List<BusinessField> fields);
 
 
     @Modifying

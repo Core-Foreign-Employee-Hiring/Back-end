@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.recruit.entity.*;
 import lombok.Getter;
@@ -17,10 +18,10 @@ public class EmployeeApplicationStatusResponseDTO {
     public static EmployeeApplicationStatusResponseDTO from (Resume resume  ){
         EmployeeApplicationStatusResponseDTO dto = new EmployeeApplicationStatusResponseDTO();
         Recruit recruit = resume.getRecruit();
-        Member employer = recruit.getEmployer();
+        Employer employer = (Employer)recruit.getEmployer();
 
         dto.resumeId = resume.getId();
-        dto.companyName=employer.getName();
+        dto.companyName=employer.getCompanyName();
         dto.recruitmentStatus=resume.getRecruitmentStatus();
         dto.contractStatus = (resume.getRecruitmentStatus() == RecruitmentStatus.APPROVED) ? resume.getContractStatus() : null;
         dto.applyMethod = resume.getApplyMethod();

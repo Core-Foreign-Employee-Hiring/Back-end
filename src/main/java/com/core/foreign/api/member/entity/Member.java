@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -45,6 +46,7 @@ public abstract class Member extends BaseTimeEntity {
     private Address address;     // 주소[회사/점포 주소]
 
     private int evaluationJoinCount;
+    private LocalDateTime passwordVerifiedAt;
 
     protected Member(String userId,
                      String password,
@@ -118,6 +120,19 @@ public abstract class Member extends BaseTimeEntity {
 
     public void updatePassword(String password){
         this.password=password;
+    }
+
+
+    public void updateName(String name){
+        this.name=name;
+    }
+
+    public void updatePasswordVerifiedAt(){
+        this.passwordVerifiedAt=LocalDateTime.now();
+    }
+
+    public void resetPasswordVerificationTime() {
+        this.passwordVerifiedAt = LocalDateTime.now().minusDays(1);
     }
 
 }

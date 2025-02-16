@@ -63,6 +63,7 @@ public enum SuccessStatus {
     BASIC_PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "기본 포트폴리오 조회 성공"),
     APPLICATION_PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "실제 지원 포트폴리오 조회 성공"),
     TAG_VIEW_SUCCESS(HttpStatus.OK, "태그 조회 성공"),
+    PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "포트폴리오 조회 성공"),
 
     /**
      * 201
