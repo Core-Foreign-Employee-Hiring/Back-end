@@ -21,6 +21,7 @@ public class ResumePortfolioRequestDTO {
     public  ResumePortfolio toEntity(Resume resume){
         ResumePortfolio build = ResumePortfolio.builder()
                 .portfolioType(portfolioType)
+                .recruitPortfolioId(portfolioId)
                 .title(title)
                 .content(content)
                 .resume(resume)

@@ -49,6 +49,10 @@ public enum ErrorStatus {
     DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "중복 지원은 불가합니다."),
     EVALUATION_TYPE_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "평가 타입이 일치하지 않습니다."),
     TAG_EVALUATION_STATUS_CANNOT_BE_NONE(HttpStatus.BAD_REQUEST, "태그의 평가 상태는 NONE 일 수 없습니다."),
+    FILE_COUNT_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "파일 개수가 맞지 않습니다."),
+    EMPLOYER_CANNOT_APPLY_EXCEPTION(HttpStatus.BAD_REQUEST, "고용인은 공고에 지원할 수 없습니다."),
+    PASSWORD_VERIFICATION_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "비밀번호 확인을 진행하세요."),
+
 
 
 

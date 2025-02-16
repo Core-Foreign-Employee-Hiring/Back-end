@@ -9,10 +9,7 @@ import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
-import com.core.foreign.api.recruit.repository.PremiumManageRepository;
-import com.core.foreign.api.recruit.repository.RecruitBookmarkRepository;
-import com.core.foreign.api.recruit.repository.RecruitRepository;
-import com.core.foreign.api.recruit.repository.ResumeRepository;
+import com.core.foreign.api.recruit.repository.*;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
@@ -30,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.core.foreign.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
 
@@ -45,6 +43,7 @@ public class RecruitService {
     private final ResumeRepository resumeRepository;
     private final RecruitBookmarkRepository recruitBookmarkRepository;
     private final EvaluationReader evaluationReader;
+    private final PortfolioRepository portfolioRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -139,7 +138,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
 
@@ -252,7 +250,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
 
@@ -364,7 +361,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
         portfolios.forEach(newRecruit::addPortfolio);
@@ -406,7 +402,6 @@ public class RecruitService {
                             .type(portfolio.getType())
                             .isRequired(portfolio.isRequired())
                             .maxFileCount(portfolio.getMaxFileCount())
-                            .maxFileSize(portfolio.getMaxFileSize())
                             .build())
                     .toList();
         }
@@ -675,13 +670,15 @@ public class RecruitService {
 
 
     @Transactional
-    public void flipRecruitBookmark(Long memberId, Long recruitId){
+    public boolean flipRecruitBookmark(Long memberId, Long recruitId){
         Optional<RecruitBookmark> findBookmark = recruitBookmarkRepository.findByRecruitIdAndMemberId(recruitId, memberId);
 
         if(findBookmark.isPresent()){
             RecruitBookmark recruitBookmark = findBookmark.get();
 
             recruitBookmarkRepository.delete(recruitBookmark);
+
+            return false;
         }
         else{
             Member member = memberRepository.findById(memberId).get();
@@ -695,6 +692,8 @@ public class RecruitService {
             RecruitBookmark recruitBookmark = new RecruitBookmark(recruit, member);
 
             recruitBookmarkRepository.save(recruitBookmark);
+
+            return true;
         }
     }
 
@@ -705,6 +704,13 @@ public class RecruitService {
 
         Page<RecruitBookmarkResponseDTO> response = recruitBookmarkRepository.findByMemberId(memberId, pageable)
                 .map(RecruitBookmarkResponseDTO::from);
+
+        return response;
+    }
+
+    public List<PortfolioResponseDTO> getPortfolios(Long recruitId){
+        List<PortfolioResponseDTO> response = portfolioRepository.findByRecruitId(recruitId).stream()
+                .map(PortfolioResponseDTO::from).toList();
 
         return response;
     }

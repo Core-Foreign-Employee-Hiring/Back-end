@@ -207,17 +207,17 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 이메일 수정 API",
-            description = "고용주의 이메일을 수정합니다."
+            summary = "회원 이메일 수정 API",
+            description = "회원 이메일을 수정합니다."
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이메일 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 이메일 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PatchMapping("/employer/profile/email")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
+    @PatchMapping("/profile/email")
+    public ResponseEntity<ApiResponse<Void>> updateMemberEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
 
-        memberService.updateEmployerEmail(securityMember.getId(), email);
+        memberService.updateMemberEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -237,17 +237,17 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 휴대폰 번호 수정 API",
-            description = "고용주의 휴대폰 번호를 수정합니다."
+            summary = "회원 휴대폰 번호 수정 API",
+            description = "회원 휴대폰 번호를 수정합니다."
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 휴대폰 번호 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 휴대폰 번호 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PatchMapping("/employer/profile/phone-number")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
+    @PatchMapping("/profile/phone-number")
+    public ResponseEntity<ApiResponse<Void>> updateMemberPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
 
-        memberService.updateEmployerPhoneNumber(securityMember.getId(), phoneNumber);
+        memberService.updateMemberPhoneNumber(securityMember.getId(), phoneNumber);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 

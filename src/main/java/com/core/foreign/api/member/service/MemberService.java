@@ -1,9 +1,8 @@
 package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.business_field.BusinessFieldTarget;
-import com.core.foreign.api.business_field.entity.BusinessFieldEntity;
 import com.core.foreign.api.business_field.repository.BusinessFieldEntityRepository;
+import com.core.foreign.api.business_field.repository.EmployerBusinessFieldRepository;
 import com.core.foreign.api.business_field.service.BusinessFieldUpdater;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
@@ -26,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.core.foreign.common.response.ErrorStatus.PASSWORD_VERIFICATION_REQUIRED_EXCEPTION;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -42,6 +43,7 @@ public class MemberService {
     private final CompanyValidationRepository companyValidationRepository;
     private final PasswordResetRepository passwordResetRepository;
     private final EvaluationCreator evaluationCreator;
+    private final EmployerBusinessFieldRepository employerBusinessFieldRepository;
 
     // 고용인 회원가입
     @Transactional
@@ -150,7 +152,6 @@ public class MemberService {
         }
 
         companyValidationRepository.delete(cv.get());
-
         Address address = new Address(
                 employerRegisterRequestDTO.getZipcode(),
                 employerRegisterRequestDTO.getAddress1(),
@@ -257,7 +258,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateEmployerEmail(Long memberId, String email){
+    public void updateMemberEmail(Long memberId, String email){
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
 
@@ -274,6 +275,8 @@ public class MemberService {
         }
 
         member.updateEmail(email);
+
+        emailVerificationRepository.delete(emailVerification);
     }
 
     @Transactional
@@ -294,10 +297,11 @@ public class MemberService {
         }
 
         employer.updateCompanyEmail(email);
+        emailVerificationRepository.delete(emailVerification);
     }
 
     @Transactional
-    public void updateEmployerPhoneNumber(Long memberId, String phoneNumber){
+    public void updateMemberPhoneNumber(Long memberId, String phoneNumber){
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
 
@@ -314,6 +318,8 @@ public class MemberService {
         }
 
         member.updatePhoneNumber(phoneNumber);
+
+        phoneNumberVerificationRepository.delete(phoneNumberVerification);
     }
 
     @Transactional
@@ -334,6 +340,7 @@ public class MemberService {
         }
 
         employer.updateCompanyMainPhoneNumber(phoneNumber);
+        phoneNumberVerificationRepository.delete(phoneNumberVerification);
     }
 
     @Transactional
@@ -357,8 +364,8 @@ public class MemberService {
         // 인증에서 이미 존재하는 거 검증.
         Employer employer = (Employer)memberRepository.findById(employerId).get();
 
-        List<BusinessField> businessFields = businessFieldEntityRepository.findByTargetAndTargetId(BusinessFieldTarget.EMPLOYER, employerId)
-                .stream().map(BusinessFieldEntity::getBusinessField).toList();
+        List<BusinessField> businessFields = employerBusinessFieldRepository.findByEmployerId(employerId)
+                .stream().map(employerBusinessField -> employerBusinessField.getBusinessFieldEntity().getBusinessField()).toList();
 
         return EmployerCompanyInfoResponseDTO.from(employer, businessFields);
     }
@@ -402,10 +409,12 @@ public class MemberService {
 
     public boolean checkPassword(Long memberId, String password){
         Member member = memberRepository.findById(memberId).get();
-        String findPassword = member.getPassword();
 
         // 비밀번호 검증
         boolean matches = passwordEncoder.matches(password, member.getPassword());
+
+        if(matches){member.updatePasswordVerifiedAt();}
+
         return matches;
     }
 
@@ -413,9 +422,18 @@ public class MemberService {
     public void updateUserId(Long memberId, String userId){
         Member member = memberRepository.findById(memberId).get();
 
+        // 비밀번호 확인했는지 판단.
+        if (member.getPasswordVerifiedAt()== null || member.getPasswordVerifiedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+            throw new BadRequestException(PASSWORD_VERIFICATION_REQUIRED_EXCEPTION.getMessage());
+        }
+
         try{
+
             memberRepository.updateUserId(member.getId(), userId);
+            member.resetPasswordVerificationTime();
+
         }catch(DataIntegrityViolationException e){
+            e.printStackTrace();
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }catch (Exception e){
             e.printStackTrace();
@@ -427,6 +445,11 @@ public class MemberService {
     public void updateMemberPassword(Long memberId, String password){
         Member member = memberRepository.findById(memberId).get();
 
+        // 비밀번호 확인했는지 판단.
+        if (member.getPasswordVerifiedAt()== null || member.getPasswordVerifiedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+            throw new BadRequestException(PASSWORD_VERIFICATION_REQUIRED_EXCEPTION.getMessage());
+        }
+
         // 이메일 인증 여부 체크
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(member.getEmail())
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
@@ -437,6 +460,7 @@ public class MemberService {
         emailVerificationRepository.delete(emailVerification);
         String encode = passwordEncoder.encode(password);
         member.updatePassword(encode);
+        member.resetPasswordVerificationTime();
     }
 
     // 비밀번호 초기화

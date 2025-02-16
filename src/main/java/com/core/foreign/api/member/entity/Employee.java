@@ -1,6 +1,7 @@
 package com.core.foreign.api.member.entity;
 
 import com.core.foreign.api.member.dto.EmployeeBasicResumeUpdateDTO;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -19,6 +20,7 @@ public class Employee extends Member {
     private String education;   // 학력
     private String visa;        // 비자
 
+    @Column(name = "is_portfolio_public")
     private boolean isPortfolioPublic;
 
     public Employee(String userId,

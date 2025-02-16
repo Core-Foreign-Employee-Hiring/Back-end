@@ -11,6 +11,7 @@ import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.UnauthorizedException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -112,5 +113,36 @@ public class EmailService {
 
         verification.setIsVerified(true);
         emailVerificationRepository.save(verification);
+    }
+
+    public void sendVerificationMyEmail(Long memberId) {
+        Member member = memberRepository.findById(memberId).get();
+        String email = member.getEmail();
+
+        // Apache Commons EmailValidator 검증
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new BadRequestException(ErrorStatus.VALIDATION_EMAIL_FORMAT_EXCEPTION.getMessage());
+        }
+
+
+        //기존에 있는 Email 삭제
+        emailVerificationRepository.findByEmail(email)
+                .ifPresent(emailVerification -> emailVerificationRepository.delete(emailVerification));
+
+        String code = generateSixDigitCode();
+        EmailVerification verification = EmailVerification.builder()
+                .email(email)
+                .code(code)
+                .expirationTimeInMinutes(5)
+                .isVerified(false)
+                .build();
+        emailVerificationRepository.save(verification);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom(String.format("ForWork <%s>", serviceEmail));
+        mailMessage.setTo(email);
+        mailMessage.setSubject("ForWork 회원가입 인증코드 입니다.");
+        mailMessage.setText(verification.generateCodeMessage());
+        mailSender.send(mailMessage);
     }
 }
