@@ -42,6 +42,7 @@ public enum ErrorStatus {
     ALREADY_REJECTED_RESUME_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 거절된 이력서입니다."),
     NOT_DRAFT_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 임시 저장 상태가 아닙니다."),
     DONT_HAVE_PERMISSION_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 요청을 수행할 권한이 없습니다."),
+    ALREADY_ADD_CHILD_COMMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 댓글에는 이미 대댓글이 등록되어 있습니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -66,6 +67,7 @@ public enum ErrorStatus {
     PREMIUM_MANAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"프리미엄 관리 정보가 없습니다."),
     RESUME_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 이력서를 찾을 수 없습니다."),
     ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
+    PARENT_COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR

@@ -57,6 +57,7 @@ public enum SuccessStatus {
     ALBA_REVIEW_LIST_SUCCESS(HttpStatus.OK,"알바 후기 전체조회 성공"),
     ALBA_REVIEW_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 수정 성공"),
     ALBA_REVIEW_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 삭제 성공"),
+    SEND_ALBA_REVIEW_COMMENT_SUCCESS(HttpStatus.OK,"알바 후기 댓글 조회 성공"),
 
     /**
      * 201
@@ -69,6 +70,7 @@ public enum SuccessStatus {
     UPLOAD_IMAGE_SUCCESS(HttpStatus.CREATED, "이미지 업로드 성공"),
     APPLY_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 지원 성공"),
     ALBA_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"알바 후기 작성 성공"),
+    ALBA_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"알바 후기 댓글 작성 성공"),
 
     ;
 

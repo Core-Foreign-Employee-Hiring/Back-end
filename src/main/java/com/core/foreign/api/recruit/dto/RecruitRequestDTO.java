@@ -74,7 +74,6 @@ public class RecruitRequestDTO {
             private PortfolioType type;
             private boolean isRequired;
             private Integer maxFileCount;
-            private Long maxFileSize;
         }
     }
 }

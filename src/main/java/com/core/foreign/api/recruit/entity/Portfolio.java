@@ -25,7 +25,6 @@ public class Portfolio {
 
     // 파일 업로드 관련 필드
     private Integer maxFileCount; // 최대 업로드 가능 파일 갯수
-    private Long maxFileSize; // 바이트 단위
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "premium_recruit_id", nullable = false)
@@ -36,14 +35,12 @@ public class Portfolio {
             String title,
             PortfolioType type,
             boolean isRequired,
-            Integer maxFileCount,
-            Long maxFileSize
+            Integer maxFileCount
     ) {
         this.title = title;
         this.type = type;
         this.isRequired = isRequired;
         this.maxFileCount = maxFileCount;
-        this.maxFileSize = maxFileSize;
     }
 
     public void assignPremiumRecruit(PremiumRecruit premiumRecruit) {

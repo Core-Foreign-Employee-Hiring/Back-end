@@ -12,5 +12,5 @@ public interface AlbaReviewRepository extends JpaRepository<AlbaReview, Long> {
 
     @Modifying
     @Query("update AlbaReview a set a.readCount = a.readCount + 1 where a.id = :reviewId")
-    int incrementReadCount(@Param("reviewId") Long reviewId);
+    void incrementReadCount(@Param("reviewId") Long reviewId);
 }
