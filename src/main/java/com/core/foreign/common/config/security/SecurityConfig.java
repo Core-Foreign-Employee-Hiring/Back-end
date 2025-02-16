@@ -74,7 +74,7 @@ public class SecurityConfig {
                                 "/api/v1/recruit/search","/api/v1/recruit/view"
                         ).permitAll() // 공고 전체 조회, 공고 상세 조회 인증 허가
                         .requestMatchers(
-                                HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview"
+                                HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview","/api/v1/albareview/comment"
                         ).permitAll() // 알바 후기 조회 관련 API
                         .anyRequest().authenticated()
                 )
