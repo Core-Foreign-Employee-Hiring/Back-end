@@ -39,7 +39,6 @@ public class MemberService {
     private final EmailVerificationRepository emailVerificationRepository;
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
     private final BusinessFieldUpdater businessFiledUpdater;
-    private final BusinessFieldEntityRepository businessFieldEntityRepository;
     private final CompanyValidationRepository companyValidationRepository;
     private final PasswordResetRepository passwordResetRepository;
     private final EvaluationCreator evaluationCreator;
