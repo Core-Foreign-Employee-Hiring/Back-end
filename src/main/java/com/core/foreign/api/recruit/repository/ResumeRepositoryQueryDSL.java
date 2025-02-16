@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.repository;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.recruit.entity.ContractStatus;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
@@ -10,4 +11,6 @@ public interface ResumeRepositoryQueryDSL {
     Page<Resume> searchResumedByRecruitId(Long recruitId,
                                           String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                           Pageable pageable);
+
+    Page<Resume> getApplicationPortfolio(BusinessField businessField, Pageable pageable);
 }

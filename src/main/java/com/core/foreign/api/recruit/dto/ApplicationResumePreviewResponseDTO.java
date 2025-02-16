@@ -31,7 +31,7 @@ public class ApplicationResumePreviewResponseDTO {
         dto.phoneNumber = employee.getPhoneNumber();
         dto.applyMethod=resume.getApplyMethod();
         dto.recruitmentStatus = resume.getRecruitmentStatus();
-        dto.evaluationStatus = resume.getRecruitmentStatus()!=RecruitmentStatus.APPROVED?EvaluationStatus.NONE:resume.getEvaluationStatus();
+        dto.evaluationStatus = resume.getRecruitmentStatus()!=RecruitmentStatus.APPROVED?EvaluationStatus.NONE:resume.getIsEmployeeEvaluatedByEmployer();
         dto.contractStatus = resume.getContractStatus();
         return dto;
     }

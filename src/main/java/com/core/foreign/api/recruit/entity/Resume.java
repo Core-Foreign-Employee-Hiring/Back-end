@@ -37,13 +37,18 @@ public class Resume {
 
     @Enumerated(STRING)
     private RecruitmentStatus recruitmentStatus;
-
-    @Enumerated(STRING)
-    private EvaluationStatus evaluationStatus;
     private LocalDate approvedAt;
 
-    private boolean isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
-    private boolean isEmployerEvaluatedByEmployee; // 피고용인이 고용인을 평가했는지 여부
+    @Enumerated(STRING)
+    private EvaluationStatus isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
+    private LocalDate employeeEvaluationDate; // 고용인이 피고용인을 평가한 날짜
+
+    @Enumerated(STRING)
+    private EvaluationStatus isEmployerEvaluatedByEmployee; // 피고용인이 고용인을 평가했는지 여부
+    private LocalDate employerEvaluationDate; // 피고용인이 고용인을 평가한 날짜
+
+
+    private boolean isPublic;  // 프리미엄 공고일 때만 유효함.
 
 
     @Enumerated(STRING)
@@ -59,6 +64,7 @@ public class Resume {
     public void approve() {
         this.recruitmentStatus = RecruitmentStatus.APPROVED;
         this.approvedAt = LocalDate.now();
+        this.isEmployeeEvaluatedByEmployer=EvaluationStatus.NOT_EVALUATED;
     }
 
     public void reject(){
@@ -67,10 +73,21 @@ public class Resume {
 
 
     public void evaluateEmployer(){
-        this.isEmployerEvaluatedByEmployee=true;
+        this.isEmployerEvaluatedByEmployee=EvaluationStatus.COMPLETED;
+        this.employerEvaluationDate = LocalDate.now();
     }
 
     public void evaluateEmployee(){
-        this.isEmployeeEvaluatedByEmployer=true;
+        this.isEmployeeEvaluatedByEmployer=EvaluationStatus.COMPLETED;
+        this.employeeEvaluationDate=LocalDate.now();
     }
+
+    public void makePublic() {
+        this.isPublic = true;
+    }
+
+    public void makePrivate() {
+        this.isPublic = false;
+    }
+
 }

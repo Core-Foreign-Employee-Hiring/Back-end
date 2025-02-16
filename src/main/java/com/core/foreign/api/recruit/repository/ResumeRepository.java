@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.repository;
 
+import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.entity.RecruitWithResumeCountDTO;
 import com.core.foreign.api.recruit.entity.Resume;
 import org.springframework.data.domain.Page;
@@ -54,5 +55,11 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " join fetch re.employer" +
             " where r.employee.id=:employeeId and r.isDeleted=false")
     Page<Resume> findResumeByEmployeeId(@Param("employeeId")Long employeeId, Pageable pageable);
+
+
+    @Query("select r from Resume r" +
+            " join fetch r.recruit" +
+            " where r.recruitmentStatus='APPROVED' and r.isEmployerEvaluatedByEmployee= :evaluationStatus")
+    Page<Resume> findResumeByEmployeeIdAndEvaluationStatus(@Param("employeeId")Long employeeId,  @Param("evaluationStatus") EvaluationStatus evaluationStatus, Pageable pageable);
 
 }

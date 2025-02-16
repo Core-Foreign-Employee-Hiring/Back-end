@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.repository;
 
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.recruit.entity.ContractStatus;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
@@ -67,6 +68,33 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
 
     }
 
+    @Override
+    public Page<Resume> getApplicationPortfolio(BusinessField businessField, Pageable pageable) {
+        List<Resume> content = queryFactory
+                .select(resume)
+                .from(resume)
+                .innerJoin(resume.employee).fetchJoin()
+                .innerJoin(resume.recruit).fetchJoin()
+                .where(
+                        isPublic(),
+                        businessFieldEq(businessField)
+                )
+                .orderBy(resume.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(resume.count())
+                .from(resume)
+                .where(
+                        isPublic(),
+                        businessFieldEq(businessField)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
     private BooleanBuilder statusEq(RecruitmentStatus recruitmentStatus, ContractStatus contractStatus) {
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -80,6 +108,14 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
 
     private BooleanExpression contractStatusEq(ContractStatus contractStatus){
         return contractStatus==null?null:resume.contractStatus.eq(contractStatus);
+    }
+
+
+    private BooleanExpression businessFieldEq(BusinessField businessField){
+        return null;
+    }
+    private BooleanExpression isPublic(){
+        return resume.isPublic.eq(true).and(resume.employee.isPortfolioPublic.eq(true));
     }
 
 
