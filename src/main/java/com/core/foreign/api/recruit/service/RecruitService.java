@@ -139,7 +139,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
 
@@ -205,6 +204,7 @@ public class RecruitService {
     ) {
         Member employer = getEmployer(memberId);
 
+        /*
         // 프리미엄 공고 등록 가능 체크
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
@@ -212,7 +212,7 @@ public class RecruitService {
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-
+*/
         // 임시 저장 한 데이터 삭제
         deleteDraft(employer);
 
@@ -252,7 +252,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
 
@@ -364,7 +363,6 @@ public class RecruitService {
                         .type(p.getType())
                         .isRequired(p.isRequired())
                         .maxFileCount(p.getMaxFileCount())
-                        .maxFileSize(p.getMaxFileSize())
                         .build())
                 .toList();
         portfolios.forEach(newRecruit::addPortfolio);
@@ -406,7 +404,6 @@ public class RecruitService {
                             .type(portfolio.getType())
                             .isRequired(portfolio.isRequired())
                             .maxFileCount(portfolio.getMaxFileCount())
-                            .maxFileSize(portfolio.getMaxFileSize())
                             .build())
                     .toList();
         }

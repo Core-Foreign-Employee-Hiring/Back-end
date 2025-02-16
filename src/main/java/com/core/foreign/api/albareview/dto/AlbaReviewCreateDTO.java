@@ -1,9 +1,11 @@
 package com.core.foreign.api.albareview.dto;
 
 import com.core.foreign.api.business_field.BusinessField;
+import lombok.Data;
 import lombok.Getter;
 
 @Getter
+@Data
 public class AlbaReviewCreateDTO {
 
     private String title;

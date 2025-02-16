@@ -51,6 +51,5 @@ public class RecruitResponseDTO {
         private PortfolioType type;        // 포트폴리오 유형 (장문형, 단답형, 파일 업로드)
         private boolean isRequired;        // 필수 여부
         private Integer maxFileCount;      // 최대 파일 개수
-        private Long maxFileSize;          // 최대 파일 크기
     }
 }
