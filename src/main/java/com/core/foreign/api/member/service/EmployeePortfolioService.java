@@ -9,6 +9,7 @@ import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.EmployeePortfolioBusinessFieldInfoRepository;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import static com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldType.*;
 import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.COMPLETED;
 import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.TEMPORARY;
+import static com.core.foreign.common.response.ErrorStatus.PORTFOLIO_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -55,18 +57,22 @@ public class EmployeePortfolioService {
         EmployeePortfolio portfolio = employeePortfolioRepository.save(build);
 
         saveEmployeePortfolioBusinessFieldInfo(portfolio, dto);
+
+        if(dto.isPublic()){employee.publicizePortfolio();}
+        else{employee.privatizePortfolio();}
+
     }
 
 
-
     public EmployeePortfolioDTO getEmployeePortfolio(Long employeeId, EmployeePortfolioStatus status) {
-        Optional<EmployeePortfolio> portfolio = employeePortfolioRepository.findByEmployeeId(employeeId, status);
-        if(portfolio.isEmpty()) {
-            return null;
-        }
+        EmployeePortfolio portfolio = employeePortfolioRepository.findByEmployeeId(employeeId, status)
+                .orElseThrow(() -> {
+                    log.error("포트폴리오 없음. employeeId={}, status={}", employeeId, status);
+                    return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
-
-        EmployeePortfolioDTO dto = EmployeePortfolioDTO.from(portfolio.get());
+        Employee employee = portfolio.getEmployee();
+        EmployeePortfolioDTO dto = EmployeePortfolioDTO.from(portfolio, employee.isPortfolioPublic());
 
         return dto;
     }
@@ -85,6 +91,11 @@ public class EmployeePortfolioService {
         employeePortfolio.updateExceptBusinessFieldInfo(dto.getIntroduction(),
                 dto.getEnrollmentCertificateUrl(), dto.getTranscriptUrl(), dto.getTranscriptUrl(),
                 dto.getTopic(), dto.getEnglishTestType(), dto.getEnglishTestScore());
+
+        Employee employee = employeePortfolio.getEmployee();
+
+        if(dto.isPublic()){employee.publicizePortfolio();}
+        else{employee.privatizePortfolio();}
 
         // 업종별 정보 수정  그냥 싹 지우고 새로 insert. 수정 판단하기 힘들 것 같음.
 

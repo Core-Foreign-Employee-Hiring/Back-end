@@ -23,7 +23,6 @@ public class RecruitResponseDTO {
     private RecruitType recruitType;       // 공고 유형 (GENERAL, PREMIUM 등)
     private LocalDate recruitStartDate;    // 모집 시작일
     private LocalDate recruitEndDate;      // 모집 종료일
-    private Integer recruitCount;          // 모집 인원
     private String gender;                 // 성별
     private String education;              // 학력 조건
     private String otherConditions;        // 기타 조건

@@ -1,10 +1,12 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
@@ -42,6 +44,7 @@ public class RecruitService {
     private final S3Service s3Service;
     private final ResumeRepository resumeRepository;
     private final RecruitBookmarkRepository recruitBookmarkRepository;
+    private final EvaluationReader evaluationReader;
 
     // 일반 공고 등록
     @Transactional
@@ -63,7 +66,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -113,7 +115,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -173,7 +174,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -228,7 +228,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -285,7 +284,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -340,7 +338,6 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
-                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -417,7 +414,6 @@ public class RecruitService {
                 .recruitType(draft.getRecruitType())
                 .recruitStartDate(draft.getRecruitStartDate())
                 .recruitEndDate(draft.getRecruitEndDate())
-                .recruitCount(draft.getRecruitCount())
                 .gender(draft.getGender())
                 .education(draft.getEducation())
                 .otherConditions(draft.getOtherConditions())
@@ -584,6 +580,7 @@ public class RecruitService {
         String businessRegistrationNumber = null;
 
         Member employer = recruit.getEmployer();
+        EmployerEvaluationCountDTO employerEvaluationCountDTO=evaluationReader.getEmployerEvaluation(employer.getId());
         if (employer instanceof Employer employerEntity) {
             companyName = employerEntity.getCompanyName();
             companyIconImage = employerEntity.getCompanyImageUrl();
@@ -605,7 +602,6 @@ public class RecruitService {
                 .address(recruit.getAddress())
                 .recruitStartDate(recruit.getRecruitStartDate())
                 .recruitEndDate(recruit.getRecruitEndDate())
-                .recruitCount(recruit.getRecruitCount())
                 .gender(recruit.getGender())
                 .education(recruit.getEducation())
                 .otherConditions(recruit.getOtherConditions())
@@ -630,21 +626,28 @@ public class RecruitService {
                 .representative(representative)
                 .employerEmail(employerEmail)
                 .businessRegistrationNumber(businessRegistrationNumber)
+                .employerEvaluationCountDTO(employerEvaluationCountDTO)
                 .build();
     }
 
 
-    /**
-     * @implNote
-     * 상단 노출 필터링은 나중에
-     */
-    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, RecruitType recruitType){
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        Page<MyRecruitResponseDTO> map = recruitRepository.findByEmployerIdAndRecruitType(employerId, recruitType, pageable)
+    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, Integer size, RecruitType recruitType, boolean excludeExpired){
+        Pageable pageable= PageRequest.of(page, size);
+
+        Page<MyRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, recruitType, RecruitPublishStatus.PUBLISHED, excludeExpired, pageable)
                 .map(MyRecruitResponseDTO::from);
 
-        return map;
 
+        return response;
+    }
+
+    public Page<MyDraftRecruitResponseDTO> getMyDraftRecruits(Long employerId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size);
+
+        Page<MyDraftRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, null , RecruitPublishStatus.DRAFT, false, pageable)
+                .map(MyDraftRecruitResponseDTO::from);
+
+        return response;
     }
 
     public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){

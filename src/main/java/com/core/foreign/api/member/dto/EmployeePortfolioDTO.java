@@ -26,8 +26,10 @@ public class EmployeePortfolioDTO {
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
 
+    private boolean isPublic;
 
-    public static EmployeePortfolioDTO from(EmployeePortfolio portfolio) {
+
+    public static EmployeePortfolioDTO from(EmployeePortfolio portfolio, boolean isPublic) {
         EmployeePortfolioDTO dto = new EmployeePortfolioDTO();
         dto.introduction = portfolio.getIntroduction();
         dto.enrollmentCertificateUrl = portfolio.getEnrollmentCertificateUrl();
@@ -56,7 +58,11 @@ public class EmployeePortfolioDTO {
         dto.experiences = e;
         dto.certifications = c;
         dto.awards = a;
+        dto.isPublic = isPublic;
         return dto;
 
     }
+
+
+
 }

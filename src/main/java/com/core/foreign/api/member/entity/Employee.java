@@ -19,6 +19,8 @@ public class Employee extends Member {
     private String education;   // 학력
     private String visa;        // 비자
 
+    private boolean isPortfolioPublic;
+
     public Employee(String userId,
                     String password,
                     String name,
@@ -39,12 +41,22 @@ public class Employee extends Member {
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;
+        this.isPortfolioPublic = true;
     }
 
 
-   public void updateBasicResume(EmployeeBasicResumeUpdateDTO updateDTO){
-        education=updateDTO.getEducation();
-        visa=updateDTO.getVisa();
+    public void updateBasicResume(EmployeeBasicResumeUpdateDTO updateDTO) {
+        education = updateDTO.getEducation();
+        visa = updateDTO.getVisa();
         updateAddress(new Address(updateDTO.getZipcode(), updateDTO.getAddress1(), updateDTO.getAddress2()));
     }
+
+    public void publicizePortfolio() {
+        this.isPortfolioPublic = true;
+    }
+
+    public void privatizePortfolio() {
+        this.isPortfolioPublic = false;
+    }
+
 }

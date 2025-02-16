@@ -16,7 +16,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface RecruitRepository
-        extends JpaRepository<Recruit, Long>, JpaSpecificationExecutor<Recruit> {
+        extends JpaRepository<Recruit, Long>, JpaSpecificationExecutor<Recruit>, RecruitRepositoryQueryDSL {
 
     Optional<Recruit> findAllByEmployerAndRecruitPublishStatus(Member employer, RecruitPublishStatus status);
 

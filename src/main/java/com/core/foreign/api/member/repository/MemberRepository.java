@@ -26,4 +26,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("update Member m set m.userId=:userId where m.id=:memberId")
     void updateUserId(@Param("memberId") Long memberId, @Param("userId") String userId);
 
+
+    @Modifying
+    @Query("update Member m set m.evaluationJoinCount=m.evaluationJoinCount+1 where m.id=:memberId")
+    void increaseEvaluationJoinCount(@Param("memberId") Long memberId);
+
 }

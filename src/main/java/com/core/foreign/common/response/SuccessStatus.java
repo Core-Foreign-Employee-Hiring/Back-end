@@ -58,6 +58,11 @@ public enum SuccessStatus {
     ALBA_REVIEW_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 수정 성공"),
     ALBA_REVIEW_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 삭제 성공"),
     SEND_ALBA_REVIEW_COMMENT_SUCCESS(HttpStatus.OK,"알바 후기 댓글 조회 성공"),
+    EVALUATE_EMPLOYEE_SUCCESS(HttpStatus.OK, "평가하기 성공"),
+    EVALUATE_VIEW_SUCCESS(HttpStatus.OK, "평가 보기 성공"),
+    BASIC_PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "기본 포트폴리오 조회 성공"),
+    APPLICATION_PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "실제 지원 포트폴리오 조회 성공"),
+    TAG_VIEW_SUCCESS(HttpStatus.OK, "태그 조회 성공"),
 
     /**
      * 201

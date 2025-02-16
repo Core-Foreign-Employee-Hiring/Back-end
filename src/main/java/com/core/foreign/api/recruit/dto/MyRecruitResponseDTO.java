@@ -27,9 +27,18 @@ public class MyRecruitResponseDTO {
         dto.title = recruit.getTitle();
         dto.recruitStartDate=recruit.getRecruitStartDate();
         dto.recruitEndDate=recruit.getRecruitEndDate();
+
+
+/*
         dto.workDuration = recruit.getWorkDuration();
         dto.workDays = recruit.getWorkDays();
         dto.workTime = recruit.getWorkTime();
+*/
+
+        dto.workDuration =null;
+        dto.workDays = null;
+        dto.workTime = null;
+
         dto.recruitType = recruit.getRecruitType();
         dto.isUp=false;
 
