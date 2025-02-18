@@ -1,5 +1,7 @@
 package com.core.foreign.api.recruit.service;
 
+import com.core.foreign.api.contract.entity.ContractStatus;
+import com.core.foreign.api.contract.service.ContractCreator;
 import com.core.foreign.api.member.dto.TagResponseDTO;
 import com.core.foreign.api.member.entity.Employee;
 import com.core.foreign.api.member.entity.Employer;
@@ -35,6 +37,7 @@ public class ResumeService {
     private final ResumePortfolioRepository resumePortfolioRepository;
     private final EmployeePortfolioRepository employeePortfolioRepository;
     private final ResumeReader resumeReader;
+    private final ContractCreator contractCreator;
 
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
@@ -201,7 +204,7 @@ public class ResumeService {
                 .employee(employee)
                 .applyMethod(dto.getApplyMethod())
                 .recruitmentStatus(RecruitmentStatus.PENDING)
-                .contractStatus(ContractStatus.NOT_WRITTEN)
+                .contractStatus(ContractStatus.NOT_COMPLETED)
                 .isDeleted(false)
                 .isEmployeeEvaluatedByEmployer(EvaluationStatus.NONE)
                 .isEmployerEvaluatedByEmployee(EvaluationStatus.NONE)
@@ -252,6 +255,8 @@ public class ResumeService {
         }
 
         resume.approve();
+
+        contractCreator.createContractMetadata(resume, recruit);
     }
 
 

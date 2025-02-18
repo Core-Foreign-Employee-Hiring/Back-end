@@ -53,6 +53,14 @@ public enum ErrorStatus {
     FILE_COUNT_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "파일 개수가 맞지 않습니다."),
     EMPLOYER_CANNOT_APPLY_EXCEPTION(HttpStatus.BAD_REQUEST, "고용인은 공고에 지원할 수 없습니다."),
     PASSWORD_VERIFICATION_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "비밀번호 확인을 진행하세요."),
+    NOT_READY_YET_EXCEPTION(HttpStatus.BAD_REQUEST, "아직 준비되지 않았습니다."),
+    CONTRACT_TYPE_ALREADY_SELECTED_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 형태를 이미 선택하였습니다."),
+    CONTRACT_TYPE_SELECTION_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 형태를 선택하세요."),
+    EMPLOYEE_CANNOT_SELECT_CONTRACT_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "피고용인은 계약서 형태를 선택할 수 없습니다."),
+    FILE_UPLOAD_NOT_ALLOWED_FOR_NON_FILE_CONTRACT_EXCEPTION(HttpStatus.BAD_REQUEST, "파일 업로드 계약서가 아닌 경우 업로드 할 수 없습니다."),
+
+
+
 
 
     /**
@@ -80,6 +88,8 @@ public enum ErrorStatus {
     ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
     PARENT_COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
     PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 포트폴리오를 찾을 수 없습니다."),
+    CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
+
 
     /**
      * 500 SERVER_ERROR

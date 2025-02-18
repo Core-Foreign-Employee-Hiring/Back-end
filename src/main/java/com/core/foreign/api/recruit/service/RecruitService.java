@@ -95,12 +95,12 @@ public class RecruitService {
         Member employer = getEmployer(memberId);
 
         // 프리미엄 공고 등록 가능 체크
-        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
+        /*PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
-        }
+        }*/
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
@@ -144,8 +144,8 @@ public class RecruitService {
         recruitRepository.save(premiumRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
-        PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
-        premiumManageRepository.save(updatedPremiumManage);
+       /* PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
+        premiumManageRepository.save(updatedPremiumManage);*/
     }
 
     // 일반 공고 임시저장
