@@ -708,11 +708,11 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping(value = "/{recruit-id}/bookmark")
-    public ResponseEntity<ApiResponse<Void>> flipRecruitBookmark(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<Boolean>> flipRecruitBookmark(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @PathVariable("recruit-id") Long recruitId) {
-        recruitService.flipRecruitBookmark(securityMember.getId(), recruitId);
+        boolean b = recruitService.flipRecruitBookmark(securityMember.getId(), recruitId);
 
-        return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS);
+        return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, b);
 
     }
 
@@ -778,5 +778,21 @@ public class RecruitController {
     }
 
 
+    @Operation(summary = "프리미엄 공고의 포트폴리오 조회. API",
+            description = "프리미엄 공고의 포트폴리오 조회.<br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "포트폴리오 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/{recruit-id}/portfolios")
+    public ResponseEntity<ApiResponse<List<PortfolioResponseDTO>>> getPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                 @PathVariable("recruit-id") Long recruitId) {
+
+        List<PortfolioResponseDTO> portfolios = recruitService.getPortfolios(recruitId);
+
+        return ApiResponse.success(SuccessStatus.PORTFOLIO_VIEW_SUCCESS, portfolios);
+
+    }
 
 }

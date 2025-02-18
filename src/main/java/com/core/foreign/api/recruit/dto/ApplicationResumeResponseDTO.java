@@ -5,6 +5,7 @@ import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.entity.ContractStatus;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
+import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
 import lombok.Getter;
 
@@ -20,8 +21,11 @@ public class ApplicationResumeResponseDTO {
     private List<ResumePortfolioFileResponseDTO> files;
 
     private Role role;
+    private RecruitmentStatus recruitmentStatus;
     private ContractStatus contractStatus;
     private EvaluationStatus isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
+
+    private boolean isPublic;
 
     public ApplicationResumeResponseDTO(Resume resume, EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO,
                                         EmployeePortfolioDTO employeePortfolioDTO,
@@ -35,6 +39,9 @@ public class ApplicationResumeResponseDTO {
 
         this.isEmployeeEvaluatedByEmployer = resume.getIsEmployeeEvaluatedByEmployer();
         this.contractStatus = resume.getContractStatus();
+        this.recruitmentStatus = resume.getRecruitmentStatus();
+
+        this.isPublic = resume.isPublic();
     }
 
 

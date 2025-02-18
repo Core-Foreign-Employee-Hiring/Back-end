@@ -39,7 +39,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
                 .where(
                         resume.isDeleted.eq(false),
                         resume.recruit.id.eq(recruitId),
-                        (resume.employee.name.lower().contains(keyword)).or(resume.employee.phoneNumber.like(keyword)),
+                        (resume.employee.name.lower().contains(keyword)).or(resume.employee.phoneNumber.contains(keyword)),
                         statusEq(recruitmentStatus, contractStatus)
 
 

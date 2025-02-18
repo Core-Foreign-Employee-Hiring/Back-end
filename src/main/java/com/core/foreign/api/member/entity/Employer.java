@@ -65,7 +65,7 @@ public class Employer extends Member {
         businessRegistrationNumber = businessNo;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         establishedDate = LocalDate.parse(startDate, formatter);
-        companyName = representativeName;
+        updateName(representativeName);
     }
 
 }

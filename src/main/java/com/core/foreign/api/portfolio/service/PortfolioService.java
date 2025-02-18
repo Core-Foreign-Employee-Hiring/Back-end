@@ -4,6 +4,9 @@ import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.entity.Employee;
+import com.core.foreign.api.member.entity.EmployeePortfolio;
+import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
+import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.EmployeeRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
@@ -42,6 +45,7 @@ public class PortfolioService {
     private final EvaluationReader evaluationReader;
     private final ResumeRepository resumeRepository;
     private final ResumeReader resumeReader;
+    private final EmployeePortfolioRepository employeePortfolioRepository;
 
 
 
@@ -106,15 +110,22 @@ public class PortfolioService {
 
 
     public BasicPortfolioResponseDTO getBasicPortfolio(Long employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
+        Employee employee = employeeRepository.findPublicEmployeeById(employeeId)
                 .orElseThrow(() -> {
                     log.error("피고용인 찾을 수 없음. employeeId= {}", employeeId);
                     return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
+        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findByEmployeeId(employeeId, EmployeePortfolioStatus.COMPLETED)
+                .orElseGet(() -> {
+                    log.error("완성된 포트 폴리오가 없음. employeeId= {}", employeeId);
+                    return null;
+                });
+
+
         EmployeeEvaluationCountDTO employeeEvaluation = evaluationReader.getEmployeeEvaluation(employee);
 
-        BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(employee, employeeEvaluation);
+        BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(employee, employeePortfolio, employeeEvaluation);
 
         return response;
     }

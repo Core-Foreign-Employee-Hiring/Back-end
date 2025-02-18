@@ -23,6 +23,7 @@ public class ResumePortfolio {
     @Enumerated(STRING)
     private PortfolioType portfolioType;
 
+    private Long recruitPortfolioId;
     private String title;
     private String content;   // 파일일 경우 url 입니다.
 

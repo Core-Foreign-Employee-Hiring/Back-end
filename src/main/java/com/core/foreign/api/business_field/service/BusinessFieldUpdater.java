@@ -1,9 +1,12 @@
 package com.core.foreign.api.business_field.service;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.business_field.BusinessFieldTarget;
 import com.core.foreign.api.business_field.entity.BusinessFieldEntity;
+import com.core.foreign.api.business_field.entity.EmployerBusinessField;
 import com.core.foreign.api.business_field.repository.BusinessFieldEntityRepository;
+import com.core.foreign.api.business_field.repository.EmployerBusinessFieldRepository;
+import com.core.foreign.api.member.entity.Employer;
+import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,43 +21,44 @@ import java.util.List;
 public class BusinessFieldUpdater {
     private final BusinessFieldEntityRepository businessFieldEntityRepository;
     private final MemberRepository memberRepository;
+    private final EmployerBusinessFieldRepository employerBusinessFieldRepository;
 
     /**
      *
-     * @apiNote
      * 고용주의 업징종을 업데이트합니다.
      */
     public void updateBusinessFiledOfEmployer(Long employerId, List<BusinessField> newFileds) {
-        List<BusinessFieldEntity> oldFields = businessFieldEntityRepository.findByTargetAndTargetId(BusinessFieldTarget.EMPLOYER, employerId);
-        List<BusinessField> list = oldFields.stream().map(BusinessFieldEntity::getBusinessField).toList();
+        List<EmployerBusinessField> olds = employerBusinessFieldRepository.findByEmployerId(employerId);
+        List<BusinessField> list = olds.stream()
+                .map((employerBusinessField -> employerBusinessField.getBusinessFieldEntity().getBusinessField())).toList();
+
 
         // 새롭게 추가할 것. new - old
         List<BusinessField> toAdd = new ArrayList<>(newFileds);
         toAdd.removeAll(list);
 
-        List<BusinessFieldEntity> toAddEntity=new ArrayList<>();
+        List<BusinessFieldEntity> byBusinessFields = businessFieldEntityRepository.findByBusinessFields(toAdd);
 
-        for (BusinessField newFiled : toAdd) {
+        List<EmployerBusinessField> toAddEntity=new ArrayList<>();
 
-            BusinessFieldEntity build = BusinessFieldEntity.builder()
-                    .targetId(employerId)
-                    .target(BusinessFieldTarget.EMPLOYER)
-                    .businessField(newFiled)
-                    .build();
-            toAddEntity.add(build);
+        Employer employer = (Employer)memberRepository.findById(employerId).get();
+
+        for (BusinessFieldEntity byBusinessField : byBusinessFields) {
+            EmployerBusinessField employerBusinessField = new EmployerBusinessField(employer, byBusinessField);
+            toAddEntity.add(employerBusinessField);
         }
 
         // 삭제할 것 old-new
-        List<Long> toDelete=new ArrayList<>();
-        for (BusinessFieldEntity oldFiled : oldFields) {
-            if(!newFileds.contains(oldFiled.getBusinessField())){
-                toDelete.add(oldFiled.getId());
+        List<EmployerBusinessField> toDelete=new ArrayList<>();
+        for (EmployerBusinessField old : olds) {
+            if(!newFileds.contains(old.getBusinessFieldEntity().getBusinessField())){
+                toDelete.add(old);
             }
         }
 
 
-        businessFieldEntityRepository.saveAll(toAddEntity);
-        if(!toDelete.isEmpty()){businessFieldEntityRepository.deleteByIds(toDelete);}
+        employerBusinessFieldRepository.saveAll(toAddEntity);
+        if(!toDelete.isEmpty()){employerBusinessFieldRepository.deleteAll(toDelete);}
 
      }
 

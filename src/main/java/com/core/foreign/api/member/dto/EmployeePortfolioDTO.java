@@ -26,7 +26,7 @@ public class EmployeePortfolioDTO {
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
 
-    private boolean isPublic;
+    private boolean portfolioPublic;
 
 
     public static EmployeePortfolioDTO from(EmployeePortfolio portfolio, boolean isPublic) {
@@ -58,7 +58,7 @@ public class EmployeePortfolioDTO {
         dto.experiences = e;
         dto.certifications = c;
         dto.awards = a;
-        dto.isPublic = isPublic;
+        dto.portfolioPublic = isPublic;
         return dto;
 
     }
