@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.service;
 
+import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.member.dto.EmployeeBasicResumeResponseDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.TagResponseDTO;

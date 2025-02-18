@@ -1,6 +1,7 @@
 package com.core.foreign.api.recruit.entity;
 
 
+import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.member.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

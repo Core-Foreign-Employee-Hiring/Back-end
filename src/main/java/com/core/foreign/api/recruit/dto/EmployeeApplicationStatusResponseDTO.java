@@ -1,7 +1,7 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.recruit.entity.*;
 import lombok.Getter;
 

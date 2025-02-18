@@ -2,7 +2,7 @@ package com.core.foreign.api.recruit.controller;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.recruit.dto.*;
-import com.core.foreign.api.recruit.entity.ContractStatus;
+import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.recruit.entity.RecruitType;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.service.RecruitService;

@@ -10,7 +10,9 @@ public enum FileDirAndName {
     EmployerCompanyImage("employer-company-image", "company_"),
     EmployeeEnrollmentCertificateImage("employee-portfolio-image", "enrollment_certificate_"),
     EmployeeTranscriptImage("employee-portfolio-image", "transcript_"),
-    EmployeePartTimeWorkPermitImage("employee-portfolio-image", "part_time_work_permit_");
+    EmployeePartTimeWorkPermitImage("employee-portfolio-image", "part_time_work_permit_"),
+    FileContract("file-contract", "contract_")
+    ;
 
 
 
