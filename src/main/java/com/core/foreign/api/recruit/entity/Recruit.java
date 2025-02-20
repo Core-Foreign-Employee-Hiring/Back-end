@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -93,6 +94,12 @@ public abstract class Recruit extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     protected RecruitPublishStatus recruitPublishStatus; // 공고 상태 (PUBLISHED, DRAFT)
 
+    protected LocalDateTime jumpDate;
+
+    public void jumpNow() {
+        this.jumpDate = LocalDateTime.now();
+    }
+
     protected Recruit(String title,
                       Member employer,
                       Address address,
@@ -117,6 +124,7 @@ public abstract class Recruit extends BaseTimeEntity {
                       Set<ApplyMethod> applicationMethods,
                       RecruitType recruitType,
                       String posterImageUrl,
+                      LocalDateTime jumpDate,
                       RecruitPublishStatus recruitPublishStatus) {
         this.title = title;
         this.employer = employer;
@@ -143,6 +151,7 @@ public abstract class Recruit extends BaseTimeEntity {
         this.recruitType = recruitType;
         this.posterImageUrl = posterImageUrl;
         this.recruitPublishStatus = recruitPublishStatus;
+        this.jumpDate = jumpDate;
     }
 
 

@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ public class GeneralRecruit extends Recruit {
             String salaryOther,
             Set<ApplyMethod> applicationMethods,
             String posterImageUrl,
+            LocalDateTime jumpDate,
             RecruitPublishStatus recruitPublishStatus) {
         super(
                 title,
@@ -70,6 +72,7 @@ public class GeneralRecruit extends Recruit {
                 applicationMethods,
                 RecruitType.GENERAL,
                 posterImageUrl,
+                jumpDate,
                 recruitPublishStatus
         );
     }

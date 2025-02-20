@@ -1,6 +1,7 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
@@ -80,6 +81,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
+                .jumpDate(null)
                 .build();
 
         recruitRepository.save(generalRecruit);
@@ -129,6 +131,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
+                .jumpDate(null)
                 .build();
 
         List<Portfolio> portfolios = request.getPortfolios().stream()
@@ -144,8 +147,12 @@ public class RecruitService {
         recruitRepository.save(premiumRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
-       /* PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
-        premiumManageRepository.save(updatedPremiumManage);*/
+        /*
+        int updatedRows = premiumManageRepository.decreasePremiumCount(employer.getId());
+        if (updatedRows == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
+        }
+        */
     }
 
     // 일반 공고 임시저장
@@ -188,6 +195,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
+                .jumpDate(null)
                 .build();
 
         recruitRepository.save(draftRecruit);
@@ -240,6 +248,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
+                .jumpDate(null)
                 .build();
 
         List<Portfolio> portfolios = request.getPortfolios().stream()
@@ -296,6 +305,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
+                .jumpDate(null)
                 .build();
 
         recruitRepository.save(newRecruit);
@@ -312,12 +322,15 @@ public class RecruitService {
         validateDraftStatus(recruit);
 
         // 프리미엄 공고 등록 가능 체크
+        /*
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(recruit.getEmployer().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
+
+         */
 
         // 이전 데이터 삭제
         recruitRepository.delete(recruit);
@@ -350,6 +363,7 @@ public class RecruitService {
                 .applicationMethods(new HashSet<>(request.getApplicationMethods()))
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
+                .jumpDate(null)
                 .build();
 
         // Portfolio 추가
@@ -365,11 +379,15 @@ public class RecruitService {
         recruitRepository.save(newRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
-        PremiumManage updatedPremiumManage = premiumManage.decreasePremiumCount();
-        premiumManageRepository.save(updatedPremiumManage);
+        /*
+        int updatedRows = premiumManageRepository.decreasePremiumCount(recruit.getEmployer().getId());
+        if (updatedRows == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
+        }
+         */
     }
 
-        // 사용자 임시저장 공고 존재 여부 확인
+    // 사용자 임시저장 공고 존재 여부 확인
     @Transactional(readOnly = true)
     public boolean hasDrafts(Long memberId) {
         Member employer = getEmployer(memberId);
@@ -466,14 +484,22 @@ public class RecruitService {
 
     // 일반 공고 조회
     private GeneralRecruit getGeneralRecruit(Long recruitId) {
-        return (GeneralRecruit) recruitRepository.findById(recruitId)
-                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        Recruit recruit = recruitRepository.findById(recruitId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        if (!(recruit instanceof GeneralRecruit)) {
+            throw new BadRequestException(ErrorStatus.NOT_GENERAL_RECRUIT_EXCEPTION.getMessage());
+        }
+        return (GeneralRecruit) recruit;
     }
 
     // 프리미엄 공고 조회
     private PremiumRecruit getPremiumRecruit(Long recruitId) {
-        return (PremiumRecruit) recruitRepository.findById(recruitId)
-                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        Recruit recruit = recruitRepository.findById(recruitId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        if (!(recruit instanceof PremiumRecruit)) {
+            throw new BadRequestException(ErrorStatus.NOT_PREMIUM_RECRUIT_EXCEPTION.getMessage());
+        }
+        return (PremiumRecruit) recruit;
     }
 
     // 등록 가능 공고 조회
@@ -522,22 +548,28 @@ public class RecruitService {
     }
 
     private RecruitListResponseDTO convertToRecruitListResponseDTO(Recruit recruit) {
-        // (employer가 Employer 타입이면 -> companyName, 아니면 Member.getName() 사용)
+
+        List<String> workTime = (recruit.getWorkTime() != null) ? new ArrayList<>(recruit.getWorkTime()) : null;
+        List<String> workDays = (recruit.getWorkDays() != null) ? new ArrayList<>(recruit.getWorkDays()) : null;
+        List<String> workDuration = (recruit.getWorkDuration() != null) ? new ArrayList<>(recruit.getWorkDuration()) : null;
+        Set<ApplyMethod> applicationMethods = (recruit.getApplicationMethods() != null) ? new HashSet<>(recruit.getApplicationMethods()) : null;
+        Set<BusinessField> businessFields = (recruit.getBusinessFields() != null) ? new HashSet<>(recruit.getBusinessFields()) : null;
+
+        // 회사명 처리 (고용주가 Employer 타입이면 회사명을 사용)
         String companyName;
         Member employer = recruit.getEmployer();
-        if (employer instanceof Employer emp) {
-            companyName = emp.getCompanyName();      // EMPLOYER 엔티티의 회사명
+        if (employer instanceof com.core.foreign.api.member.entity.Employer emp) {
+            companyName = emp.getCompanyName();
         } else {
-            companyName = employer.getName();        // 그냥 Member라면 이름
+            companyName = employer.getName();
         }
 
-        // 모집 기간 문자열 : "2025-01-01 ~ 2025-12-31"
+        // 모집 기간 문자열 구성
         String recruitPeriod = null;
         if (recruit.getRecruitStartDate() != null && recruit.getRecruitEndDate() != null) {
-            // 마감일이 2099-12-31일 경우 상시모집
-            if(recruit.getRecruitEndDate().toString().equals("2099-12-31")){
+            if("2099-12-31".equals(recruit.getRecruitEndDate().toString())){
                 recruitPeriod = "상시모집";
-            }else{
+            } else {
                 recruitPeriod = recruit.getRecruitStartDate().toString()
                         + " ~ " + recruit.getRecruitEndDate().toString();
             }
@@ -548,14 +580,14 @@ public class RecruitService {
                 .companyName(companyName)
                 .title(recruit.getTitle())
                 .address(recruit.getAddress())
-                .workTime(recruit.getWorkTime())
-                .workDays(recruit.getWorkDays())
-                .workDuration(recruit.getWorkDuration())
+                .workTime(workTime)
+                .workDays(workDays)
+                .workDuration(workDuration)
                 .salary(recruit.getSalary())
                 .salaryType(recruit.getSalaryType())
-                .businessFields(recruit.getBusinessFields())
+                .businessFields(businessFields)
                 .recruitPeriod(recruitPeriod)
-                .applicationMethods(recruit.getApplicationMethods())
+                .applicationMethods(applicationMethods)
                 .recruitType(recruit.getRecruitType())
                 .build();
     }
@@ -626,13 +658,11 @@ public class RecruitService {
                 .build();
     }
 
-
     public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, Integer size, RecruitType recruitType, boolean excludeExpired){
         Pageable pageable= PageRequest.of(page, size);
 
         Page<MyRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, recruitType, RecruitPublishStatus.PUBLISHED, excludeExpired, pageable)
                 .map(MyRecruitResponseDTO::from);
-
 
         return response;
     }
@@ -673,9 +703,7 @@ public class RecruitService {
 
         if(findBookmark.isPresent()){
             RecruitBookmark recruitBookmark = findBookmark.get();
-
             recruitBookmarkRepository.delete(recruitBookmark);
-
             return false;
         }
         else{
@@ -686,20 +714,16 @@ public class RecruitService {
                         return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
-
             RecruitBookmark recruitBookmark = new RecruitBookmark(recruit, member);
-
             recruitBookmarkRepository.save(recruitBookmark);
-
             return true;
         }
     }
 
 
     public Page<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page){
+
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-
-
         Page<RecruitBookmarkResponseDTO> response = recruitBookmarkRepository.findByMemberId(memberId, pageable)
                 .map(RecruitBookmarkResponseDTO::from);
 
@@ -707,6 +731,7 @@ public class RecruitService {
     }
 
     public List<PortfolioResponseDTO> getPortfolios(Long recruitId){
+
         List<PortfolioResponseDTO> response = portfolioRepository.findByRecruitId(recruitId).stream()
                 .map(PortfolioResponseDTO::from).toList();
 
@@ -720,8 +745,78 @@ public class RecruitService {
                     return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-
         return RecruitPreviewInContractResponseDTO.from(recruit);
     }
 
+    // 프리미엄 공고 상단 점프
+    @Transactional
+    public void topJumpPremiumRecruit(Long recruitId, Long memberId) {
+        // 프리미엄 공고 조회
+        PremiumRecruit recruit = getPremiumRecruit(recruitId);
+
+        // 해당 공고가 실제로 프리미엄 공고인지 확인
+        if (!RecruitType.PREMIUM.equals(recruit.getRecruitType())) {
+            throw new BadRequestException(ErrorStatus.NOT_PREMIUM_RECRUIT_EXCEPTION.getMessage());
+        }
+
+        // 요청자와 공고 등록자가 일치하는지 검증
+        if (!recruit.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        Long employerId = recruit.getEmployer().getId();
+        //  프리미엄 상단 점프 횟수 차감
+        int updatedRows = premiumManageRepository.decreasePremiumJumpCount(employerId);
+        if (updatedRows == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_JUMP_COUNT_EXCEPTION.getMessage());
+        }
+
+        recruit.jumpNow();
+        recruitRepository.save(recruit);
+    }
+
+    // 일반 공고 상단 점프
+    @Transactional
+    public void topJumpGeneralRecruit(Long recruitId, Long memberId) {
+        // 일반 공고 조회
+        GeneralRecruit recruit = getGeneralRecruit(recruitId);
+
+        // 해당 공고가 실제로 일반 공고인지 확인
+        if (!RecruitType.GENERAL.equals(recruit.getRecruitType())) {
+            throw new BadRequestException(ErrorStatus.NOT_GENERAL_RECRUIT_EXCEPTION.getMessage());
+        }
+
+        // 요청자와 공고 등록자가 일치하는지 검증
+        if (!recruit.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        Long employerId = recruit.getEmployer().getId();
+        // 일반 상단 점프 횟수 차감
+        int updatedRows = premiumManageRepository.decreaseNormalJumpCount(employerId);
+        if (updatedRows == 0) {
+            throw new BadRequestException(ErrorStatus.LEAK_GENERAL_RECRUIT_JUMP_COUNT_EXCEPTION.getMessage());
+        }
+
+        recruit.jumpNow();
+        recruitRepository.save(recruit);
+    }
+
+    // 상단 점프 횟수 반환
+    @Transactional(readOnly = true)
+    public TopJumpCountResponseDTO getTopJumpCounts(Long memberId) {
+
+        return premiumManageRepository.findByEmployerId(memberId)
+                .map(pm -> new TopJumpCountResponseDTO(pm.getPremiumJumpCount(), pm.getNormalJumpCount()))
+                .orElse(new TopJumpCountResponseDTO(0, 0));
+    }
+
+    // 상단 점프 한 공고 목록 조회
+    @Transactional(readOnly = true)
+    public Page<RecruitListResponseDTO> getRecruitsOrderedByJumpDate(RecruitType recruitType, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Recruit> recruitPage = recruitRepository.findByRecruitTypeAndJumpDateIsNotNullOrderByJumpDateDesc(recruitType, pageable);
+        return recruitPage.map(this::convertToRecruitListResponseDTO);
+    }
 }

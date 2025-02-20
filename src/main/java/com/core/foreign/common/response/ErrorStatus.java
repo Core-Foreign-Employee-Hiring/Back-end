@@ -61,6 +61,11 @@ public enum ErrorStatus {
     ALREADY_UPLOADED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 업로드 했습니다."),
     FILE_NOT_PROVIDED_EXCEPTION(HttpStatus.BAD_REQUEST, "업로드할 파일이 제공되지 않았습니다."),
     ONLY_MODIFY_WRITER_USER_EXCEPTION(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다."),
+    NOT_EMPLOYER_USER_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 회원은 고용주가 아닙니다."),
+    NOT_PREMIUM_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 프리미엄 공고가 아닙니다."),
+    NOT_GENERAL_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 일반 공고가 아닙니다."),
+    LEAK_PREMIUM_RECRUIT_JUMP_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 상단 점프 횟수가 부족합니다."),
+    LEAK_GENERAL_RECRUIT_JUMP_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"일반 상단 점프 횟수가 부족합니다."),
 
     /**
      * 401 UNAUTHORIZED

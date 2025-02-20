@@ -494,8 +494,8 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<Void>> applyGeneralRecruit(@AuthenticationPrincipal SecurityMember securityMember,
                                                                        @PathVariable("recruit-id") Long recruitId,
                                                                        @RequestBody GeneralResumeRequestDTO dto) {
-        resumeService.applyResume(securityMember.getId(), recruitId,dto);
 
+        resumeService.applyResume(securityMember.getId(), recruitId,dto);
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
@@ -509,8 +509,8 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<Void>> applyPremiumResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @PathVariable("recruit-id") Long recruitId,
                                                                  @RequestBody PremiumResumeRequestDTO dto) {
-        resumeService.applyPremiumResume(securityMember.getId(), recruitId,dto);
 
+        resumeService.applyPremiumResume(securityMember.getId(), recruitId,dto);
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
@@ -563,7 +563,6 @@ public class RecruitController {
                     "friendlyBoss: 사장님이 친절해요 (개수)<br>" +
                     "fairWorkload: 업무 강도가 적당해요 (개수)<br>" +
                     "joinCount: 평가에 참여수"
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상세 조회 성공"),
@@ -591,7 +590,6 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
     }
 
-
     @Operation(summary = "지원자 이력서 보기 API",
             description = "지원자의 이력서를 조회합니다.<br>"
     )
@@ -617,8 +615,6 @@ public class RecruitController {
                     "recruitmentStatus: 모집상태<br>" +
                     "evaluationStatus: 평가상태<br>" +
                     "contractStatus: 계약서상태<br>"
-
-
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고에 지원한 피고용인들 조회 성공"),
@@ -631,7 +627,6 @@ public class RecruitController {
                                                                                                                   @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
                                                                                                                   @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
                                                                                                                   @RequestParam("page") Integer page) {
-
 
         Page<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANTS_FOR_RECRUIT_SUCCESS, responseDTOS);
@@ -667,7 +662,6 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
     }
 
-
     @Operation(summary = "피고용인 작성한 이력서 리스트 조회 API",
             description = "피고용인 작성한 이력서 리스트 조회.<br>"
     )
@@ -678,10 +672,9 @@ public class RecruitController {
     @GetMapping(value = "/my-resumes")
     public ResponseEntity<ApiResponse<Page<EmployeeApplicationStatusResponseDTO>>> getMyResumes(@AuthenticationPrincipal SecurityMember securityMember,
                                                            @RequestParam("page") Integer page) {
+
         Page<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page);
-
         return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, response);
-
     }
 
     @Operation(summary = "피고용인 자신이 작성한 이력서 삭제. API",
@@ -694,10 +687,9 @@ public class RecruitController {
     @DeleteMapping(value = "/my-resumes/{resume-id}/remove")
     public ResponseEntity<ApiResponse<Void>> removeMyResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                             @PathVariable("resume-id") Long resumeId) {
+
         resumeService.removeMyResume(securityMember.getId(), resumeId);
-
         return ApiResponse.success_only(SuccessStatus.DELETE_MY_RESUME_SUCCESS);
-
     }
 
     @Operation(summary = "공고 찜하기 상태 변경. API",
@@ -710,10 +702,9 @@ public class RecruitController {
     @PatchMapping(value = "/{recruit-id}/bookmark")
     public ResponseEntity<ApiResponse<Boolean>> flipRecruitBookmark(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @PathVariable("recruit-id") Long recruitId) {
+
         boolean b = recruitService.flipRecruitBookmark(securityMember.getId(), recruitId);
-
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, b);
-
     }
 
     @Operation(summary = "찜한 공고 조회. API",
@@ -726,10 +717,9 @@ public class RecruitController {
     @GetMapping(value = "/bookmarks")
     public ResponseEntity<ApiResponse<Page<RecruitBookmarkResponseDTO>>> getRecruitBookmarks(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @RequestParam(value = "page", defaultValue = "0") Integer  page) {
+
         Page<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page);
-
         return ApiResponse.success(SuccessStatus.SEND_BOOKMARKED_RECRUITS_SUCCESS, response);
-
     }
 
     @Operation(summary = "고용인의 내 공고 조회 API",
@@ -754,10 +744,9 @@ public class RecruitController {
                                                                          @RequestParam("size")Integer size,
                                                                          @RequestParam(value = "recruitType", required = false)RecruitType recruitType,
                                                                          @RequestParam(value = "excludeExpired", defaultValue = "false")boolean excludeExpired) {
+
         Page<MyRecruitResponseDTO> recruits = recruitService.getMyRecruits(securityMember.getId(), page, size, recruitType, excludeExpired);
-
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
-
     }
 
     @Operation(summary = "고용인 내 임시 공고 공고 조회 API",
@@ -771,12 +760,10 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<Page<MyDraftRecruitResponseDTO>>> getMyDraftRecruits(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer  page,
                                                                                  @RequestParam("size")Integer size) {
+
         Page<MyDraftRecruitResponseDTO> recruits = recruitService.getMyDraftRecruits(securityMember.getId(), page, size);
-
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
-
     }
-
 
     @Operation(summary = "프리미엄 공고의 포트폴리오 조회. API",
             description = "프리미엄 공고의 포트폴리오 조회.<br>"
@@ -790,9 +777,85 @@ public class RecruitController {
                                                                                  @PathVariable("recruit-id") Long recruitId) {
 
         List<PortfolioResponseDTO> portfolios = recruitService.getPortfolios(recruitId);
-
         return ApiResponse.success(SuccessStatus.PORTFOLIO_VIEW_SUCCESS, portfolios);
+    }
 
+    @Operation(summary = "프리미엄 공고 상단 점프 API",
+            description = "프리미엄 공고를 상단으로 올립니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상단 점프 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/premium/{recruitId}/top-jump")
+    public ResponseEntity<ApiResponse<Void>> topJumpPremiumRecruit(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long recruitId
+    ) {
+        recruitService.topJumpPremiumRecruit(recruitId, securityMember.getId());
+        return ApiResponse.success_only(SuccessStatus.UPDATE_TOP_JUMP_SUCCESS);
+    }
+
+    @Operation(summary = "일반 공고 상단 점프 API",
+            description = "일반 공고를 상단으로 올립니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상단 점프 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/general/{recruitId}/top-jump")
+    public ResponseEntity<ApiResponse<Void>> topJumpGeneralRecruit(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long recruitId
+    ) {
+        recruitService.topJumpGeneralRecruit(recruitId, securityMember.getId());
+        return ApiResponse.success_only(SuccessStatus.UPDATE_TOP_JUMP_SUCCESS);
+    }
+
+    @Operation(summary = "상단 점프 잔여 횟수 조회 API",
+            description = "현재 사용자가 보유한 프리미엄/일반 상단 점프 횟수를 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "상단 점프 잔여 횟수 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/top-jump-count")
+    public ResponseEntity<ApiResponse<TopJumpCountResponseDTO>> getTopJumpCounts(
+            @AuthenticationPrincipal SecurityMember securityMember
+    ) {
+        TopJumpCountResponseDTO topJumpCountResponseDTO = recruitService.getTopJumpCounts(securityMember.getId());
+        return ApiResponse.success(SuccessStatus.SEND_TOP_JUMP_COUNT_SUCCESS, topJumpCountResponseDTO);
+    }
+
+    @Operation(summary = "프리미엄 공고 상단 점프 목록 조회 API",
+            description = "프리미엄 공고 중 상단 점프를 한 공고들을 최신순으로 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프리미엄 공고 목록 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/premium/jump")
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitListResponseDTO>>> getPremiumJumpedRecruits(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size
+    ) {
+        Page<RecruitListResponseDTO> recruitPage = recruitService.getRecruitsOrderedByJumpDate(RecruitType.PREMIUM, page, size);
+        PageResponseDTO<RecruitListResponseDTO> response = PageResponseDTO.of(recruitPage);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
+    }
+
+    @Operation(summary = "일반 공고 상단 점프 목록 조회 API",
+            description = "일반 공고 중 상단 점프를 한 공고들을 최신순으로 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "일반 공고 목록 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/general/jump")
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitListResponseDTO>>> getGeneralJumpedRecruits(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size
+    ) {
+        Page<RecruitListResponseDTO> recruitPage = recruitService.getRecruitsOrderedByJumpDate(RecruitType.GENERAL, page, size);
+        PageResponseDTO<RecruitListResponseDTO> response = PageResponseDTO.of(recruitPage);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
 }
