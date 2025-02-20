@@ -2,6 +2,7 @@ package com.core.foreign.api.albareview.controller;
 
 import com.core.foreign.api.albareview.dto.AlbaReviewCommentCreateDTO;
 import com.core.foreign.api.albareview.dto.AlbaReviewCommentResponseDTO;
+import com.core.foreign.api.albareview.dto.AlbaReviewCommentUpdateDTO;
 import com.core.foreign.api.albareview.service.AlbaReviewCommentService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.response.ApiResponse;
@@ -42,7 +43,9 @@ public class AlbaReviewCommentController {
 
     @Operation(
             summary = "알바 후기 댓글 조회 API",
-            description = "리뷰 ID에 해당하는 댓글들을 최신순(생성일 내림차순)으로 반환합니다."
+            description = "리뷰 ID에 해당하는 댓글들을 최신순(생성일 내림차순)으로 반환합니다. <br>" +
+                    "<p>" +
+                    "내 댓글 여부 : 'mine : true'"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 조회 성공"),
@@ -50,9 +53,46 @@ public class AlbaReviewCommentController {
     })
     @GetMapping("/comment")
     public ResponseEntity<ApiResponse<List<AlbaReviewCommentResponseDTO>>> getCommentsByReviewId(
+            @AuthenticationPrincipal SecurityMember securityMember,
             @RequestParam Long reviewId) {
 
-        List<AlbaReviewCommentResponseDTO> comments = albaReviewCommentService.getCommentsByReviewId(reviewId);
+        Long memberId = (securityMember != null) ? securityMember.getId() : null;
+        List<AlbaReviewCommentResponseDTO> comments = albaReviewCommentService.getCommentsByReviewId(reviewId, memberId);
         return ApiResponse.success(SuccessStatus.SEND_ALBA_REVIEW_COMMENT_SUCCESS, comments);
+    }
+
+    @Operation(
+            summary = "알바 후기 댓글 수정 API",
+            description = "댓글 작성자만 댓글을 수정할 수 있습니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @PutMapping("/comment/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> updateAlbaReviewComment(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long commentId,
+            @RequestBody AlbaReviewCommentUpdateDTO albaReviewCommentUpdateDTO) {
+
+        albaReviewCommentService.updateAlbaReviewComment(commentId, albaReviewCommentUpdateDTO, securityMember.getId());
+        return ApiResponse.success_only(SuccessStatus.ALBA_REVIEW_COMMENT_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "알바 후기 댓글 삭제 API",
+            description = "댓글 작성자만 댓글을 삭제할 수 있습니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteAlbaReviewComment(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long commentId) {
+
+        albaReviewCommentService.deleteAlbaReviewComment(commentId, securityMember.getId());
+        return ApiResponse.success_only(SuccessStatus.ALBA_REVIEW_COMMENT_DELETE_SUCCESS);
     }
 }
