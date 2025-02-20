@@ -58,6 +58,8 @@ public enum ErrorStatus {
     CONTRACT_TYPE_SELECTION_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 형태를 선택하세요."),
     EMPLOYEE_CANNOT_SELECT_CONTRACT_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "피고용인은 계약서 형태를 선택할 수 없습니다."),
     FILE_UPLOAD_NOT_ALLOWED_FOR_NON_FILE_CONTRACT_EXCEPTION(HttpStatus.BAD_REQUEST, "파일 업로드 계약서가 아닌 경우 업로드 할 수 없습니다."),
+    ALREADY_UPLOADED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 업로드 했습니다."),
+    FILE_NOT_PROVIDED_EXCEPTION(HttpStatus.BAD_REQUEST, "업로드할 파일이 제공되지 않았습니다."),
     ONLY_MODIFY_WRITER_USER_EXCEPTION(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다."),
 
     /**

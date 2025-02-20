@@ -13,13 +13,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Tag(name = "Contract", description = "Contract 관련 API 입니다.")
 @RestController
@@ -36,9 +35,10 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping(value = "/")
-    public ResponseEntity<ApiResponse<List<ContractPreviewResponseDTO>>> getBasicPortfolios(@AuthenticationPrincipal SecurityMember securityMember) {
-        List<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getContractMetadataOfEmployee(securityMember.getId());
+    @GetMapping(value = "/not-completed")
+    public ResponseEntity<ApiResponse<Page<ContractPreviewResponseDTO>>> getNotCompletedContract(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                 @RequestParam(value = "page", defaultValue = "0")Integer page) {
+        Page<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getNotCompletedContractMetadata(securityMember.getRole(), securityMember.getId(), page);
 
         return ApiResponse.success(SuccessStatus.INCOMPLETE_CONTRACT_VIEW_SUCCESS, contractMetadataOfEmployee);
     }
@@ -88,4 +88,19 @@ public class ContractController {
         return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
     }
 
+
+    @Operation(summary = "테스트 :: 파일 업로드 계약서 승인. API",
+            description = "테스트 :: 파일 업로드 계약서 승인. <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "승인 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping(value = "/test/approve-contract")
+    public ResponseEntity<ApiResponse<Void>> test_approveContract(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                  @RequestParam("contractMetadataId") Long contractMetadataId) {
+        contractService.test_approveContract(contractMetadataId);
+
+        return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
+    }
 }
