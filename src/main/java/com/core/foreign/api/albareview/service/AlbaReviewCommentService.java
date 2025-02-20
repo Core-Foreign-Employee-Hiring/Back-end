@@ -1,6 +1,7 @@
 package com.core.foreign.api.albareview.service;
 
 import com.core.foreign.api.albareview.dto.AlbaReviewCommentCreateDTO;
+import com.core.foreign.api.albareview.dto.AlbaReviewCommentUpdateDTO;
 import com.core.foreign.api.albareview.entity.AlbaReviewComment;
 import com.core.foreign.api.albareview.entity.AlbaReview;
 import com.core.foreign.api.albareview.repository.AlbaReviewCommentRepository;
@@ -65,11 +66,14 @@ public class AlbaReviewCommentService {
 
         AlbaReviewComment comment = commentBuilder.build();
         albaReviewCommentRepository.save(comment);
+
+        // 댓글 수 증가
+        albaReviewRepository.incrementCommentCount(albaReview.getId());
     }
 
     // 알바 후기 댓글 조회
     @Transactional(readOnly = true)
-    public List<AlbaReviewCommentResponseDTO> getCommentsByReviewId(Long reviewId) {
+    public List<AlbaReviewCommentResponseDTO> getCommentsByReviewId(Long reviewId, Long memberId) {
 
         // 알바 후기 조회
         if (!albaReviewRepository.existsById(reviewId)) {
@@ -80,12 +84,68 @@ public class AlbaReviewCommentService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
         return comments.stream().map(comment -> {
+            // 현재 로그인한 사용자가 작성한 댓글인지 여부 체크
+            boolean isMine = comment.getMember().getId().equals(memberId);
             AlbaReviewCommentResponseDTO albaReviewCommentResponseDTO = new AlbaReviewCommentResponseDTO();
+            albaReviewCommentResponseDTO.setId(comment.getId());
             albaReviewCommentResponseDTO.setUserId(comment.getMember().getUserId());
             albaReviewCommentResponseDTO.setComment(comment.getComment());
             albaReviewCommentResponseDTO.setCreatedAt(comment.getCreatedAt().format(formatter));
             albaReviewCommentResponseDTO.setParentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
+            albaReviewCommentResponseDTO.setMine(isMine);
             return albaReviewCommentResponseDTO;
         }).collect(Collectors.toList());
+    }
+
+    // 댓글 수정
+    @Transactional
+    public void updateAlbaReviewComment(Long commentId, AlbaReviewCommentUpdateDTO albaReviewCommentUpdateDTO, Long memberId) {
+        // 댓글 존재 여부 체크
+        AlbaReviewComment comment = albaReviewCommentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.COMMENT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 댓글 작성자 본인 여부 체크
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        AlbaReviewComment updatedComment = comment.toBuilder()
+                .comment(albaReviewCommentUpdateDTO.getContent())
+                .build();
+
+        albaReviewCommentRepository.save(updatedComment);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteAlbaReviewComment(Long commentId, Long memberId) {
+
+        // 삭제할 댓글 조회
+        AlbaReviewComment comment = albaReviewCommentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.COMMENT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 댓글 작성자 본인 여부 체크
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        Long reviewId = comment.getAlbaReview().getId();
+        int deletedCount = 0;
+
+        // 해당 댓글에 대댓글이 있다면 먼저 삭제 (한 댓글에 대댓글은 최대 1개 허용)
+        Optional<AlbaReviewComment> childCommentOpt = albaReviewCommentRepository.findByParentComment_Id(comment.getId());
+        if (childCommentOpt.isPresent()) {
+            albaReviewCommentRepository.delete(childCommentOpt.get());
+            deletedCount++;
+        }
+
+        // 부모 댓글 삭제
+        albaReviewCommentRepository.delete(comment);
+        deletedCount++;
+
+        // 삭제된 댓글 수만큼 해당 후기의 댓글 수를 감소시킴
+        for (int i = 0; i < deletedCount; i++) {
+            albaReviewRepository.decrementCommentCount(reviewId);
+        }
     }
 }
