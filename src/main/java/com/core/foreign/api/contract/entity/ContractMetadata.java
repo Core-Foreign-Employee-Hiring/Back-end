@@ -1,9 +1,13 @@
 package com.core.foreign.api.contract.entity;
 
-import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -36,14 +40,11 @@ public class ContractMetadata {
     @JoinColumn(name="resume_id")
     private Resume resume;
 
-    @OneToOne(fetch= LAZY)
-    @JoinColumn(name="recruit_id")
-    private Recruit recruit;
-
     @OneToOne(fetch=LAZY)
     @JoinColumn(name="contract_id")
     private Contract contract;
 
+    private LocalDate contractCompletionDate; // 계약서 체결일 추가
 
     public void chooseContractType(ContractType contractType) {
         this.contractType = contractType;
@@ -69,5 +70,21 @@ public class ContractMetadata {
         fileUploadContract.uploadEmployeeFile(fileUrl);
         this.employeeContractStatus=ContractStatus.PENDING_APPROVAL;
     }
+
+    public void completeFileUploadContract(){
+
+        this.employeeContractStatus=ContractStatus.APPROVED;
+        this.employerContractStatus=ContractStatus.APPROVED;
+
+        completeContract();
+    }
+
+
+    private void completeContract(){
+        this.contractStatus=ContractStatus.COMPLETED;
+        this.contractCompletionDate=LocalDate.now();
+        resume.completeContract();
+    }
+
 
 }

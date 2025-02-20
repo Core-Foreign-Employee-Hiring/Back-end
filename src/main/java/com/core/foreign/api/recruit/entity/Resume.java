@@ -91,4 +91,7 @@ public class Resume {
         this.isPublic = false;
     }
 
+    public void completeContract(){
+        this.contractStatus = ContractStatus.COMPLETED;
+    }
 }

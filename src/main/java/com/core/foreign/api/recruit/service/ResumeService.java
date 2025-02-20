@@ -256,7 +256,7 @@ public class ResumeService {
 
         resume.approve();
 
-        contractCreator.createContractMetadata(resume, recruit);
+        contractCreator.createContractMetadata(resume);
     }
 
 

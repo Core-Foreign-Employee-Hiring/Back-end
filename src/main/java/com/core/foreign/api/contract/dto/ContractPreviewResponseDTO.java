@@ -1,10 +1,10 @@
 package com.core.foreign.api.contract.dto;
 
 import com.core.foreign.api.contract.entity.ContractMetadata;
+import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.member.entity.Employee;
 import com.core.foreign.api.member.entity.Member;
-import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class ContractPreviewResponseDTO {
         Resume resume = contractMetadata.getResume();
         Employee employee = resume.getEmployee();
 
-        Recruit recruit = contractMetadata.getRecruit();
+        Recruit recruit = resume.getRecruit();
         Member employer = recruit.getEmployer();
 
         dto.contractId = contractMetadata.getId();

@@ -1,13 +1,18 @@
 package com.core.foreign.api.member.controller;
 
 import com.core.foreign.api.business_field.BusinessField;
+import com.core.foreign.api.contract.dto.EmployeeCompletedContractResponseDTO;
+import com.core.foreign.api.contract.dto.EmployerCompletedContractResponseDTO;
+import com.core.foreign.api.contract.service.ContractService;
 import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
+import com.core.foreign.api.recruit.dto.RecruitPreviewInContractResponseDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
+import com.core.foreign.api.recruit.service.RecruitService;
 import com.core.foreign.api.recruit.service.ResumeService;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
@@ -44,6 +49,8 @@ public class MemberController {
     private final EmailService emailService;
     private final EvaluationService evaluationService;
     private final ResumeService resumeService;
+    private final ContractService contractService;
+    private final RecruitService recruitService;
 
     @Operation(
             summary = "피고용인 회원가입 API",
@@ -810,6 +817,52 @@ public class MemberController {
 
         Page<TagResponseDTO> tags = resumeService.getTags(securityMember.getId(), evaluationStatus, page, size);
         return ApiResponse.success(SuccessStatus.TAG_VIEW_SUCCESS, tags);
+    }
+
+    @Operation(summary = "피고용인 완료된 계약서 조회. API",
+            description = "피고용인 완료된 계약서 조회. <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employee/complete-contract")
+    public ResponseEntity<ApiResponse<Page<EmployeeCompletedContractResponseDTO>>> getCompletedContractOfEmployee(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Page<EmployeeCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployee(securityMember.getId(), page);
+
+        return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
+    }
+
+    @Operation(summary = "고용인 완료된 계약서 조회. API",
+            description = "고용인 완료된 계약서 조회. <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employer/complete-contract")
+    public ResponseEntity<ApiResponse<Page<EmployerCompletedContractResponseDTO>>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Page<EmployerCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployer(securityMember.getId(), page);
+
+        return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
+    }
+
+    @Operation(summary = "고용인 완료된 계약서에서 공고 미리보기 조회. API",
+            description = "고용인 완료된 계약서에서 공고 미리보기 조회 <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employer/complete-contract/recruit")
+    public ResponseEntity<ApiResponse<RecruitPreviewInContractResponseDTO>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                  @RequestParam("recruitId")Long recruitId) {
+        RecruitPreviewInContractResponseDTO response = recruitService.getRecruitPreviewInContract(recruitId);
+
+
+        return ApiResponse.success(SuccessStatus.PREVIEW_RECRUIT_SUCCESS, response);
     }
 
 }

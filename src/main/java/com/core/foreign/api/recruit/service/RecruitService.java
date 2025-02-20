@@ -713,4 +713,15 @@ public class RecruitService {
         return response;
     }
 
+    public RecruitPreviewInContractResponseDTO getRecruitPreviewInContract(Long recruitId){
+        Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
+                .orElseThrow(() -> {
+                    log.error("공고 찾을 수 없음. recruitId= {}", recruitId);
+                    return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        return RecruitPreviewInContractResponseDTO.from(recruit);
+    }
+
 }
