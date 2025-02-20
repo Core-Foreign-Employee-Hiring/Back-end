@@ -43,17 +43,16 @@ public interface RecruitRepository
             "where r.id = :recruitId")
     Optional<Recruit> findByIdFetchJoin(@Param("recruitId") Long recruitId);
 
-
-
     @Query("select r from Recruit r" +
             " where r.employer.id=:employerId and r.recruitType=:recruitType and r.recruitPublishStatus='PUBLISHED'")
     Page<Recruit> findByEmployerIdAndRecruitType(@Param("employerId")Long employerId, @Param("recruitType")RecruitType recruitType, Pageable pageable);
-
 
     @Query("select r from Recruit r" +
             " where r.employer.id=:employerId ")
     Page<Recruit> findByEmployerId(Long employerId, Pageable pageable);
 
-
+    // 해당 공고 유형(recruitType)이고 jumpDate가 설정된 공고를 jumpDate 내림차순으로 조회
+    @Query("SELECT r FROM Recruit r WHERE r.recruitType = :recruitType AND r.jumpDate IS NOT NULL ORDER BY r.jumpDate DESC")
+    Page<Recruit> findByRecruitTypeAndJumpDateIsNotNullOrderByJumpDateDesc(@Param("recruitType") RecruitType recruitType, Pageable pageable);
 
 }

@@ -1,5 +1,6 @@
 package com.core.foreign.api.payment.service;
 
+import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.payment.dto.ApprovalRequestDTO;
@@ -32,6 +33,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -190,14 +192,47 @@ public class PaymentService {
         Member member = memberRepository.findById(payment.getMember().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
-        // "프리미엄 공고" 제품 구매 -> 프리미엄 공고 등록 횟수 증가
-        if ("프리미엄 공고".equals(orderName.trim())) {
+        if (!(member instanceof Employer employer)) {
+            throw new BadRequestException(ErrorStatus.NOT_EMPLOYER_USER_EXCEPTION.getMessage());
+        }
 
-            PremiumManage premiumManage = premiumManageRepository.findByEmployerId(member.getId())
-                    .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
+        String orderNameTrimmed = updatedPayment.getOrderName().trim();
 
-            PremiumManage updatedPremiumManage = premiumManage.increasePremiumCount();
-            premiumManageRepository.save(updatedPremiumManage);
+        // "프리미엄 공고" 구매 시: 프리미엄 공고 등록 카운트 1증가
+        if ("프리미엄 공고".equals(orderNameTrimmed)) {
+            Optional<PremiumManage> optionalPremiumManage = premiumManageRepository.findByEmployerId(employer.getId());
+            if (optionalPremiumManage.isEmpty()) {
+                PremiumManage newPremiumManage = new PremiumManage(employer);
+                premiumManageRepository.save(newPremiumManage);
+            }
+            int updatedRows = premiumManageRepository.increasePremiumCount(employer.getId());
+            if (updatedRows == 0) {
+                throw new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage());
+            }
+        }
+        // "프리미엄 공고 상단점프" 구매 시: premiumJumpCount 3증가
+        else if ("프리미엄 공고 상단점프".equals(orderNameTrimmed)) {
+            Optional<PremiumManage> optionalPremiumManage = premiumManageRepository.findByEmployerId(employer.getId());
+            if (optionalPremiumManage.isEmpty()) {
+                PremiumManage newPremiumManage = new PremiumManage(employer);
+                premiumManageRepository.save(newPremiumManage);
+            }
+            int updatedRows = premiumManageRepository.increasePremiumJumpCount(employer.getId());
+            if (updatedRows == 0) {
+                throw new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage());
+            }
+        }
+        // "일반 공고 상단점프" 구매 시: normalJumpCount 3증가
+        else if ("일반 공고 상단점프".equals(orderNameTrimmed)) {
+            Optional<PremiumManage> optionalPremiumManage = premiumManageRepository.findByEmployerId(employer.getId());
+            if (optionalPremiumManage.isEmpty()) {
+                PremiumManage newPremiumManage = new PremiumManage(employer);
+                premiumManageRepository.save(newPremiumManage);
+            }
+            int updatedRows = premiumManageRepository.increaseNormalJumpCount(employer.getId());
+            if (updatedRows == 0) {
+                throw new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage());
+            }
         }
 
         return new PaymentResponseDTO(

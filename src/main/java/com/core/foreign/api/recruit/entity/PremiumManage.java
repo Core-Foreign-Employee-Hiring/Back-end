@@ -29,24 +29,7 @@ public class PremiumManage {
     public PremiumManage(Employer employer) {
         this.employer = employer;
         this.premiumCount = 0;
-        this.premiumJumpCount = 0;
-        this.normalJumpCount = 0;
-    }
-
-    // 프리미엄 공고 등록 횟수 증가
-    public PremiumManage increasePremiumCount() {
-        return this.toBuilder()
-                .premiumCount(this.premiumCount + 1)
-                .build();
-    }
-
-    // 프리미엄 공고 등록 횟수 감소
-    public PremiumManage decreasePremiumCount() {
-        if (this.premiumCount == 0) {
-            throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
-        }
-        return this.toBuilder()
-                .premiumCount(this.premiumCount - 1)
-                .build();
+        this.premiumJumpCount = 5;
+        this.normalJumpCount = 5;
     }
 }
