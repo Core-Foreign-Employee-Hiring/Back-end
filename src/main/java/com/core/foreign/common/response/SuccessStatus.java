@@ -69,8 +69,8 @@ public enum SuccessStatus {
     CONTRACT_TYPE_SELECTION_SUCCESS(HttpStatus.OK, "계약서 형태 선택 성공"),
     CONTRACT_UPLOAD_SUCCESS(HttpStatus.OK, "계약서 업로드 성공"),
     PREVIEW_RECRUIT_SUCCESS(HttpStatus.OK, "공고 미리보기 조회 성공"),
-
-
+    ALBA_REVIEW_COMMENT_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 댓글 수정 성공"),
+    ALBA_REVIEW_COMMENT_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 댓글 삭제 성공"),
 
     /**
      * 201
