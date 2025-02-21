@@ -679,7 +679,7 @@ public class RecruitService {
     public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
         Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<Recruit> byEmployerId = recruitRepository.findByEmployerId(employerId, pageable);
+        Page<Recruit> byEmployerId = recruitRepository.findPublishedRecruitsByEmployerId(employerId, pageable);
         List<Long> recruitIds=new ArrayList<>();
         List<Recruit> content = byEmployerId.getContent();
         for (Recruit recruit : content) {

@@ -44,7 +44,7 @@ public class ResumeReader {
                 });
 
 
-        List<ResumePortfolioTestResponseDTO> texts = new ArrayList<>();
+        List<ResumePortfolioTextResponseDTO> texts = new ArrayList<>();
         List<ResumePortfolioFileResponseDTO> files = new ArrayList<>();
 
         // Premium 이면 ResumePortfolio 갖고 와야 함.
@@ -79,7 +79,7 @@ public class ResumeReader {
 
                 }
                 else if(portfolioType==PortfolioType.LONG_TEXT || portfolioType==PortfolioType.SHORT_TEXT){
-                    texts.add(ResumePortfolioTestResponseDTO.from(resumePortfolio));
+                    texts.add(ResumePortfolioTextResponseDTO.from(resumePortfolio));
                 }
             }
 
@@ -132,9 +132,7 @@ public class ResumeReader {
         Page<TagResponseDTO> response = resumeRepository.findResumeByEmployeeIdAndEvaluationStatus(employerId, evaluationStatus, pageable)
                 .map(TagResponseDTO::from);
 
-
         return response;
     }
-
 
 }

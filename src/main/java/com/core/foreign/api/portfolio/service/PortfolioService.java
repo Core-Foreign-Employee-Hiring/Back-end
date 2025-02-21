@@ -15,7 +15,7 @@ import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioResponseDTO;
 import com.core.foreign.api.recruit.dto.ApplicationResumeResponseDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioFileResponseDTO;
-import com.core.foreign.api.recruit.dto.ResumePortfolioTestResponseDTO;
+import com.core.foreign.api.recruit.dto.ResumePortfolioTextResponseDTO;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
@@ -137,7 +137,7 @@ public class PortfolioService {
 
         BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(employeeId);
         EmployeePortfolioDTO employeePortfolioDTO = resume.getEmployeePortfolioDTO();
-        List<ResumePortfolioTestResponseDTO> texts = resume.getTexts();
+        List<ResumePortfolioTextResponseDTO> texts = resume.getTexts();
         List<ResumePortfolioFileResponseDTO> files = resume.getFiles();
 
         ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files);

@@ -4,7 +4,7 @@ import com.core.foreign.api.contract.entity.ContractMetadata;
 import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class ContractPreviewResponseDTO {
         Employee employee = resume.getEmployee();
 
         Recruit recruit = resume.getRecruit();
-        Member employer = recruit.getEmployer();
+        Employer employer = (Employer)recruit.getEmployer();
 
         dto.contractId = contractMetadata.getId();
 
@@ -45,7 +45,7 @@ public class ContractPreviewResponseDTO {
         dto.employeeContractStatus=contractMetadata.getEmployeeContractStatus();
         dto.employeeSign=false;
 
-        dto.companyName = employer.getName();
+        dto.companyName = employer.getCompanyName();
         dto.companyContractStatus=contractMetadata.getEmployerContractStatus();
         dto.companySign=false;
 

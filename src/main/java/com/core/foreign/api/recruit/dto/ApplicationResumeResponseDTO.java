@@ -17,7 +17,7 @@ public class ApplicationResumeResponseDTO {
     private EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO;
     private EmployeePortfolioDTO employeePortfolioDTO;
     private String messageToEmployer;
-    private List<ResumePortfolioTestResponseDTO> texts;
+    private List<ResumePortfolioTextResponseDTO> texts;
     private List<ResumePortfolioFileResponseDTO> files;
 
     private Role role;
@@ -29,7 +29,7 @@ public class ApplicationResumeResponseDTO {
 
     public ApplicationResumeResponseDTO(Resume resume, EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO,
                                         EmployeePortfolioDTO employeePortfolioDTO,
-                                        String messageToEmployer, List<ResumePortfolioTestResponseDTO> texts, List<ResumePortfolioFileResponseDTO> files) {
+                                        String messageToEmployer, List<ResumePortfolioTextResponseDTO> texts, List<ResumePortfolioFileResponseDTO> files) {
         this.resumeId = resume.getId();
         this.employeeBasicResumeResponseDTO = employeeBasicResumeResponseDTO;
         this.employeePortfolioDTO = employeePortfolioDTO;

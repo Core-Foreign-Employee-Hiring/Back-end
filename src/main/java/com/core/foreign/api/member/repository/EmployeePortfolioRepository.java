@@ -16,4 +16,8 @@ public interface EmployeePortfolioRepository extends JpaRepository<EmployeePortf
             " where p.employee.id=:employeeId and p.employeePortfolioStatus=:status")
     Optional<EmployeePortfolio> findByEmployeeId(@Param("employeeId")Long employeeId, @Param("status") EmployeePortfolioStatus status);
 
+    @Query("select count(*)>0 from EmployeePortfolio p" +
+            " where p.employee.id=:employeeId and p.employeePortfolioStatus=:status")
+    boolean existsByEmployeeId(@Param("employeeId")Long employeeId, @Param("status") EmployeePortfolioStatus status);
+
 }

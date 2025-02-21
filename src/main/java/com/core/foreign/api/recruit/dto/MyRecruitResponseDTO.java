@@ -17,7 +17,6 @@ public class MyRecruitResponseDTO {
     private List<String> workDays;      // 근무 요일 목록
     private List<String> workTime; // 근무 시간
     private RecruitType recruitType; // 공고 유형 (GENERAL, PREMIUM)
-    private boolean isUp;
 
 
     public static MyRecruitResponseDTO from(Recruit recruit) {
@@ -28,22 +27,16 @@ public class MyRecruitResponseDTO {
         dto.recruitStartDate=recruit.getRecruitStartDate();
         dto.recruitEndDate=recruit.getRecruitEndDate();
 
-
 /*
         dto.workDuration = recruit.getWorkDuration();
         dto.workDays = recruit.getWorkDays();
         dto.workTime = recruit.getWorkTime();
 */
-
         dto.workDuration =null;
         dto.workDays = null;
         dto.workTime = null;
-
         dto.recruitType = recruit.getRecruitType();
-        dto.isUp=false;
 
         return dto;
-
-
     }
 }
