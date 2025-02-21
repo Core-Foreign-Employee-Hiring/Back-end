@@ -80,12 +80,12 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value = "/{contract-id}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> uploadFileContract(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<String>> uploadFileContract(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @PathVariable("contract-id") Long contractMetadataId,
                                                                 @RequestPart(value = "contract", required = false) MultipartFile contract) {
-        contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
+        String url = contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
 
-        return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
+        return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, url);
     }
 
 

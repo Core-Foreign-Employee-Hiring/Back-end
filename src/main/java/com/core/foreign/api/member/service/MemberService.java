@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.core.foreign.common.response.ErrorStatus.PASSWORD_VERIFICATION_REQUIRED_EXCEPTION;
+import static com.core.foreign.common.response.ErrorStatus.REQUIRED_TERMS_NOT_AGREED_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -253,6 +254,12 @@ public class MemberService {
                                         boolean adInfoAgreementEmail){
         // 이미 필터에서 있는 거 확인했음.
         Member member = memberRepository.findById(memberId).get();
+
+        if(!isOver15 || !termsOfServiceAgreement || !personalInfoAgreement){
+            log.warn("[MemberService][updateEmployerAgreement][필수 약관 동의 안 함.][isOver15= {}, termsOfServiceAgreement= {}, personalInfoAgreement= {}]", isOver15, termsOfServiceAgreement, personalInfoAgreement);
+            throw new BadRequestException(REQUIRED_TERMS_NOT_AGREED_EXCEPTION.getMessage());
+        }
+
         member.updateAgreement(termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSmsMms, adInfoAgreementEmail);
     }
 

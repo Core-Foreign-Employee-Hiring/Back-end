@@ -70,9 +70,27 @@ public class FileController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value="/employee/part-time-work-permit-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> updatePartTimeWorkPermitImage(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<String>> uploadPartTimeWorkPermitImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "partTimeWorkPermitImage", required = false) MultipartFile partTimeWorkPermitImage) {
         String url = fileService.uploadOnlyS3(partTimeWorkPermitImage, FileDirAndName.EmployeePartTimeWorkPermitImage);
+
+        return ApiResponse.success(SuccessStatus.UPLOAD_IMAGE_SUCCESS, url);
+    }
+
+
+    @Operation(summary = "프리미엄 공고 지원 시 파일 업로드. API",
+            description = "프리미엄 공고 지원 시 파일 업로드 합니다<br>." +
+                    "파일 저장소에만 저장합니다.<br>" +
+                    " 파일의 url 을 반환합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PostMapping(value = "/premium-recruit/portfolio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> uploadPremiumRecruitPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                        @RequestPart(value = "file", required = false) MultipartFile file) {
+        String url = fileService.uploadOnlyS3(file, FileDirAndName.PremiumRecruitPortfolio);
 
         return ApiResponse.success(SuccessStatus.UPLOAD_IMAGE_SUCCESS, url);
     }
