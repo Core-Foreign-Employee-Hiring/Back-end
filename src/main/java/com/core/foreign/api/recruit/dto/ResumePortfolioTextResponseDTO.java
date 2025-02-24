@@ -5,14 +5,14 @@ import com.core.foreign.api.recruit.entity.ResumePortfolio;
 import lombok.Getter;
 
 @Getter
-public class ResumePortfolioTestResponseDTO {
+public class ResumePortfolioTextResponseDTO {
     private PortfolioType PortfolioType;
     private String title;
     private String content;
 
 
-    public static ResumePortfolioTestResponseDTO from(ResumePortfolio resumePortfolio){
-        ResumePortfolioTestResponseDTO dto = new ResumePortfolioTestResponseDTO();
+    public static ResumePortfolioTextResponseDTO from(ResumePortfolio resumePortfolio){
+        ResumePortfolioTextResponseDTO dto = new ResumePortfolioTextResponseDTO();
         dto.PortfolioType=resumePortfolio.getPortfolioType();
         dto.title=resumePortfolio.getTitle();
         dto.content=resumePortfolio.getContent();

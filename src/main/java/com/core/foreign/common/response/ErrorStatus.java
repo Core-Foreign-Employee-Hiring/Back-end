@@ -66,6 +66,11 @@ public enum ErrorStatus {
     NOT_GENERAL_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 일반 공고가 아닙니다."),
     LEAK_PREMIUM_RECRUIT_JUMP_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"프리미엄 상단 점프 횟수가 부족합니다."),
     LEAK_GENERAL_RECRUIT_JUMP_COUNT_EXCEPTION(HttpStatus.BAD_REQUEST,"일반 상단 점프 횟수가 부족합니다."),
+    PORTFOLIO_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "포트폴리오가 이미 존재합니다."),
+    INVALID_PORTFOLIO_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 포트폴리오가 전달되었습니다."),
+    DUPLICATE_PORTFOLIO_TYPE_FOR_SAME_PORTFOLIO_EXCEPTION(HttpStatus.BAD_REQUEST, "동일한 포트폴리오에 대해 장문 또는 단문 형식은 2개 이상 등록할 수 없습니다."),
+    REQUIRED_TERMS_NOT_AGREED_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
+    TEMPORARY_RECRUIT_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "임시 저장 공고는 지원이 불가합니다."),
 
     /**
      * 401 UNAUTHORIZED

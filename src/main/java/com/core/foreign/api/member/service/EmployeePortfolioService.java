@@ -10,6 +10,7 @@ import com.core.foreign.api.member.repository.EmployeePortfolioBusinessFieldInfo
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,11 @@ public class EmployeePortfolioService {
         // 임시 등록 시 기존 임시 등록은 삭제합니다.
         if(employeePortfolioStatus==TEMPORARY){
             clearTemporarySave(employeeId);
+        }
+
+        if(employeePortfolioStatus.equals(COMPLETED) && employeePortfolioRepository.existsByEmployeeId(employee.getId(), COMPLETED)){
+          log.warn("[EmployeePortfolioService][createEmployeePortfolio][포트폴리오 이미 존재][employeeId= {}]", employee.getId());
+          throw new BadRequestException(ErrorStatus.PORTFOLIO_ALREADY_EXISTS_EXCEPTION.getMessage());
         }
 
         EmployeePortfolio build = EmployeePortfolio.builder()

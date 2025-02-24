@@ -63,14 +63,19 @@ public class ResumeService {
             throw  new BadRequestException(INVALID_RECRUIT_TYPE_EXCEPTION.getMessage());
         }
 
-        // 필수인데 작성 하지 않은 것들 예외 처리.
         List<ResumePortfolioRequestDTO> resumePortfolios = dto.getResumePortfolios();
 
-        checkRequiredPortfolio(premiumRecruit, resumePortfolios);
+        checkPortfolio(premiumRecruit, resumePortfolios);
 
-        // 파일 개수 확인.
-        Map<Long, Integer> map=new HashMap<>();  // key: portfolioId value: maxFileCount();
-        Map<Long, Portfolio> map3=new HashMap<>();
+        // 일단 이력서 저장.
+
+        Resume resume = doApplyResume(employeeId, premiumRecruit, dto.getGeneralResumeRequestDTO());
+        if (dto.isPublic()) {resume.makePublic();}
+        else {resume.makePrivate();}
+
+        // 개수 확인.
+        Map<Long, Integer> map=new HashMap<>();  // original: key: portfolioId value: maxFileCount();
+        Map<Long, Portfolio> map3=new HashMap<>();  //   original: key: portfolioId value: Portfolio();
         List<Portfolio> portfolios = premiumRecruit.getPortfolios();
         for (Portfolio portfolio : portfolios) {
             map3.put(portfolio.getId(), portfolio);
@@ -79,50 +84,80 @@ public class ResumeService {
             }
         }
 
-
-        // 일단 이력서 저장.
-
-        Resume resume = doApplyResume(employeeId, premiumRecruit, dto.getGeneralResumeRequestDTO());
-        if (dto.isPublic()) {resume.makePublic();}
-        else {resume.makePrivate();}
-
-
-        // 이력서에 딸린 포트폴리오 저장.
         List<ResumePortfolio> resumePortfolioEntities = resumePortfolios.stream().map((p) -> p.toEntity(resume)).toList();
-        Map<Long, Integer> map2=new HashMap<>();
+        Map<Long, Integer> map2=new HashMap<>();  //  request: key: portfolioId, value: 개수
         for (ResumePortfolio resumePortfolioEntity : resumePortfolioEntities) {
             map2.merge(resumePortfolioEntity.getRecruitPortfolioId(), 1, Integer::sum);
         }
 
+        // 장문 또는 단문인데 2개 이상 예외.
+
+        for(Long portfolioId:map2.keySet()){
+            if(map2.get(portfolioId)==1){continue;}
+
+            Portfolio portfolio = map3.get(portfolioId);
+
+            if(portfolio.getType().equals(PortfolioType.FILE_UPLOAD)){continue;}
+
+            log.warn("[applyPremiumResume][장문 또는 단문인데 2개 이상 요청.][portfolioId= {}", portfolioId);
+
+            throw new BadRequestException(DUPLICATE_PORTFOLIO_TYPE_FOR_SAME_PORTFOLIO_EXCEPTION.getMessage());
+        }
+
+
+        // 파일 개수 판단.
         for (Long portfolioId : map.keySet()) {
             if(!map2.containsKey(portfolioId)){map2.put(portfolioId,0);}
 
             Integer request = map2.get(portfolioId);
-            Integer required = map.get(portfolioId);
-            if(!Objects.equals(request, required)){
-                log.error("portfolioId= {}: 파일 개수 안 맞음. 필요= {}, 요청= {}", portfolioId, required, request);
+            Integer max = map.get(portfolioId);
+            if(max<request){
+                log.warn("[applyPremiumResume][파일 개수 초과][portfolioId= {}, max= {}, 요청= {}]", portfolioId, max, request);
 
+                throw new BadRequestException(FILE_COUNT_MISMATCH_EXCEPTION.getMessage());
+            }
 
-                // 필수면 예외 터트림.
-                if(map3.get(portfolioId).isRequired()){
-                    log.error("필수라 예외 터트린다.");
-                    throw new BadRequestException(FILE_COUNT_MISMATCH_EXCEPTION.getMessage());
-                }
-                log.warn("파일 개수 안 맞는데 필수는 아니라서 그냥 넘어간다.");
+            if(map3.get(portfolioId).isRequired() && max!=0 && request==0){
+                log.warn("[applyPremiumResume][필수인데 0개 입력][portfolioId= {}, max= {}, 요청= {}]", portfolioId, max, request);
+
+                throw new BadRequestException(FILE_COUNT_MISMATCH_EXCEPTION.getMessage());
             }
         }
 
 
+        // 이력서에 딸린 포트폴리오 저장.
         resumePortfolioRepository.saveAll(resumePortfolioEntities);
 
         return resume.getId();
     }
 
 
-    private void checkRequiredPortfolio(PremiumRecruit premiumRecruit , List<ResumePortfolioRequestDTO> dto) {
+    /**
+     * 이상한 거 넘겼는지 and 필수 없는지
+     */
+    private void checkPortfolio(PremiumRecruit premiumRecruit , List<ResumePortfolioRequestDTO> dto) {
 
         List<Portfolio> portfolios = premiumRecruit.getPortfolios();
 
+        Set<Long >requestHashSet=new HashSet<>();
+        for (ResumePortfolioRequestDTO dto1 : dto) {
+            requestHashSet.add(dto1.getPortfolioId());
+        }
+
+        List<Long> requests = requestHashSet.stream().toList();
+
+        // 이상한 거 넘겼는지
+        List<Long> portfolioIds = portfolios.stream().map(Portfolio::getId).toList();
+
+        if (!new HashSet<>(portfolioIds).containsAll(requests)){
+            List<Long> invalids=new ArrayList<>(requests);
+            invalids.removeAll(portfolioIds);
+
+            log.warn("[ResumeService][checkPortfolio][이상한 포트폴리오 넘겼음][{}]",invalids);
+            throw new BadRequestException(INVALID_PORTFOLIO_EXCEPTION.getMessage());
+        }
+
+        // 필수
         List<Long> requires=new ArrayList<>();
 
         for (Portfolio portfolio : portfolios) {
@@ -131,18 +166,12 @@ public class ResumeService {
             }
         }
 
-        List<Long >requests=new ArrayList<>();
-        for (ResumePortfolioRequestDTO dto1 : dto) {
-            requests.add(dto1.getPortfolioId());
-        }
-
         // requires 가 requests 의 부분 집합이면 성공.
 
         if (!new HashSet<>(requests).containsAll(requires)){
-            log.error("필수 포트폴리오 없음.");
+            log.warn("필수 포트폴리오 없음.");
             throw new BadRequestException(REQUIRED_PORTFOLIO_MISSING_EXCEPTION.getMessage());
         }
-
 
     }
 
@@ -164,7 +193,7 @@ public class ResumeService {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error("유저를 찾을 수 없음. memberId= {}", memberId);
+                    log.warn("유저를 찾을 수 없음. memberId= {}", memberId);
                     return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
@@ -179,9 +208,14 @@ public class ResumeService {
     private Resume doApplyResume(Long employeeId, Recruit recruit, GeneralResumeRequestDTO dto){
         if(!dto.isThirdPartyConsent()){throw new BadRequestException(THIRD_PARTY_CONSENT_REQUIRED_EXCEPTION.getMessage());}
 
+        if(recruit.getRecruitPublishStatus().equals(RecruitPublishStatus.DRAFT)){
+            log.warn("[doApplyResume][임시 저장된 공고 지원 불가][recruitId= {}]", recruit.getId());
+            throw new BadRequestException(TEMPORARY_RECRUIT_APPLICATION_NOT_ALLOWED_EXCEPTION.getMessage());
+        }
+
         Member member =  memberRepository.findById(employeeId).get();
         if(member instanceof Employer){
-            log.error("고용인이 공고 지원 신청. memberId= {}", employeeId);
+            log.warn("고용인이 공고 지원 신청. memberId= {}", employeeId);
             throw new BadRequestException(EMPLOYER_CANNOT_APPLY_EXCEPTION.getMessage());
         }
 
@@ -190,7 +224,7 @@ public class ResumeService {
         Optional<Resume> findResume = resumeRepository.findByEmployeeIdAndRecruitId(employeeId, recruit.getId());
 
         if(findResume.isPresent()){
-            log.error("중복 지원은 불가합니다. resumeId= {}", findResume.get().getId());
+            log.warn("중복 지원은 불가합니다. resumeId= {}", findResume.get().getId());
             throw new BadRequestException(DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION.getMessage());
 
         }
@@ -238,19 +272,19 @@ public class ResumeService {
     public void approveResume(Long resumeId){
         Resume resume = resumeRepository.findByResumeIdWithRecruit(resumeId)
                 .orElseThrow(() -> {
-                    log.error("이력서 없음 resumeId= {}", resumeId);
+                    log.warn("이력서 없음 resumeId= {}", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Recruit recruit = resume.getRecruit();
 
         if(resume.getRecruitmentStatus().equals(RecruitmentStatus.APPROVED)){
-            log.error("이미 승인된 이력서 resumeId= {}", resumeId);
+            log.warn("이미 승인된 이력서 resumeId= {}", resumeId);
             throw new BadRequestException(ALREADY_APPROVED_RESUME_EXCEPTION.getMessage());
         }
 
         if(resume.getRecruitmentStatus().equals(RecruitmentStatus.REJECTED)){
-            log.error("이미 거절된 이력서 resumeId= {}", resumeId);
+            log.warn("이미 거절된 이력서 resumeId= {}", resumeId);
             throw new BadRequestException(ALREADY_REJECTED_RESUME_EXCEPTION.getMessage());
         }
 
@@ -271,7 +305,7 @@ public class ResumeService {
     public void removeMyResume(Long employeeId, Long resumeId){
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
                 .orElseThrow(() -> {
-                    log.error("이력서 없음. resumeId= {}", resumeId);
+                    log.warn("이력서 없음. resumeId= {}", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
@@ -279,7 +313,7 @@ public class ResumeService {
         Employee employee = resume.getEmployee();
 
         if(!Objects.equals(employeeId, employee.getId())){
-            log.error("다른 사람 이력서 삭세 시도.");
+            log.warn("다른 사람 이력서 삭세 시도.");
             throw new BadRequestException(UNAUTHORIZED_RESUME_DELETE_EXCEPTION.getMessage());
         }
 
@@ -290,7 +324,7 @@ public class ResumeService {
 
     public Page<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
         if(evaluationStatus==EvaluationStatus.NONE){
-            log.error("평가 상태= {}", evaluationStatus);
+            log.warn("평가 상태= {}", evaluationStatus);
            throw new BadRequestException(TAG_EVALUATION_STATUS_CANNOT_BE_NONE.getMessage());
         }
         Page<TagResponseDTO> response = resumeReader.getTags(employerId, evaluationStatus, page, size);

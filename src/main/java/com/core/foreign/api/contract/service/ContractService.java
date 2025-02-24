@@ -85,7 +85,7 @@ public class ContractService {
     }
 
 
-    public void uploadFileContract(Long memberId, Long contractMetadataId, MultipartFile contract) {
+    public String uploadFileContract(Long memberId, Long contractMetadataId, MultipartFile contract) {
         boolean contractFileUploadContract = contractMetadataRepository.isContractFileUploadContract(contractMetadataId);
 
         if (!contractFileUploadContract) {
@@ -99,16 +99,17 @@ public class ContractService {
             throw new BadRequestException(ErrorStatus.FILE_NOT_PROVIDED_EXCEPTION.getMessage());
         }
 
-
+        String url;
         try {
             // S3에 업로드.
-            String url = s3Service.uploadImage(contract, FileDirAndName.FileContract);
+            url = s3Service.uploadImage(contract, FileDirAndName.FileContract);
 
             contractUpdater.uploadFileContract(memberId, contractMetadataId, url);
         } catch (IOException e) {
             throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
         }
 
+        return url;
     }
 
 
