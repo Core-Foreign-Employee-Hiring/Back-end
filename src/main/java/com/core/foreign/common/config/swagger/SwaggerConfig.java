@@ -40,13 +40,13 @@ public class SwaggerConfig {
         SecurityRequirement refreshTokenRequirement = new SecurityRequirement().addList(refreshTokenHeader);
 
         Server server = new Server();
-//        server.setUrl("http://localhost:8080");
+        //server.setUrl("http://localhost:8080");
         server.setUrl("https://api.forwork.co.kr");
 
         return new OpenAPI()
                 .info(new Info()
                         .title("ForWork")
-                        .description("외국인 고용 프로젝트 REST API Document - Backend Developer : 태근, 주현(깍두기), 용범")
+                        .description("외국인 고용 프로젝트 REST API Document - Backend Developer : 태근, 용범")
                         .version("1.0.0"))
                 .components(new Components()
                         .addSecuritySchemes(accessTokenHeader, accessTokenScheme)
