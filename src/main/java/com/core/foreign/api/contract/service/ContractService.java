@@ -34,6 +34,7 @@ public class ContractService {
     private final ContractCreator contractCreator;
     private final S3Service s3Service;
     private final ContractUpdater contractUpdater;
+    private final ContractUtils contractUtils;
 
 
     public Page<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
@@ -58,14 +59,16 @@ public class ContractService {
 
         ContractMetadata contractMetadata = contractMetadataRepository.findById(contractMetadataId)
                 .orElseThrow(() -> {
-                    log.error("contractMetadataId: {} not found", contractMetadataId);
+                    log.warn("contractMetadataId: {} not found", contractMetadataId);
                     return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
+        contractUtils.validateContractOwner(contractMetadata.getId(), employerId);
 
-        if(contractMetadata.getContractType()!=ContractType.UNKNOWN) {
-            log.error("이미 계약서 형태를 선택했음. contractMetadataId= {}, 현재 형태= {}", contractMetadataId, contractMetadata.getContractType());
-            throw  new BadRequestException(ErrorStatus.CONTRACT_TYPE_ALREADY_SELECTED_EXCEPTION.getMessage());
+
+        if (contractMetadata.getContractType() != ContractType.UNKNOWN) {
+            log.warn("이미 계약서 형태를 선택했음. contractMetadataId= {}, 현재 형태= {}", contractMetadataId, contractMetadata.getContractType());
+            throw new BadRequestException(ErrorStatus.CONTRACT_TYPE_ALREADY_SELECTED_EXCEPTION.getMessage());
         }
 
         contractMetadata.chooseContractType(contractType);
@@ -73,7 +76,7 @@ public class ContractService {
         // 이때 실제 계약서를 만든다.
         switch (contractType) {
             case STANDARD, AGRICULTURE ->{
-                log.error("contractType: {} not supported", contractType);
+                log.warn("contractType: {} not supported", contractType);
                 throw new BadRequestException(ErrorStatus.NOT_READY_YET_EXCEPTION.getMessage());
             }
             case IMAGE_UPLOAD->{
@@ -85,17 +88,22 @@ public class ContractService {
     }
 
 
+    /**
+     * 최소 등록, 수정 둘 다 이거 사용.
+     */
     public String uploadFileContract(Long memberId, Long contractMetadataId, MultipartFile contract) {
         boolean contractFileUploadContract = contractMetadataRepository.isContractFileUploadContract(contractMetadataId);
 
+        contractUtils.validateContractOwner(contractMetadataId, memberId);
+
         if (!contractFileUploadContract) {
-            log.error("파일 업로드 계약서가 아닌데 업로드 시도. contractMetadataId= {}", contractMetadataId);
+            log.warn("파일 업로드 계약서가 아닌데 업로드 시도. contractMetadataId= {}", contractMetadataId);
             throw new BadRequestException(ErrorStatus.FILE_UPLOAD_NOT_ALLOWED_FOR_NON_FILE_CONTRACT_EXCEPTION.getMessage());
 
         }
 
         if (contract == null || contract.isEmpty()) {
-            log.error("업로드할 파일이 없습니다.");
+            log.warn("업로드할 파일이 없습니다.");
             throw new BadRequestException(ErrorStatus.FILE_NOT_PROVIDED_EXCEPTION.getMessage());
         }
 
@@ -140,7 +148,7 @@ public class ContractService {
     public void test_approveContract(Long contractMetadataId){
         ContractMetadata contractMetadata = contractMetadataRepository.findById(contractMetadataId)
                 .orElseThrow(() -> {
-                    log.error("contractMetadataId: {} not found", contractMetadataId);
+                    log.warn("contractMetadataId: {} not found", contractMetadataId);
                     return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
