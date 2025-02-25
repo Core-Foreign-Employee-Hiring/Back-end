@@ -55,21 +55,15 @@ public class ContractMetadata {
     }
 
 
-    // 고용인이 파일 업로드
-    public void uploadEmployerFile(String fileUrl) {
+    //  파일 업로드
+    public void uploadContract(String fileContractUrl) {
         FileUploadContract fileUploadContract = (FileUploadContract) contract;
 
-        fileUploadContract.uploadEmployerFile(fileUrl);
+        fileUploadContract.uploadContract(fileContractUrl);
         this.employerContractStatus=ContractStatus.PENDING_APPROVAL;
-    }
-
-    // 피고용인이 파일 업로드
-    public void uploadEmployeeFile(String fileUrl) {
-        FileUploadContract fileUploadContract = (FileUploadContract) contract;
-
-        fileUploadContract.uploadEmployeeFile(fileUrl);
         this.employeeContractStatus=ContractStatus.PENDING_APPROVAL;
     }
+
 
     public void completeFileUploadContract(){
 

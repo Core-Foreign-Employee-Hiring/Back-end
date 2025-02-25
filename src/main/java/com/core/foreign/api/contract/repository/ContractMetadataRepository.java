@@ -50,6 +50,10 @@ public interface ContractMetadataRepository extends JpaRepository<ContractMetada
 
 
     @Query("select cm from ContractMetadata cm" +
+            " join fetch cm.resume resume" +
+            " join fetch resume.employee" +
+            " join fetch resume.recruit recruit" +
+            " join fetch recruit.employer" +
             " join fetch cm.contract" +
             " where cm.id=:contractMetadataId")
     Optional<ContractMetadata> findByContractMetadataId(@Param("contractMetadataId") Long contractMetadataId);

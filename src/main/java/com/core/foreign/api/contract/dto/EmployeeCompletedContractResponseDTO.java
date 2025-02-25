@@ -29,7 +29,7 @@ public class EmployeeCompletedContractResponseDTO {
 
         // 이 부분 나중에 수정 필요.
         FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();
-        dto.contractUrl=contract.getEmployeeUploadedFile();
+        dto.contractUrl=contract.getFileContractUrl();
 
 
         return dto;

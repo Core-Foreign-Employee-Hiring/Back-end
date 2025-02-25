@@ -72,8 +72,8 @@ public class ContractController {
     }
 
 
-    @Operation(summary = "실물 계약서 업로드. API",
-            description = "실물 계약서 업로드. API <br>"
+    @Operation(summary = "실물 계약서 최소 업로드. API",
+            description = "실물 계약서 최소 업로드. API <br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),
@@ -83,6 +83,22 @@ public class ContractController {
     public ResponseEntity<ApiResponse<String>> uploadFileContract(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @PathVariable("contract-id") Long contractMetadataId,
                                                                 @RequestPart(value = "contract", required = false) MultipartFile contract) {
+        String url = contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
+
+        return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, url);
+    }
+
+    @Operation(summary = "실물 계약서 수정. API",
+            description = "실물 계약서 수정. API <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping(value = "/{contract-id}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> modifyFileContract(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                  @PathVariable("contract-id") Long contractMetadataId,
+                                                                  @RequestPart(value = "contract", required = false) MultipartFile contract) {
         String url = contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
 
         return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, url);

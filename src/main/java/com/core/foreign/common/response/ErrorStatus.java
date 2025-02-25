@@ -71,6 +71,7 @@ public enum ErrorStatus {
     DUPLICATE_PORTFOLIO_TYPE_FOR_SAME_PORTFOLIO_EXCEPTION(HttpStatus.BAD_REQUEST, "동일한 포트폴리오에 대해 장문 또는 단문 형식은 2개 이상 등록할 수 없습니다."),
     REQUIRED_TERMS_NOT_AGREED_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
     TEMPORARY_RECRUIT_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "임시 저장 공고는 지원이 불가합니다."),
+    INVALID_CONTRACT_OWNER_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 소유자가 아닙니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -99,6 +100,7 @@ public enum ErrorStatus {
     COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
     PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 포트폴리오를 찾을 수 없습니다."),
     CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
+    CONTRACT_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "완료된 계약서는 수정할 수 없습니다."),
 
 
     /**
