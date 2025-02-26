@@ -97,12 +97,12 @@ public class RecruitService {
         Member employer = getEmployer(memberId);
 
         // 프리미엄 공고 등록 가능 체크
-        /*PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
+        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
-        }*/
+        }
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
@@ -147,12 +147,11 @@ public class RecruitService {
         recruitRepository.save(premiumRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
-        /*
         int updatedRows = premiumManageRepository.decreasePremiumCount(employer.getId());
         if (updatedRows == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-        */
+
     }
 
     // 일반 공고 임시저장
@@ -251,7 +250,9 @@ public class RecruitService {
                 .jumpDate(null)
                 .build();
 
-        List<Portfolio> portfolios = request.getPortfolios().stream()
+        List<Portfolio> portfolios = Optional.ofNullable(request.getPortfolios())
+                .orElse(Collections.emptyList())
+                .stream()
                 .map(p -> Portfolio.builder()
                         .title(p.getTitle())
                         .type(p.getType())
@@ -322,15 +323,12 @@ public class RecruitService {
         validateDraftStatus(recruit);
 
         // 프리미엄 공고 등록 가능 체크
-        /*
         PremiumManage premiumManage = premiumManageRepository.findByEmployerId(recruit.getEmployer().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
 
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-
-         */
 
         // 이전 데이터 삭제
         recruitRepository.delete(recruit);
@@ -379,12 +377,10 @@ public class RecruitService {
         recruitRepository.save(newRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
-        /*
         int updatedRows = premiumManageRepository.decreasePremiumCount(recruit.getEmployer().getId());
         if (updatedRows == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-         */
     }
 
     // 사용자 임시저장 공고 존재 여부 확인
