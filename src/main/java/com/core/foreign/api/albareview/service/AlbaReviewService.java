@@ -162,4 +162,34 @@ public class AlbaReviewService {
 
         albaReviewRepository.delete(review);
     }
+
+    // 알바 후기 검색
+    @Transactional(readOnly = true)
+    public AlbaReviewPageResponseDTO searchAlbaReview(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AlbaReview> reviewPage = albaReviewRepository.searchByTitleOrContent(keyword, pageable);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        List<AlbaReviewListDTO> list = reviewPage.getContent().stream()
+                .map(review -> AlbaReviewListDTO.builder()
+                        .id(review.getId())
+                        .region1(review.getRegion1())
+                        .region2(review.getRegion2())
+                        .businessField(review.getBusinessField())
+                        .title(review.getTitle())
+                        .content(review.getContent())
+                        .createdAt(review.getCreatedAt().format(formatter))
+                        .readCount(review.getReadCount())
+                        .commentCount(review.getCommentCount())
+                        .build())
+                .collect(Collectors.toList());
+
+        return AlbaReviewPageResponseDTO.builder()
+                .totalElements(reviewPage.getTotalElements())
+                .totalPages(reviewPage.getTotalPages())
+                .page(reviewPage.getNumber())
+                .size(reviewPage.getSize())
+                .content(list)
+                .build();
+    }
 }

@@ -74,8 +74,8 @@ public class SecurityConfig {
                                 "/api/v1/recruit/search","/api/v1/recruit/view", "/api/v1/recruit/general/jump", "/api/v1/recruit/premium/jump"
                         ).permitAll() // 공고 전체 조회, 공고 상세 조회, 프리미엄 공고 상단 점프 목록 조회, 일반 공고 점프 목록 조회 인증 허가
                         .requestMatchers(
-                                HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview","/api/v1/albareview/comment"
-                        ).permitAll() // 알바 후기 조회 관련 API
+                                HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview","/api/v1/albareview/comment","/api/v1/albareview/search"
+                        ).permitAll() // 알바 후기 조회, 검색 관련 API
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
