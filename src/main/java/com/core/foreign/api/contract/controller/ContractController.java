@@ -4,6 +4,7 @@ import com.core.foreign.api.contract.dto.ContractPreviewResponseDTO;
 import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.contract.service.ContractService;
 import com.core.foreign.api.member.entity.Role;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ApiResponse;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,9 +36,9 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/not-completed")
-    public ResponseEntity<ApiResponse<Page<ContractPreviewResponseDTO>>> getNotCompletedContract(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<ContractPreviewResponseDTO>>> getNotCompletedContract(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                  @RequestParam(value = "page", defaultValue = "0")Integer page) {
-        Page<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getNotCompletedContractMetadata(securityMember.getRole(), securityMember.getId(), page);
+        PageResponseDTO<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getNotCompletedContractMetadata(securityMember.getRole(), securityMember.getId(), page);
 
         return ApiResponse.success(SuccessStatus.INCOMPLETE_CONTRACT_VIEW_SUCCESS, contractMetadataOfEmployee);
     }

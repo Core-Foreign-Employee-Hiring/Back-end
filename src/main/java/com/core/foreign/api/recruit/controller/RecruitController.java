@@ -1,8 +1,8 @@
 package com.core.foreign.api.recruit.controller;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.contract.entity.ContractStatus;
+import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.RecruitType;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.service.RecruitService;
@@ -584,9 +584,9 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/apply-status")
-    public ResponseEntity<ApiResponse<Page<RecruitmentApplyStatusDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitmentApplyStatusDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                 @RequestParam("page") Integer page) {
-        Page<RecruitmentApplyStatusDTO> recruitmentApplyStatus = recruitService.getRecruitmentApplyStatus(securityMember.getId(), page);
+        PageResponseDTO<RecruitmentApplyStatusDTO> recruitmentApplyStatus = recruitService.getRecruitmentApplyStatus(securityMember.getId(), page);
         return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
     }
 
@@ -621,14 +621,14 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/{recruit-id}/resumes")
-    public ResponseEntity<ApiResponse<Page<ApplicationResumePreviewResponseDTO>>> searchApplicationResume(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationResumePreviewResponseDTO>>> searchApplicationResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                   @PathVariable("recruit-id") Long recruitId,
                                                                                                                   @RequestParam(value = "keyword", required = false) String keyword,
                                                                                                                   @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
                                                                                                                   @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
                                                                                                                   @RequestParam("page") Integer page) {
 
-        Page<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+        PageResponseDTO<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANTS_FOR_RECRUIT_SUCCESS, responseDTOS);
     }
 
@@ -670,10 +670,10 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/my-resumes")
-    public ResponseEntity<ApiResponse<Page<EmployeeApplicationStatusResponseDTO>>> getMyResumes(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<EmployeeApplicationStatusResponseDTO>>> getMyResumes(@AuthenticationPrincipal SecurityMember securityMember,
                                                            @RequestParam("page") Integer page) {
 
-        Page<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page);
+        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page);
         return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, response);
     }
 
@@ -715,10 +715,10 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/bookmarks")
-    public ResponseEntity<ApiResponse<Page<RecruitBookmarkResponseDTO>>> getRecruitBookmarks(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitBookmarkResponseDTO>>> getRecruitBookmarks(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @RequestParam(value = "page", defaultValue = "0") Integer  page) {
 
-        Page<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page);
+        PageResponseDTO<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page);
         return ApiResponse.success(SuccessStatus.SEND_BOOKMARKED_RECRUITS_SUCCESS, response);
     }
 
@@ -739,13 +739,13 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/my")
-    public ResponseEntity<ApiResponse<Page<MyRecruitResponseDTO>>> getMyRecruits(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<MyRecruitResponseDTO>>> getMyRecruits(@AuthenticationPrincipal SecurityMember securityMember,
                                                                          @RequestParam(value = "page", defaultValue = "0") Integer  page,
                                                                          @RequestParam("size")Integer size,
                                                                          @RequestParam(value = "recruitType", required = false)RecruitType recruitType,
                                                                          @RequestParam(value = "excludeExpired", defaultValue = "false")boolean excludeExpired) {
 
-        Page<MyRecruitResponseDTO> recruits = recruitService.getMyRecruits(securityMember.getId(), page, size, recruitType, excludeExpired);
+        PageResponseDTO<MyRecruitResponseDTO> recruits = recruitService.getMyRecruits(securityMember.getId(), page, size, recruitType, excludeExpired);
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
     }
 
@@ -757,11 +757,11 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/draft/my")
-    public ResponseEntity<ApiResponse<Page<MyDraftRecruitResponseDTO>>> getMyDraftRecruits(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<MyDraftRecruitResponseDTO>>> getMyDraftRecruits(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer  page,
                                                                                  @RequestParam("size")Integer size) {
 
-        Page<MyDraftRecruitResponseDTO> recruits = recruitService.getMyDraftRecruits(securityMember.getId(), page, size);
+        PageResponseDTO<MyDraftRecruitResponseDTO> recruits = recruitService.getMyDraftRecruits(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
     }
 

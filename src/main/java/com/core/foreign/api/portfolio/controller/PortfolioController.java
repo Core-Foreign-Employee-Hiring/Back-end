@@ -6,6 +6,7 @@ import com.core.foreign.api.portfolio.dto.ApplicationPortfolioResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioResponseDTO;
 import com.core.foreign.api.portfolio.service.PortfolioService;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.response.ApiResponse;
 import com.core.foreign.common.response.SuccessStatus;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +34,9 @@ public class PortfolioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/basics")
-    public ResponseEntity<ApiResponse<Page<BasicPortfolioPreviewResponseDTO>>> getBasicPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<BasicPortfolioPreviewResponseDTO>>> getBasicPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                   @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Page<BasicPortfolioPreviewResponseDTO> basicPortfolios = portfolioService.getBasicPortfolios(page);
+        PageResponseDTO<BasicPortfolioPreviewResponseDTO> basicPortfolios = portfolioService.getBasicPortfolios(page);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolios);
     }
@@ -65,10 +65,10 @@ public class PortfolioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/applications")
-    public ResponseEntity<ApiResponse<Page<ApplicationPortfolioPreviewResponseDTO>>> getApplicationPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationPortfolioPreviewResponseDTO>>> getApplicationPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                               @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                                               @RequestParam("filter") BusinessField businessField) {
-        Page<ApplicationPortfolioPreviewResponseDTO> applicationPortfolios = portfolioService.getApplicationPortfolios(page, businessField);
+        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> applicationPortfolios = portfolioService.getApplicationPortfolios(page, businessField);
 
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolios);
     }

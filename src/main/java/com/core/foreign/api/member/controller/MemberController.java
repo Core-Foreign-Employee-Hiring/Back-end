@@ -10,6 +10,7 @@ import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.dto.RecruitPreviewInContractResponseDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.service.RecruitService;
@@ -23,7 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -810,12 +810,12 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping("/tags")
-    public ResponseEntity<ApiResponse<Page<TagResponseDTO>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<TagResponseDTO>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
                                                                            @RequestParam("evaluationStatus") EvaluationStatus evaluationStatus,
                                                                            @RequestParam("page") Integer page,
                                                                            @RequestParam("size") Integer size) {
 
-        Page<TagResponseDTO> tags = resumeService.getTags(securityMember.getId(), evaluationStatus, page, size);
+        PageResponseDTO<TagResponseDTO> tags = resumeService.getTags(securityMember.getId(), evaluationStatus, page, size);
         return ApiResponse.success(SuccessStatus.TAG_VIEW_SUCCESS, tags);
     }
 
@@ -827,9 +827,9 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/employee/complete-contract")
-    public ResponseEntity<ApiResponse<Page<EmployeeCompletedContractResponseDTO>>> getCompletedContractOfEmployee(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<EmployeeCompletedContractResponseDTO>>> getCompletedContractOfEmployee(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                   @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Page<EmployeeCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployee(securityMember.getId(), page);
+        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployee(securityMember.getId(), page);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
@@ -842,9 +842,9 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/employer/complete-contract")
-    public ResponseEntity<ApiResponse<Page<EmployerCompletedContractResponseDTO>>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<EmployerCompletedContractResponseDTO>>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                   @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Page<EmployerCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployer(securityMember.getId(), page);
+        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployer(securityMember.getId(), page);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }

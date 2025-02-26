@@ -14,6 +14,7 @@ import com.core.foreign.api.portfolio.dto.ApplicationPortfolioResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioResponseDTO;
 import com.core.foreign.api.recruit.dto.ApplicationResumeResponseDTO;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioFileResponseDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioTextResponseDTO;
 import com.core.foreign.api.recruit.entity.Recruit;
@@ -49,7 +50,7 @@ public class PortfolioService {
 
 
 
-    public Page<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page) {
+    public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page) {
         Pageable pageable= PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Employee> by = employeeRepository.findAll(pageable);
@@ -57,12 +58,14 @@ public class PortfolioService {
 
         Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(by.getContent());
 
-        Page<BasicPortfolioPreviewResponseDTO> response = by
+        Page<BasicPortfolioPreviewResponseDTO> dto = by
                 .map((employee -> {
                     EmployeeEvaluationCountDTO employeeEvaluationCountDTO = employeeEvaluations.get(employee.getId());
 
                     return new BasicPortfolioPreviewResponseDTO(employee, employeeEvaluationCountDTO);
                 }));
+
+        PageResponseDTO<BasicPortfolioPreviewResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
 
@@ -71,7 +74,7 @@ public class PortfolioService {
     /**
      * 필터는 공고 부분 업직종 수정 후 가능함.
      */
-    public Page<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, BusinessField field) {
+    public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, BusinessField field) {
         Pageable pageable= PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Resume> applicationPortfolio = resumeRepository.getApplicationPortfolio(field, pageable);
@@ -93,7 +96,7 @@ public class PortfolioService {
          * 갖고 오는 로직.
          */
 
-        Page<ApplicationPortfolioPreviewResponseDTO> response = applicationPortfolio.map((resume) -> {
+        Page<ApplicationPortfolioPreviewResponseDTO> dto = applicationPortfolio.map((resume) -> {
             Employee employee = resume.getEmployee();
             Recruit recruit = resume.getRecruit();
 
@@ -103,6 +106,8 @@ public class PortfolioService {
             return new ApplicationPortfolioPreviewResponseDTO(resume, employeeEvaluationCountDTO, businessFields);
 
         });
+
+        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
 

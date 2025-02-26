@@ -107,30 +107,36 @@ public class ResumeReader {
         return response;
     }
 
-    public Page<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
+    public PageResponseDTO<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
                                                                              String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                                                              Integer page){
         Pageable pageable = PageRequest.of(page, 5);
 
         Page<Resume> resumes = resumeRepository.searchResumedByRecruitId(recruitId, keyword, recruitmentStatus, contractStatus, pageable);
-        Page<ApplicationResumePreviewResponseDTO> response = resumes.map(ApplicationResumePreviewResponseDTO::from);
+        Page<ApplicationResumePreviewResponseDTO> dto = resumes.map(ApplicationResumePreviewResponseDTO::from);
+
+        PageResponseDTO<ApplicationResumePreviewResponseDTO> response = PageResponseDTO.of(dto);
         return response;
     }
 
-    public Page<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
+    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
         Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<EmployeeApplicationStatusResponseDTO> response = resumeRepository.findResumeByEmployeeId(employeeId, pageable)
+        Page<EmployeeApplicationStatusResponseDTO> dto = resumeRepository.findResumeByEmployeeId(employeeId, pageable)
                 .map(EmployeeApplicationStatusResponseDTO::from);
 
+        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = PageResponseDTO.of(dto);
+
         return response;
     }
 
 
-    public Page<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
+    public PageResponseDTO<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<TagResponseDTO> response = resumeRepository.findResumeByEmployeeIdAndEvaluationStatus(employerId, evaluationStatus, pageable)
+        Page<TagResponseDTO> dto = resumeRepository.findResumeByEmployeeIdAndEvaluationStatus(employerId, evaluationStatus, pageable)
                 .map(TagResponseDTO::from);
+
+        PageResponseDTO<TagResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }

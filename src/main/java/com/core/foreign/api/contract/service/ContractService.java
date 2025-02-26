@@ -11,6 +11,7 @@ import com.core.foreign.api.contract.entity.FileUploadContract;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
 import com.core.foreign.api.file.FileDirAndName;
 import com.core.foreign.api.member.entity.Role;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.response.ErrorStatus;
@@ -37,7 +38,7 @@ public class ContractService {
     private final ContractUtils contractUtils;
 
 
-    public Page<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
+    public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
 
         Pageable pageable= PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata=null;
@@ -49,7 +50,9 @@ public class ContractService {
             contractMetadata=contractMetadataRepository.findByEmployerId(memberId, ContractStatus.NOT_COMPLETED, pageable);
         }
 
-        Page<ContractPreviewResponseDTO> response = contractMetadata.map(ContractPreviewResponseDTO::from);
+        Page<ContractPreviewResponseDTO> dto = contractMetadata.map(ContractPreviewResponseDTO::from);
+
+        PageResponseDTO<ContractPreviewResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }
@@ -122,22 +125,26 @@ public class ContractService {
 
 
 
-    public Page<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page){
+    public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page){
         Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployeeIdWithContract(employeeId, ContractStatus.COMPLETED, pageable);
 
-        Page<EmployeeCompletedContractResponseDTO> response = contractMetadata
+        Page<EmployeeCompletedContractResponseDTO> dto = contractMetadata
                 .map(EmployeeCompletedContractResponseDTO::from);
+
+        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }
 
-    public Page<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page){
+    public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page){
         Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployerIdWithContract(employerId, ContractStatus.COMPLETED, pageable);
 
-        Page<EmployerCompletedContractResponseDTO> response = contractMetadata
+        Page<EmployerCompletedContractResponseDTO> dto = contractMetadata
                 .map(EmployerCompletedContractResponseDTO::from);
+
+        PageResponseDTO<EmployerCompletedContractResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }
