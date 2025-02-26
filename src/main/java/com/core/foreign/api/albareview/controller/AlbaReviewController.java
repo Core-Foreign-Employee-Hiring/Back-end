@@ -137,4 +137,22 @@ public class AlbaReviewController {
         albaReviewService.deleteAlbaReview(reviewId, securityMember.getId());
         return ApiResponse.success_only(SuccessStatus.ALBA_REVIEW_DELETE_SUCCESS);
     }
+
+    @Operation(
+            summary = "알바 후기 검색 API",
+            description = "제목이나 본문 내용에 검색어(keyword)를 포함하는 알바 후기를 연관도(제목 가중치 우선)와 최신순으로 조회합니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 검색 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<AlbaReviewPageResponseDTO>> searchAlbaReview(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        AlbaReviewPageResponseDTO result = albaReviewService.searchAlbaReview(keyword, page, size);
+        return ApiResponse.success(SuccessStatus.ALBA_REVIEW_SEARCH_SUCCESS, result);
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
+import java.util.List;
 
 public interface RecruitRepository
         extends JpaRepository<Recruit, Long>, JpaSpecificationExecutor<Recruit>, RecruitRepositoryQueryDSL {
@@ -54,4 +55,10 @@ public interface RecruitRepository
     @Query("SELECT r FROM Recruit r WHERE r.recruitType = :recruitType AND r.jumpDate IS NOT NULL ORDER BY r.jumpDate DESC")
     Page<Recruit> findByRecruitTypeAndJumpDateIsNotNullOrderByJumpDateDesc(@Param("recruitType") RecruitType recruitType, Pageable pageable);
 
+    // 제목 내에 검색어(query)가 포함된 모든 제목을 조회 (자동완성에 활용)
+    @Query("SELECT r.title FROM Recruit r WHERE r.title LIKE %:query%")
+    List<String> findTitlesByTitleContaining(@Param("query") String query);
+
+    // 최종 검색: 제목에 검색어가 포함된 공고 조회 (페이징 지원)
+    Page<Recruit> findByTitleContaining(String keyword, Pageable pageable);
 }
