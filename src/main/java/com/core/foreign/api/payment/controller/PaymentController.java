@@ -2,6 +2,7 @@ package com.core.foreign.api.payment.controller;
 
 import com.core.foreign.api.payment.dto.*;
 import com.core.foreign.api.payment.service.PaymentService;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.SecurityMember;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.response.ApiResponse;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -103,10 +103,10 @@ public class PaymentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping("/history")
-    public ResponseEntity<ApiResponse<Page<PaymentHistoryResponseDTO>>> getPaymentHistory(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<PageResponseDTO<PaymentHistoryResponseDTO>>> getPaymentHistory(@AuthenticationPrincipal SecurityMember securityMember,
                                                            @RequestParam("page") Integer page) {
 
-        Page<PaymentHistoryResponseDTO> paymentHistory = paymentService.getPaymentHistory(securityMember.getId(), page);
+        PageResponseDTO<PaymentHistoryResponseDTO> paymentHistory = paymentService.getPaymentHistory(securityMember.getId(), page);
 
         return ApiResponse.success(SuccessStatus.SEND_PAYMENT_HISTORY_SUCCESS, paymentHistory);
     }

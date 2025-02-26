@@ -18,7 +18,6 @@ import com.core.foreign.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -229,9 +228,6 @@ public class ResumeService {
 
         }
 
-
-
-
         Resume build = Resume.builder()
                 .messageToEmployer(dto.getMessageToEmployer())
                 .recruit(recruit)
@@ -251,11 +247,11 @@ public class ResumeService {
         return response;
     }
 
-    public Page<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
+    public PageResponseDTO<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
                                                                              String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                                                              Integer page){
 
-        Page<ApplicationResumePreviewResponseDTO> response = resumeReader.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+        PageResponseDTO<ApplicationResumePreviewResponseDTO> response = resumeReader.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
 
         return response;
     }
@@ -294,9 +290,9 @@ public class ResumeService {
     }
 
 
-    public Page<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
+    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
 
-        Page<EmployeeApplicationStatusResponseDTO> response = resumeReader.getMyResumes(employeeId, page);
+        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeReader.getMyResumes(employeeId, page);
 
         return response;
     }
@@ -322,12 +318,12 @@ public class ResumeService {
     }
 
 
-    public Page<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
+    public PageResponseDTO<TagResponseDTO> getTags(Long employerId, EvaluationStatus evaluationStatus, Integer page, Integer size) {
         if(evaluationStatus==EvaluationStatus.NONE){
             log.warn("평가 상태= {}", evaluationStatus);
            throw new BadRequestException(TAG_EVALUATION_STATUS_CANNOT_BE_NONE.getMessage());
         }
-        Page<TagResponseDTO> response = resumeReader.getTags(employerId, evaluationStatus, page, size);
+        PageResponseDTO<TagResponseDTO> response = resumeReader.getTags(employerId, evaluationStatus, page, size);
 
         return response;
     }

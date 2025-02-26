@@ -658,25 +658,29 @@ public class RecruitService {
                 .build();
     }
 
-    public Page<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, Integer size, RecruitType recruitType, boolean excludeExpired){
+    public PageResponseDTO<MyRecruitResponseDTO> getMyRecruits(Long employerId, Integer page, Integer size, RecruitType recruitType, boolean excludeExpired){
         Pageable pageable= PageRequest.of(page, size);
 
-        Page<MyRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, recruitType, RecruitPublishStatus.PUBLISHED, excludeExpired, pageable)
+        Page<MyRecruitResponseDTO> dto = recruitRepository.getMyRecruits(employerId, recruitType, RecruitPublishStatus.PUBLISHED, excludeExpired, pageable)
                 .map(MyRecruitResponseDTO::from);
 
+        PageResponseDTO<MyRecruitResponseDTO> response = PageResponseDTO.of(dto);
+
         return response;
     }
 
-    public Page<MyDraftRecruitResponseDTO> getMyDraftRecruits(Long employerId, Integer page, Integer size){
+    public PageResponseDTO<MyDraftRecruitResponseDTO> getMyDraftRecruits(Long employerId, Integer page, Integer size){
         Pageable pageable= PageRequest.of(page, size);
 
-        Page<MyDraftRecruitResponseDTO> response = recruitRepository.getMyRecruits(employerId, null , RecruitPublishStatus.DRAFT, false, pageable)
+        Page<MyDraftRecruitResponseDTO> dto = recruitRepository.getMyRecruits(employerId, null , RecruitPublishStatus.DRAFT, false, pageable)
                 .map(MyDraftRecruitResponseDTO::from);
+
+        PageResponseDTO<MyDraftRecruitResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }
 
-    public Page<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
+    public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
         Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Recruit> byEmployerId = recruitRepository.findPublishedRecruitsByEmployerId(employerId, pageable);
@@ -691,9 +695,11 @@ public class RecruitService {
             resumeCount.put(recruitWithResumeCountDTO.getRecruitId(), recruitWithResumeCountDTO.getResumeCount());
         }
 
-        Page<RecruitmentApplyStatusDTO> map = byEmployerId.map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId())));
+        Page<RecruitmentApplyStatusDTO> dto = byEmployerId.map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId())));
 
-        return map;
+        PageResponseDTO<RecruitmentApplyStatusDTO> response = PageResponseDTO.of(dto);
+
+        return response;
     }
 
 
@@ -721,11 +727,13 @@ public class RecruitService {
     }
 
 
-    public Page<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page){
+    public PageResponseDTO<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page){
 
         Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<RecruitBookmarkResponseDTO> response = recruitBookmarkRepository.findByMemberId(memberId, pageable)
+        Page<RecruitBookmarkResponseDTO> dto = recruitBookmarkRepository.findByMemberId(memberId, pageable)
                 .map(RecruitBookmarkResponseDTO::from);
+
+        PageResponseDTO<RecruitBookmarkResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }

@@ -9,6 +9,7 @@ import com.core.foreign.api.payment.dto.PaymentRequestDTO;
 import com.core.foreign.api.payment.dto.PaymentResponseDTO;
 import com.core.foreign.api.payment.entity.Payment;
 import com.core.foreign.api.payment.repository.PaymentRepository;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.entity.PremiumManage;
 import com.core.foreign.api.recruit.repository.PremiumManageRepository;
 import com.core.foreign.common.exception.BadRequestException;
@@ -339,12 +340,13 @@ public class PaymentService {
         return "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
     }
 
-
-    public Page<PaymentHistoryResponseDTO> getPaymentHistory(Long memberId, Integer page){
+    public PageResponseDTO<PaymentHistoryResponseDTO> getPaymentHistory(Long memberId, Integer page){
         Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<PaymentHistoryResponseDTO> response= paymentRepository.findAllByMemberId(memberId, pageable)
+        Page<PaymentHistoryResponseDTO> dto= paymentRepository.findAllByMemberId(memberId, pageable)
                 .map(PaymentHistoryResponseDTO::from);
+
+        PageResponseDTO<PaymentHistoryResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
     }
