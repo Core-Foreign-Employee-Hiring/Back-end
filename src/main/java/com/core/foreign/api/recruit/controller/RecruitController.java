@@ -643,7 +643,7 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<Void>> rejectResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @PathVariable("resume-id") Long resumeId
     ) {
-        resumeService.rejectResume(resumeId);
+        resumeService.approveOrRejectResume(securityMember.getId(), resumeId, RecruitmentStatus.REJECTED);
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
     }
 
@@ -658,7 +658,7 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<Void>> approveApprove(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @PathVariable("resume-id") Long resumeId
     ) {
-        resumeService.approveResume(resumeId);
+        resumeService.approveOrRejectResume(securityMember.getId(), resumeId, RecruitmentStatus.APPROVED);
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
     }
 

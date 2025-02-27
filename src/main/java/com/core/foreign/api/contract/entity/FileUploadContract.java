@@ -10,18 +10,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor()
 public class FileUploadContract extends Contract{
-    private String fileContractUrl;  // 고용인이 업로드한 파일
-    private String rejectionReason; // 피고용인 반려 사유
-
-
-
+    private String fileContractUrl;
+    private String rejectionReason;
+    private Long curVersion=0L;
+    private Long adminViewVersion;
 
     public void uploadContract(String fileContractUrl) {
         this.fileContractUrl = fileContractUrl;
+        curVersion++;
     }
 
+    public void synchronizeAdminViewVersion() {
+        this.adminViewVersion = curVersion;
+    }
 
-    public void rejectEmployer(String rejectionReason) {
+    public void reject(String rejectionReason) {
         this.rejectionReason = rejectionReason;
     }
 

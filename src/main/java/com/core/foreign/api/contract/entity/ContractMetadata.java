@@ -44,7 +44,7 @@ public class ContractMetadata {
     @JoinColumn(name="contract_id")
     private Contract contract;
 
-    private LocalDate contractCompletionDate; // 계약서 체결일 추가
+    private LocalDate contractCompletionDate;
 
     public void chooseContractType(ContractType contractType) {
         this.contractType = contractType;
@@ -65,19 +65,28 @@ public class ContractMetadata {
     }
 
 
-    public void completeFileUploadContract(){
-
+    public void approveFileUploadContract(){
         this.employeeContractStatus=ContractStatus.APPROVED;
         this.employerContractStatus=ContractStatus.APPROVED;
 
         completeContract();
     }
 
+    public void rejectFileUploadContract(String rejectionReason){
+        FileUploadContract fileUploadContract = (FileUploadContract) contract;
+
+        fileUploadContract.reject(rejectionReason);
+
+        this.employeeContractStatus=ContractStatus.REJECTED;
+        this.employerContractStatus=ContractStatus.REJECTED;
+
+    }
+
 
     private void completeContract(){
         this.contractStatus=ContractStatus.COMPLETED;
         this.contractCompletionDate=LocalDate.now();
-        resume.completeContract();
+        resume.completeContract(this.contractCompletionDate);
     }
 
 

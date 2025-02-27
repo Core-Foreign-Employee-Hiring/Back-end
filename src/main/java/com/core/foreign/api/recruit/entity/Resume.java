@@ -54,6 +54,7 @@ public class Resume {
 
     @Enumerated(STRING)
     private ContractStatus contractStatus;
+    private LocalDate contractCompletionDate;
 
     private boolean isDeleted;
 
@@ -91,7 +92,8 @@ public class Resume {
         this.isPublic = false;
     }
 
-    public void completeContract(){
+    public void completeContract(LocalDate contractCompletionDate){
         this.contractStatus = ContractStatus.COMPLETED;
+        this.contractCompletionDate = contractCompletionDate;
     }
 }

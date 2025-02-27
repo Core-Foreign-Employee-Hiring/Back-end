@@ -37,9 +37,9 @@ public class ResumeReader {
 
 
     public ApplicationResumeResponseDTO getResume(Long resumeId){
-        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
+        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForPortfolio(resumeId)
                 .orElseThrow(() -> {
-                    log.error("이력서 없음. resumeId= {}", resumeId);
+                    log.warn("[getResume][이력서 없음.][resumeId= {}]", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
@@ -99,7 +99,7 @@ public class ResumeReader {
         if(find.isPresent()){
             employeePortfolioDTO = EmployeePortfolioDTO.from(find.get(), employee.isPortfolioPublic());
         }else{
-            log.warn("완성된 포트폴리오가 없음");
+            log.warn("[getResume][완성된 포트폴리오가 없음]");
         }
 
         ApplicationResumeResponseDTO response = new ApplicationResumeResponseDTO(resume, employeeBasicResumeResponseDTO,employeePortfolioDTO, resume.getMessageToEmployer(), texts, files);

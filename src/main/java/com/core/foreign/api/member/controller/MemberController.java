@@ -10,6 +10,8 @@ import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
+import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.dto.RecruitPreviewInContractResponseDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
@@ -240,6 +242,24 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
 
         memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "고용주 회사 주소 수정 API",
+            description = "고용주의 회사 주소를 수정합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 주소 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping("/employer/profile/company-address")
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyAddress(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                          @RequestParam String zipcode,
+                                                                          @RequestParam String address1,
+                                                                          @RequestParam String address2){
+
+        memberService.updateCompanyAddress(securityMember.getId(),zipcode,address1,address2);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -682,7 +702,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/password")
-    public ResponseEntity<ApiResponse<Void>> upadtePassword(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @RequestBody PasswordDTO passwordDTO) {
 
         memberService.updateMemberPassword(securityMember.getId(), passwordDTO.getPassword());
@@ -863,6 +883,40 @@ public class MemberController {
 
 
         return ApiResponse.success(SuccessStatus.PREVIEW_RECRUIT_SUCCESS, response);
+    }
+
+    @Operation(summary = "고용인 관심 고용인 (기본) 조회. API",
+            description = "고용인 관심 고용인 (기본) 조회 <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employer/favorite/basic")
+    public ResponseEntity<ApiResponse<PageResponseDTO<BasicPortfolioPreviewResponseDTO>>> getMyBasicPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                               @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                               @RequestParam(value = "size", defaultValue = "6") Integer size) {
+        PageResponseDTO<BasicPortfolioPreviewResponseDTO> response = memberService.getMyBasicPortfolios(securityMember.getId(), page, size);
+
+
+        return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, response);
+    }
+
+    @Operation(summary = "고용인 관심 고용인 (실제 지원) 조회. API",
+            description = "고용인 관심 고용인 (실제 지원) 조회 <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employer/favorite/application")
+    public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationPortfolioPreviewResponseDTO>>> getMyApplicationPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                           @RequestParam(value = "size", defaultValue = "6") Integer size) {
+        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> response = memberService.getMyApplicationPortfolios(securityMember.getId(), page, size);
+
+
+        return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, response);
     }
 
 }

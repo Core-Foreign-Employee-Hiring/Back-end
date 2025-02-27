@@ -1,13 +1,17 @@
 package com.core.foreign.api.member.service;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.business_field.repository.BusinessFieldEntityRepository;
 import com.core.foreign.api.business_field.repository.EmployerBusinessFieldRepository;
 import com.core.foreign.api.business_field.service.BusinessFieldUpdater;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.repository.*;
+import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
+import com.core.foreign.api.recruit.dto.PageResponseDTO;
+import com.core.foreign.api.recruit.entity.Recruit;
+import com.core.foreign.api.recruit.entity.Resume;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.exception.UnauthorizedException;
@@ -16,14 +20,16 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.core.foreign.common.response.ErrorStatus.PASSWORD_VERIFICATION_REQUIRED_EXCEPTION;
 import static com.core.foreign.common.response.ErrorStatus.REQUIRED_TERMS_NOT_AGREED_EXCEPTION;
@@ -44,6 +50,9 @@ public class MemberService {
     private final PasswordResetRepository passwordResetRepository;
     private final EvaluationCreator evaluationCreator;
     private final EmployerBusinessFieldRepository employerBusinessFieldRepository;
+    private final EmployerEmployeeRepository employerEmployeeRepository;
+    private final EmployerResumeRepository employerResumeRepository;
+    private final EvaluationReader evaluationReader;
 
     // 고용인 회원가입
     @Transactional
@@ -362,6 +371,18 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateCompanyAddress(Long memberId, String zipcode, String address1, String address2) {
+        // 이미 필터에서 있는 거 확인했음.
+        Employer employer = (Employer)memberRepository.findById(memberId).get();
+        Address address = new Address(
+                zipcode,
+                address1,
+                address2
+        );
+        employer.updateAddress(address);
+    }
+
+    @Transactional
     public void updateBusinessFiledOfEmployer(Long employerId, List<BusinessField> newFields){
         businessFiledUpdater.updateBusinessFiledOfEmployer(employerId, newFields);
     }
@@ -488,5 +509,65 @@ public class MemberService {
 
         passwordResetRepository.delete(passwordReset);
     }
+
+    public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getMyBasicPortfolios(Long employerId, Integer page, Integer size){
+        Pageable pageable =PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Employee> find = employerEmployeeRepository.findByEmployerId(employerId, pageable).map(EmployerEmployee::getEmployee);
+
+        Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(find.getContent());
+
+        Page<BasicPortfolioPreviewResponseDTO> dto = find
+                .map((employee -> {
+                    EmployeeEvaluationCountDTO employeeEvaluationCountDTO = employeeEvaluations.get(employee.getId());
+
+                    return new BasicPortfolioPreviewResponseDTO(employee, employeeEvaluationCountDTO);
+                }));
+
+        PageResponseDTO<BasicPortfolioPreviewResponseDTO> response = PageResponseDTO.of(dto);
+
+        return response;
+    }
+
+    public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getMyApplicationPortfolios(Long employerId, Integer page, Integer size){
+
+        Pageable pageable =PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Resume> applicationPortfolio = employerResumeRepository.findByEmployerId(employerId, pageable).map(EmployerResume::getResume);
+
+
+        // 평가 갖고 온다.
+        List<Employee> employees = applicationPortfolio.map(Resume::getEmployee).toList();
+        Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(employees);
+
+
+        // 업직종 갖고 온다.
+        List<Recruit> recruits = applicationPortfolio.map(Resume::getRecruit).toList();
+        Map<Recruit, List<BusinessField>> businessMap=new HashMap<>();
+
+        for (Recruit recruit : recruits) {
+            businessMap.put(recruit, new ArrayList<>());
+        }
+
+        /**
+         * 갖고 오는 로직.
+         */
+
+        Page<ApplicationPortfolioPreviewResponseDTO> dto = applicationPortfolio.map((resume) -> {
+            Employee employee = resume.getEmployee();
+            Recruit recruit = resume.getRecruit();
+
+            EmployeeEvaluationCountDTO employeeEvaluationCountDTO = employeeEvaluations.get(employee.getId());
+            List<BusinessField> businessFields = businessMap.get(recruit);
+
+            return new ApplicationPortfolioPreviewResponseDTO(resume, employeeEvaluationCountDTO, businessFields);
+
+        });
+
+        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> response = PageResponseDTO.of(dto);
+
+        return response;
+    }
+
 
 }

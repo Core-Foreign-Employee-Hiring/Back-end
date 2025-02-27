@@ -2,9 +2,8 @@ package com.core.foreign.api.contract.service;
 
 import com.core.foreign.api.contract.entity.ContractMetadata;
 import com.core.foreign.api.contract.entity.ContractStatus;
+import com.core.foreign.api.contract.entity.FileUploadContract;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
-import com.core.foreign.api.member.entity.Member;
-import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -17,24 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class ContractUpdater {
-    private final MemberRepository memberRepository;
     private final ContractMetadataRepository contractMetadataRepository;
 
-
-    public void uploadFileContract(Long memberId, Long contractMetadataId, String fileContractUrl){
-        Member member = memberRepository.findById(memberId)
+    public void uploadFileContract(Long contractMetadataId, String fileContractUrl){
+        ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
-                    log.warn("member not found :: memberId= {}", memberId);
-                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
-                });
-
-
-        ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataId(contractMetadataId)
-                .orElseThrow(() -> {
-                    log.warn("contract metadata not found: contractMetadataId= {}", contractMetadataId);
+                    log.warn("[uploadFileContract][contract metadata not found][contractMetadataId= {}]", contractMetadataId);
                     return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
-
 
 
         if(contractMetadata.getContractStatus().equals(ContractStatus.COMPLETED)){
@@ -42,8 +31,37 @@ public class ContractUpdater {
             throw new BadRequestException(ErrorStatus.CONTRACT_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
 
-
         contractMetadata.uploadContract(fileContractUrl);
+    }
+
+
+    public void approveOrRejectFileUploadContract(Long contractMetadataId, ContractStatus contractStatus, String rejectionReason){
+        ContractMetadata contractMetadata = contractMetadataRepository.findNotCompleteFileUploadContractMetadataBy(contractMetadataId)
+                .orElseThrow(() -> {
+                    log.warn("[approveOrRejectFileUploadContract][contract metadata not found][contractMetadataId= {}]", contractMetadataId);
+                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();
+        Long curVersion = contract.getCurVersion();
+        Long adminViewVersion = contract.getAdminViewVersion();
+
+        if(adminViewVersion == null){
+            log.warn("[approveOrRejectFileUploadContract][계약서 안 보고 승인/반려 시도.][contractId= {}]", contract.getId());
+            throw new BadRequestException(ErrorStatus.CONTRACT_REVIEW_REQUIRED_EXCEPTION.getMessage());
+        }
+
+        if(!adminViewVersion.equals(curVersion)){
+            log.warn("[approveOrRejectFileUploadContract][조회 ~ 승인/반려 사이 파일 변경 감지][contractId= {} adminViewVersion= {} curVersion= {}]", contract.getId(), adminViewVersion, curVersion);
+            throw new BadRequestException(ErrorStatus.CONTRACT_VERSION_MISMATCH_EXCEPTION.getMessage());
+        }
+
+        if(contractStatus.equals(ContractStatus.APPROVED)){
+            contractMetadata.approveFileUploadContract();
+        }
+        else if(contractStatus.equals(ContractStatus.REJECTED)){
+            contractMetadata.rejectFileUploadContract(rejectionReason);
+        }
 
     }
 }

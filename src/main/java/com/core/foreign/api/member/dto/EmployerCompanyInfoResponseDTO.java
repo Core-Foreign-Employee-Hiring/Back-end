@@ -29,7 +29,7 @@ public class EmployerCompanyInfoResponseDTO {
 
     public static EmployerCompanyInfoResponseDTO from(Employer employer, List<BusinessField> businessFields){
         EmployerCompanyInfoResponseDTO dto = new EmployerCompanyInfoResponseDTO();
-        Address address = employer.getAddress();
+        Address address = employer.getCompanyAddress();
 
         dto.companyImage= employer.getCompanyImageUrl();
         dto.companyName = employer.getCompanyName();

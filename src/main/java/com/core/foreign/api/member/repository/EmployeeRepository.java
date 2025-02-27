@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    @Query("select e from Employee e" +
+            " where e.isPortfolioPublic=true")
     Page<Employee> findAllBy(Pageable pageable);
 
     @Query("select e from Employee e" +
