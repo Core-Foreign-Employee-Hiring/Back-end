@@ -229,8 +229,138 @@ public class RecruitController {
             @RequestPart("request") RecruitRequestDTO.GeneralRecruitRequest recruitRequest,
             @RequestPart(value = "posterImage", required = false) MultipartFile posterImage
     ) {
-        recruitService.saveGeneralRecruitDraft(securityMember.getId(), recruitRequest, posterImage);
+        recruitService.createGeneralDraft(securityMember.getId(), recruitRequest, posterImage);
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
+    }
+
+    @Operation(summary = "임시 저장된 일반 공고 수정 API",
+            description = "임시 저장된 일반 공고 데이터를 수정 합니다.<br>" +
+                    "<p>" +
+                    "title : 공고 제목 - String <br>" +
+                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
+                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
+                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
+                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
+                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "otherConditions : 기타 조건 - String <br>" +
+                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
+                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
+                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
+                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
+                    "salary : 급여 정보 - String (ex 14000)<br>" +
+                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
+                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
+                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
+                    "latitude : 위도 - Double (ex 36.215556)<br>" +
+                    "longitude : 경도- Double (ex 127.251855)<br>" +
+                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
+                    "address1 : 주소 - String (ex '충대로1')<br>" +
+                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
+                    "<p>" +
+                    "businessField 종류<br>" +
+                    "<p>" +
+                    "FOOD_BEVERAGE : 외식/음료,<br>" +
+                    "STORE_SALES : 매장/판매,<br>" +
+                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
+                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
+                    "OFFICE_SALES : 사무/영업,<br>" +
+                    "DRIVING_DELIVERY : 운전/배달,<br>" +
+                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
+                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
+                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
+                    "RURAL_FISHING : 농어촌/선원,<br>" +
+                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
+                    "EDUCATION : 교육,<br>" +
+                    "OTHER_SERVICE : 기타/서비스" +
+                    "<p>" +
+                    "applicationMethods 종류<br>" +
+                    "<p>" +
+                    "ONLINE : 온라인지원,<br>" +
+                    "INQUIRY : 문의 지원,<br>" +
+                    "VISIT : 방문 접수,<br>" +
+                    "CALL_VISIT : 전화 후 방문,<br>")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 임시 저장 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping(value = "/general/draft/{recruitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> updateGeneralDraft(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long recruitId,
+            @RequestPart("request") RecruitRequestDTO.GeneralRecruitRequest recruitRequest,
+            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) {
+
+        recruitService.updateGeneralDraft(securityMember.getId(), recruitId, recruitRequest, posterImage);
+        return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
+    }
+
+        @Operation(summary = "일반 공고 퍼블리싱 API",
+            description = "임시 저장한 일반 공고를 최종 퍼블리싱 합니다.<br>" +
+                    "<p>" +
+                    "title : 공고 제목 - String <br>" +
+                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
+                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
+                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
+                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
+                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "otherConditions : 기타 조건 - String <br>" +
+                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
+                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
+                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
+                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
+                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
+                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
+                    "salary : 급여 정보 - String (ex 14000)<br>" +
+                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
+                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
+                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
+                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
+                    "latitude : 위도 - Double (ex 36.215556)<br>" +
+                    "longitude : 경도- Double (ex 127.251855)<br>" +
+                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
+                    "address1 : 주소 - String (ex '충대로1')<br>" +
+                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
+                    "<p>" +
+                    "businessField 종류<br>" +
+                    "<p>" +
+                    "FOOD_BEVERAGE : 외식/음료,<br>" +
+                    "STORE_SALES : 매장/판매,<br>" +
+                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
+                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
+                    "OFFICE_SALES : 사무/영업,<br>" +
+                    "DRIVING_DELIVERY : 운전/배달,<br>" +
+                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
+                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
+                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
+                    "RURAL_FISHING : 농어촌/선원,<br>" +
+                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
+                    "EDUCATION : 교육,<br>" +
+                    "OTHER_SERVICE : 기타/서비스" +
+                    "<p>" +
+                    "applicationMethods 종류<br>" +
+                    "<p>" +
+                    "ONLINE : 온라인지원,<br>" +
+                    "INQUIRY : 문의 지원,<br>" +
+                    "VISIT : 방문 접수,<br>" +
+                    "CALL_VISIT : 전화 후 방문,<br>")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PutMapping(value = "/general/draft/{recruitId}/publish", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> publishGeneralDraft(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable Long recruitId,
+            @RequestPart("request") RecruitRequestDTO.GeneralRecruitRequest recruitRequest,
+            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) {
+
+        recruitService.publishGeneralDraft(securityMember.getId(), recruitId, recruitRequest, posterImage);
+        return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
     @Operation(summary = "프리미엄 공고 임시저장 API",
@@ -304,8 +434,8 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "일반 공고 퍼블리싱 API",
-            description = "임시 저장한 일반 공고를 최종 퍼블리싱 합니다.<br>" +
+    @Operation(summary = "임시 저장된 프리미엄 공고 수정 API",
+            description = "임시 저장된 프리미엄 공고 데이터를 수정 합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
                     "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
@@ -353,22 +483,30 @@ public class RecruitController {
                     "ONLINE : 온라인지원,<br>" +
                     "INQUIRY : 문의 지원,<br>" +
                     "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>")
+                    "CALL_VISIT : 전화 후 방문,<br>" +
+                    "<p>" +
+                    "Portfolios<br>" +
+                    "title : 질문 제목 - String<br>" +
+                    "type : 질문 유형 - String (LONG_TEXT : 장문형 / SHORT_TEXT : 단답형 / FILE_UPLOAD : 파일 업로드)<br>" +
+                    "required : 필수 질문 - String<br>" +
+                    "maxFileCount : 최대 업로드 가능 갯수 - Int (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>" +
+                    "maxFileSize : 최대 업로드 가능 파일 사이즈 - Long (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping(value = "/general/{recruitId}/publish", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> publishGeneralRecruit(
+    @PutMapping(value = "/premium/draft/{recruitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> updatePremiumDraft(
+            @AuthenticationPrincipal SecurityMember securityMember,
             @PathVariable Long recruitId,
-            @RequestPart("request") RecruitRequestDTO.GeneralRecruitRequest recruitRequest,
-            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage
-    ) {
-        recruitService.publishGeneralRecruit(recruitId, recruitRequest, posterImage);
-        return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
+            @RequestPart("request") RecruitRequestDTO.PremiumRecruitRequest recruitRequest,
+            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) {
+
+        recruitService.updatePremiumDraft(securityMember.getId(), recruitId, recruitRequest, posterImage);
+        return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "프리미엄 공고 퍼블리싱 API",
+        @Operation(summary = "프리미엄 공고 퍼블리싱 API",
             description = "임시 저장한 프리미엄 공고를 최종 퍼블리싱 합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
@@ -429,13 +567,14 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PutMapping(value = "/premium/{recruitId}/publish", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> publishPremiumRecruit(
+    @PutMapping(value = "/premium/draft/{recruitId}/publish", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> publishPremiumDraft(
+            @AuthenticationPrincipal SecurityMember securityMember,
             @PathVariable Long recruitId,
             @RequestPart("request") RecruitRequestDTO.PremiumRecruitRequest recruitRequest,
-            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage
-    ) {
-        recruitService.publishPremiumRecruit(recruitId, recruitRequest, posterImage);
+            @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) {
+
+        recruitService.publishPremiumDraft(securityMember.getId(), recruitId, recruitRequest, posterImage);
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 

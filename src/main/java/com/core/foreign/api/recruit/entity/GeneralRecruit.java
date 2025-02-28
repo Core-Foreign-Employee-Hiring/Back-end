@@ -3,6 +3,7 @@ package com.core.foreign.api.recruit.entity;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -75,6 +76,37 @@ public class GeneralRecruit extends Recruit {
                 jumpDate,
                 recruitPublishStatus
         );
+    }
+
+    public void updateFrom(RecruitRequestDTO.GeneralRecruitRequest request, String posterImageUrl) {
+        this.title = request.getTitle();
+        this.address = request.getAddress();
+        if (request.getBusinessFields() != null) {
+            this.businessFields = new java.util.HashSet<>(request.getBusinessFields());
+        }
+        this.latitude = request.getLatitude();
+        this.longitude = request.getLongitude();
+        this.recruitStartDate = request.getRecruitStartDate();
+        this.recruitEndDate = request.getRecruitEndDate();
+        this.gender = request.getGender();
+        this.education = request.getEducation();
+        this.otherConditions = request.getOtherConditions();
+        this.preferredConditions = request.getPreferredConditions();
+        this.workDuration = request.getWorkDuration();
+        this.workDurationOther = request.getWorkDurationOther();
+        this.workTime = request.getWorkTime();
+        this.workTimeOther = request.getWorkTimeOther();
+        this.workDays = request.getWorkDays();
+        this.workDaysOther = request.getWorkDaysOther();
+        this.salary = request.getSalary();
+        this.salaryType = request.getSalaryType();
+        this.salaryOther = request.getSalaryOther();
+        if (request.getApplicationMethods() != null) {
+            this.applicationMethods = new java.util.HashSet<>(request.getApplicationMethods());
+        }
+        if (posterImageUrl != null) {
+            this.posterImageUrl = posterImageUrl;
+        }
     }
 
 }
