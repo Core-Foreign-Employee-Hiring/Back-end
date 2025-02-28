@@ -138,4 +138,14 @@ public class ContractService {
 
         return fileContractUrl;
     }
+
+    @Transactional
+    public String getCompletedFileUploadContract(Long memberId, Long contractMetadataId){
+
+        contractUtils.validateContractOwner(contractMetadataId, memberId);
+
+        String fileContractUrl = contractReader.getCompletedFileUploadContract(contractMetadataId);
+
+        return fileContractUrl;
+    }
 }
