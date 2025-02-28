@@ -98,9 +98,11 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
     private BooleanBuilder statusEq(RecruitmentStatus recruitmentStatus, ContractStatus contractStatus) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(resume.recruitmentStatus.eq(recruitmentStatus));
-        if(recruitmentStatus.equals(RecruitmentStatus.APPROVED)){
-           builder.and(contractStatusEq(contractStatus));
+        if(recruitmentStatus!=null){
+            builder.and(resume.recruitmentStatus.eq(recruitmentStatus));
+            if(recruitmentStatus.equals(RecruitmentStatus.APPROVED)){
+                builder.and(contractStatusEq(contractStatus));
+            }
         }
 
         return builder;
