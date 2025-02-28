@@ -24,6 +24,9 @@ public class Employer extends Member {
     private String companyEmail;
     private String mainPhoneNumber;
 
+    @Embedded
+    private Address companyAddress;
+
     @OneToOne(mappedBy = "employer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PremiumManage premiumManage;
 
@@ -59,6 +62,10 @@ public class Employer extends Member {
 
     public void updateCompanyMainPhoneNumber(String mainPhoneNumber){
         this.mainPhoneNumber=mainPhoneNumber;
+    }
+
+    public void updateCompanyAddress(Address address){
+        this.companyAddress = address;
     }
 
     public void updateBusinessInfo(String businessNo, String startDate, String representativeName) {

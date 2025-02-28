@@ -1,6 +1,7 @@
 package com.core.foreign.api.contract.service;
 
 import com.core.foreign.api.aws.service.S3Service;
+import com.core.foreign.api.contract.dto.AdminContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.ContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.EmployeeCompletedContractResponseDTO;
 import com.core.foreign.api.contract.dto.EmployerCompletedContractResponseDTO;
@@ -17,10 +18,6 @@ import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,23 +33,11 @@ public class ContractService {
     private final S3Service s3Service;
     private final ContractUpdater contractUpdater;
     private final ContractUtils contractUtils;
+    private final ContractReader contractReader;
 
 
     public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
-
-        Pageable pageable= PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "id"));
-        Page<ContractMetadata> contractMetadata=null;
-
-        if(role.equals(Role.EMPLOYEE)){
-            contractMetadata=contractMetadataRepository.findByEmployeeId(memberId, ContractStatus.NOT_COMPLETED, pageable);
-        }
-        else if(role.equals(Role.EMPLOYER)) {
-            contractMetadata=contractMetadataRepository.findByEmployerId(memberId, ContractStatus.NOT_COMPLETED, pageable);
-        }
-
-        Page<ContractPreviewResponseDTO> dto = contractMetadata.map(ContractPreviewResponseDTO::from);
-
-        PageResponseDTO<ContractPreviewResponseDTO> response = PageResponseDTO.of(dto);
+        PageResponseDTO<ContractPreviewResponseDTO> response = contractReader.getNotCompletedContractMetadata(role, memberId, page);
 
         return response;
     }
@@ -115,7 +100,7 @@ public class ContractService {
             // S3에 업로드.
             url = s3Service.uploadImage(contract, FileDirAndName.FileContract);
 
-            contractUpdater.uploadFileContract(memberId, contractMetadataId, url);
+            contractUpdater.uploadFileContract(contractMetadataId, url);
         } catch (IOException e) {
             throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
         }
@@ -123,28 +108,14 @@ public class ContractService {
         return url;
     }
 
-
-
     public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployeeIdWithContract(employeeId, ContractStatus.COMPLETED, pageable);
-
-        Page<EmployeeCompletedContractResponseDTO> dto = contractMetadata
-                .map(EmployeeCompletedContractResponseDTO::from);
-
-        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = PageResponseDTO.of(dto);
+        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployee(employeeId, page);
 
         return response;
     }
 
     public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
-        Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployerIdWithContract(employerId, ContractStatus.COMPLETED, pageable);
-
-        Page<EmployerCompletedContractResponseDTO> dto = contractMetadata
-                .map(EmployerCompletedContractResponseDTO::from);
-
-        PageResponseDTO<EmployerCompletedContractResponseDTO> response = PageResponseDTO.of(dto);
+        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployer(employerId, page);
 
         return response;
     }
@@ -152,17 +123,19 @@ public class ContractService {
 
 
     @Transactional
-    public void test_approveContract(Long contractMetadataId){
-        ContractMetadata contractMetadata = contractMetadataRepository.findById(contractMetadataId)
-                .orElseThrow(() -> {
-                    log.warn("contractMetadataId: {} not found", contractMetadataId);
-                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
-                });
-
-
-        contractMetadata.completeFileUploadContract();
-
+    public void approveOrRejectFileUploadContract(Long contractMetadataId, ContractStatus contractStatus, String rejectionReason){
+        contractUpdater.approveOrRejectFileUploadContract(contractMetadataId, contractStatus, rejectionReason);
     }
 
+    public PageResponseDTO<AdminContractPreviewResponseDTO> getNotCompleteFileUploadContractMetadata(Integer page, Integer size){
+        PageResponseDTO<AdminContractPreviewResponseDTO> response = contractReader.getNotCompleteFileUploadContractMetadata(page, size);
 
+        return response;
+    }
+
+    public String getNotFileUploadCompleteContractMetadata(Long contractMetadataId){
+        String fileContractUrl = contractReader.getNotFileUploadCompleteContractMetadata(contractMetadataId);
+
+        return fileContractUrl;
+    }
 }

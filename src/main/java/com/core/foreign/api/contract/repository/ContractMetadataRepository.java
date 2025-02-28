@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
 import java.util.Optional;
 
 public interface ContractMetadataRepository extends JpaRepository<ContractMetadata, Long> {
@@ -48,15 +47,35 @@ public interface ContractMetadataRepository extends JpaRepository<ContractMetada
     Page<ContractMetadata> findByEmployerIdWithContract(@Param("employerId") Long employerId, @Param("contractStatus") ContractStatus contractStatus, Pageable pageable);
 
 
+    @Query("select cm from ContractMetadata cm" +
+            " join fetch cm.contract" +
+            " join fetch cm.resume resume" +
+            " join fetch resume.employee employee" +
+            " join fetch resume.recruit recruit" +
+            " join fetch recruit.employer employer" +
+            " where cm.contractStatus='NOT_COMPLETED' and cm.contractType='IMAGE_UPLOAD'" +
+            " order by cm.contract.updatedAt desc")
+    Page<ContractMetadata> findNotCompleteFileUploadContractMetadataBy(Pageable pageable);
+
+    @Query("select cm from ContractMetadata cm" +
+            " join fetch cm.contract" +
+            " join fetch cm.resume resume" +
+            " join fetch resume.employee employee" +
+            " join fetch resume.recruit recruit" +
+            " join fetch recruit.employer employer" +
+            " where cm.id=:contractMetadataId and cm.contractStatus='NOT_COMPLETED' and cm.contractType='IMAGE_UPLOAD'")
+    Optional<ContractMetadata> findNotCompleteFileUploadContractMetadataBy(@Param("contractMetadataId")Long contractMetadataId);
+
+
 
     @Query("select cm from ContractMetadata cm" +
             " join fetch cm.resume resume" +
             " join fetch resume.employee" +
             " join fetch resume.recruit recruit" +
             " join fetch recruit.employer" +
-            " join fetch cm.contract" +
+            " left join fetch cm.contract" +
             " where cm.id=:contractMetadataId")
-    Optional<ContractMetadata> findByContractMetadataId(@Param("contractMetadataId") Long contractMetadataId);
+    Optional<ContractMetadata> findByContractMetadataIdWithContract(@Param("contractMetadataId") Long contractMetadataId);
 
     @Query("select count(*)>0 from ContractMetadata cm" +
             " where cm.id=:contractMetadataId and cm.contractType='IMAGE_UPLOAD'")

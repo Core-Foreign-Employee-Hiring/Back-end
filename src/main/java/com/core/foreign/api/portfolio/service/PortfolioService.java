@@ -3,11 +3,8 @@ package com.core.foreign.api.portfolio.service;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
-import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.EmployeePortfolio;
-import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
-import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
-import com.core.foreign.api.member.repository.EmployeeRepository;
+import com.core.foreign.api.member.entity.*;
+import com.core.foreign.api.member.repository.*;
 import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.ApplicationPortfolioResponseDTO;
@@ -31,11 +28,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static com.core.foreign.common.response.ErrorStatus.RESUME_NOT_FOUND_EXCEPTION;
 import static com.core.foreign.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
 
 @Service
@@ -47,13 +42,16 @@ public class PortfolioService {
     private final ResumeRepository resumeRepository;
     private final ResumeReader resumeReader;
     private final EmployeePortfolioRepository employeePortfolioRepository;
+    private final EmployerEmployeeRepository employerEmployeeRepository;
+    private final EmployerResumeRepository employerResumeRepository;
+    private final MemberRepository memberRepository;
 
 
 
     public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page) {
-        Pageable pageable= PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
-        Page<Employee> by = employeeRepository.findAll(pageable);
+        Page<Employee> by = employeeRepository.findAllBy(pageable);
 
 
         Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(by.getContent());
@@ -75,7 +73,7 @@ public class PortfolioService {
      * 필터는 공고 부분 업직종 수정 후 가능함.
      */
     public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, BusinessField field) {
-        Pageable pageable= PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Resume> applicationPortfolio = resumeRepository.getApplicationPortfolio(field, pageable);
 
@@ -148,6 +146,60 @@ public class PortfolioService {
         ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files);
 
         return response;
+    }
+
+    @Transactional
+    public boolean flipEmployerEmployee(Long employerId, Long employeeId) {
+        Optional<EmployerEmployee> findEmployerEmployee = employerEmployeeRepository.findByEmployerIdAndEmployeeId(employerId, employeeId);
+
+        if (findEmployerEmployee.isPresent()) {
+            EmployerEmployee recruitBookmark = findEmployerEmployee.get();
+            employerEmployeeRepository.delete(recruitBookmark);
+            return false;
+        } else {
+            Employer employer = (Employer) memberRepository.findByMemberIdAndRole(employerId, Role.EMPLOYER)
+                    .orElseThrow(() -> {
+                        log.warn("[flipEmployerEmployee][고용인 찾을 수 없음.][employerId= {}]", employerId);
+                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+            Employee employee = (Employee) memberRepository.findByMemberIdAndRole(employeeId, Role.EMPLOYEE)
+                    .orElseThrow(() -> {
+                        log.warn("[flipEmployerEmployee][피고용인 찾을 수 없음.][employeeId= {}]", employeeId);
+                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+            EmployerEmployee employerEmployee = new EmployerEmployee(employer, employee);
+            employerEmployeeRepository.save(employerEmployee);
+            return true;
+        }
+    }
+
+    @Transactional
+    public boolean flipEmployerResume(Long employerId, Long resumeId) {
+        Optional<EmployerResume> findEmployerResume = employerResumeRepository.findByEmployerIdAndResumeId(employerId, resumeId);
+
+        if (findEmployerResume.isPresent()) {
+            EmployerResume employerResume = findEmployerResume.get();
+            employerResumeRepository.delete(employerResume);
+            return false;
+        } else {
+            Employer employer = (Employer) memberRepository.findByMemberIdAndRole(employerId, Role.EMPLOYER)
+                    .orElseThrow(() -> {
+                        log.warn("[flipEmployerResume][고용인 찾을 수 없음.][employerId= {}]", employerId);
+                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+            Resume resume = resumeRepository.findById(resumeId)
+                    .orElseThrow(() -> {
+                        log.warn("[flipEmployerResume][이력서 찾을 수 없음.][resumeId= {}]", resumeId);
+                        return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+            EmployerResume employerResume = new EmployerResume(employer, resume);
+            employerResumeRepository.save(employerResume);
+            return true;
+        }
     }
 
 

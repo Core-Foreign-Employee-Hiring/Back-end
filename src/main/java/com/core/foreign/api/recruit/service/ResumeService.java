@@ -6,7 +6,6 @@ import com.core.foreign.api.member.dto.TagResponseDTO;
 import com.core.foreign.api.member.entity.Employee;
 import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
-import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.entity.*;
@@ -34,7 +33,6 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final PremiumRecruitRepository  premiumRecruitRepository;
     private final ResumePortfolioRepository resumePortfolioRepository;
-    private final EmployeePortfolioRepository employeePortfolioRepository;
     private final ResumeReader resumeReader;
     private final ContractCreator contractCreator;
 
@@ -152,7 +150,7 @@ public class ResumeService {
             List<Long> invalids=new ArrayList<>(requests);
             invalids.removeAll(portfolioIds);
 
-            log.warn("[ResumeService][checkPortfolio][이상한 포트폴리오 넘겼음][{}]",invalids);
+            log.warn("[ResumeService][checkPortfolio][이상한 포트폴리오 넘겼음][invalidPortfolioIds={}]",invalids);
             throw new BadRequestException(INVALID_PORTFOLIO_EXCEPTION.getMessage());
         }
 
@@ -259,20 +257,21 @@ public class ResumeService {
 
 
     @Transactional
-    public void rejectResume(Long resumeId){
-        Resume resume = resumeRepository.findByResumeIdWithRecruit(resumeId).orElseThrow(() -> new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage()));
-        resume.reject();
-    }
-
-    @Transactional
-    public void approveResume(Long resumeId){
-        Resume resume = resumeRepository.findByResumeIdWithRecruit(resumeId)
+    public void approveOrRejectResume(Long memberId, Long resumeId, RecruitmentStatus recruitmentStatus){
+        Resume resume = resumeRepository.findByResumeIdWithRecruitAndEmployer(resumeId)
                 .orElseThrow(() -> {
                     log.warn("이력서 없음 resumeId= {}", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Recruit recruit = resume.getRecruit();
+
+        Employer employer = (Employer) recruit.getEmployer();
+
+        if(!employer.getId().equals(memberId)){
+            log.warn("[approveResume][고용주가 아닌데 변경 시도.][employerId= {}, memberId= {}]", employer.getId(), memberId);
+            throw new BadRequestException(INVALID_USER_EXCEPTION.getMessage());
+        }
 
         if(resume.getRecruitmentStatus().equals(RecruitmentStatus.APPROVED)){
             log.warn("이미 승인된 이력서 resumeId= {}", resumeId);
@@ -284,9 +283,14 @@ public class ResumeService {
             throw new BadRequestException(ALREADY_REJECTED_RESUME_EXCEPTION.getMessage());
         }
 
-        resume.approve();
+        if(recruitmentStatus.equals(RecruitmentStatus.APPROVED)){
+            resume.approve();
+            contractCreator.createContractMetadata(resume);
+        }
+        else if(recruitmentStatus.equals(RecruitmentStatus.REJECTED)){
+            resume.reject();
+        }
 
-        contractCreator.createContractMetadata(resume);
     }
 
 

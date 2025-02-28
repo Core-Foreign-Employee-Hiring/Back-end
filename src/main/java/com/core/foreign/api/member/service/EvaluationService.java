@@ -38,14 +38,14 @@ public class EvaluationService {
     public void evaluateEmployee(Long resumeId, List<EvaluationCategory> evaluationCategory){
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitIncludingDeleted(resumeId)
                 .orElseThrow(() -> {
-                    log.error("이력서가 없어 평가할 수 없음. resumeId={}", resumeId);
+                    log.warn("[evaluateEmployee][이력서가 없어 평가할 수 없음].[resumeId={}]", resumeId);
                     return new BadRequestException(EVALUATION_NOT_ALLOWED_FOR_USER_EXCEPTION.getMessage());
                 });
 
         validateApprovalStatus(resume);
 
         if(resume.getIsEmployeeEvaluatedByEmployer()== EvaluationStatus.COMPLETED){
-            log.error("고용인이 피고용인을 이미 평가했음. resumeId= {}", resume.getId());
+            log.warn("[evaluateEmployee][고용인이 피고용인을 이미 평가했음.][resumeId= {}]", resume.getId());
             throw new BadRequestException(EVALUATION_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
 
@@ -89,7 +89,7 @@ public class EvaluationService {
     public void evaluateEmployer(Long employeeId, Long recruitId, List<EvaluationCategory> evaluationCategory){
         Resume resume = resumeRepository.findByEmployeeIdAndRecruitIdIncludingDeleted(employeeId, recruitId)
                 .orElseThrow(() -> {
-                    log.error("이력서가 없어 평가할 수 없음. employeeId={}, recruitId={}", employeeId, recruitId);
+                    log.warn("[evaluateEmployer][이력서가 없어 평가할 수 없음.][employeeId={}, recruitId={}]", employeeId, recruitId);
                     return new BadRequestException(EVALUATION_NOT_ALLOWED_FOR_USER_EXCEPTION.getMessage());
                 });
 
@@ -97,7 +97,7 @@ public class EvaluationService {
         validateApprovalStatus(resume);
 
         if(resume.getIsEmployerEvaluatedByEmployee()==EvaluationStatus.COMPLETED){
-            log.error("피고용인이 고용인을 이미 평가했음. resumeId= {}", resume.getId());
+            log.warn("[evaluateEmployer][피고용인이 고용인을 이미 평가했음].[resumeId= {}]", resume.getId());
             throw new BadRequestException(EVALUATION_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
 
@@ -136,12 +136,12 @@ public class EvaluationService {
 
 
     private void validateApprovalStatus(Resume resume) {
-        // 모집 승인 상태가 아니거나, 승인일로부터 30일이 지나지 않았으면
+        // 모집 승인 상태가 아니거나, 계약서 완료부터 30일이 지나지 않았으면
         if (resume.getRecruitmentStatus() != RecruitmentStatus.APPROVED
-                || resume.getApprovedAt().plusMonths(1).isAfter(LocalDate.now())) {
+                || resume.getContractCompletionDate().plusMonths(1).isAfter(LocalDate.now())) {
 
-            log.error("모집 승인 상태가 아닌 경우 또는 승인일로부터 30일이 지나지 않았습니다. "
-                            + "현재 상태: {}, 모집 승인 날짜: {}, 30일 후 날짜: {}, 현재 날짜: {}",
+            log.warn("[validateApprovalStatus][모집 승인 상태가 아닌 경우 또는 승인일로부터 30일이 지나지 않았습니다.]"
+                            + "[현재 상태: {}, 계약서 완료 날짜: {}, 30일 후 날짜: {}, 현재 날짜: {}]",
                     resume.getRecruitmentStatus(),
                     resume.getApprovedAt(),
                     resume.getApprovedAt().plusMonths(1),
@@ -154,7 +154,7 @@ public class EvaluationService {
     private void validateEvaluationType(Set<EvaluationCategory> uniqueEvaluationCategories, EvaluationType type){
         for (EvaluationCategory uniqueEvaluationCategory : uniqueEvaluationCategories) {
             if(uniqueEvaluationCategory.getType()!=type){
-                log.error("평가 타입이 다름. EvaluationCategory({}, {}) 필요 타입=({})", uniqueEvaluationCategory.getDescription(), uniqueEvaluationCategory.getType(), type);
+                log.warn("[validateEvaluationType][평가 타입이 다름.][EvaluationCategory({}, {}) 필요 타입=({})]", uniqueEvaluationCategory.getDescription(), uniqueEvaluationCategory.getType(), type);
                 throw new BadRequestException(EVALUATION_TYPE_MISMATCH_EXCEPTION.getMessage());
             }
         }
@@ -164,7 +164,7 @@ public class EvaluationService {
     public List<EvaluationCategory> getEvaluation(Long memberId, Long resumeId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error("유저 못 찾음. memberId= {}", memberId);
+                    log.warn("[getEvaluation][유저 못 찾음.][memberId= {}]", memberId);
                     return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 

@@ -21,9 +21,9 @@ public class ContractUtils {
 
 
     public void validateContractOwner(Long contractMetadataId, Long memberId){
-        ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataId(contractMetadataId)
+        ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
-                    log.warn("contract metadata not found: contractMetadataId= {}", contractMetadataId);
+                    log.warn("[validateContractOwner][contract metadata not found][contractMetadataId= {}]", contractMetadataId);
                     return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 

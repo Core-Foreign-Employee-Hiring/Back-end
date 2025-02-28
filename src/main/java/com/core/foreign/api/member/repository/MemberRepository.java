@@ -1,6 +1,7 @@
 package com.core.foreign.api.member.repository;
 
 import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByUserIdAndEmailAndName(String userId, String email, String name);
     Optional<Member> findByNameAndPhoneNumber(String name, String phoneNumber);
     Optional<Member> findByPhoneNumber(String phoneNumber);
+
+    @Query("select m from Member m" +
+            " where m.id=:memberId and m.role=:role")
+    Optional<Member> findByMemberIdAndRole(@Param("memberId")Long memberId, @Param("role") Role role );
 
     @Transactional
     @Modifying
