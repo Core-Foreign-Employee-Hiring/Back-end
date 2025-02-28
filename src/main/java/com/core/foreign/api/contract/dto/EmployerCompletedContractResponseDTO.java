@@ -2,9 +2,9 @@ package com.core.foreign.api.contract.dto;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.contract.entity.ContractMetadata;
+import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.recruit.entity.ApplyMethod;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
@@ -17,6 +17,7 @@ import java.util.List;
 public class EmployerCompletedContractResponseDTO {
     private Long recruitId;
     private Long contractId;
+    private ContractType contractType;
     private String title; // 공고 제목
     private List<String> workDuration; // 근무 기간 목록
     private List<String> workDays;      // 근무 요일 목록
@@ -42,6 +43,7 @@ public class EmployerCompletedContractResponseDTO {
 
         dto.recruitId = resume.getId();
         dto.contractId = contractMetadata.getId();
+        dto.contractType = contractMetadata.getContractType();
         dto.title= recruit.getTitle();
         dto.recruitStartDate = recruit.getRecruitStartDate();
         dto.recruitEndDate = recruit.getRecruitEndDate();

@@ -71,6 +71,21 @@ public class ContractReader {
         return response;
     }
 
+    public String getCompletedFileUploadContract(Long contractMetadataId){
+        ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
+                .orElseThrow(() -> {
+                    log.warn("[getCompletedFileUploadContract][contractMetadata 조회 실패][contractMetadataId:{}]", contractMetadataId);
+                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();
+
+        String fileContractUrl = contract.getFileContractUrl();
+
+        return fileContractUrl;
+    }
+
 
     public PageResponseDTO<AdminContractPreviewResponseDTO> getNotCompleteFileUploadContractMetadata(Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);

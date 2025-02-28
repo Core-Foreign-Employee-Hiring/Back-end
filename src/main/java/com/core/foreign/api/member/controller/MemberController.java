@@ -871,6 +871,21 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
 
+    @Operation(summary = "완료된 계약서 상세 조회. API",
+            description = "완료된 계약서 상세 조회. <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/complete-file-upload-contract/{contract-id}")
+    public ResponseEntity<ApiResponse<String>> getCompletedFileUploadContract(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                              @PathVariable("contract-id") Long contractMetadataId) {
+        String response = contractService.getCompletedFileUploadContract(securityMember.getId(), contractMetadataId);
+
+        return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
+    }
+
     @Operation(summary = "고용인 완료된 계약서에서 공고 미리보기 조회. API",
             description = "고용인 완료된 계약서에서 공고 미리보기 조회 <br>"
     )
