@@ -246,10 +246,10 @@ public class ResumeService {
     }
 
     public PageResponseDTO<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
-                                                                             String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
-                                                                             Integer page){
+                                                                                        String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
+                                                                                        Integer page, Integer size) {
 
-        PageResponseDTO<ApplicationResumePreviewResponseDTO> response = resumeReader.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+        PageResponseDTO<ApplicationResumePreviewResponseDTO> response = resumeReader.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page, size);
 
         return response;
     }
@@ -294,9 +294,9 @@ public class ResumeService {
     }
 
 
-    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
+    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page, Integer size){
 
-        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeReader.getMyResumes(employeeId, page);
+        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeReader.getMyResumes(employeeId, page, size);
 
         return response;
     }

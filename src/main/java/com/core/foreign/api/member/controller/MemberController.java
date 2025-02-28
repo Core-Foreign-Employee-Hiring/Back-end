@@ -224,7 +224,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/profile/email")
-    public ResponseEntity<ApiResponse<Void>> updateMemberEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
+    public ResponseEntity<ApiResponse<Void>> updateMemberEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember) {
 
         memberService.updateMemberEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
@@ -239,7 +239,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/company-email")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember){
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember) {
 
         memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
@@ -257,9 +257,9 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyAddress(@AuthenticationPrincipal SecurityMember securityMember,
                                                                           @RequestParam String zipcode,
                                                                           @RequestParam String address1,
-                                                                          @RequestParam String address2){
+                                                                          @RequestParam String address2) {
 
-        memberService.updateCompanyAddress(securityMember.getId(),zipcode,address1,address2);
+        memberService.updateCompanyAddress(securityMember.getId(), zipcode, address1, address2);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
@@ -272,7 +272,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/profile/phone-number")
-    public ResponseEntity<ApiResponse<Void>> updateMemberPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
+    public ResponseEntity<ApiResponse<Void>> updateMemberPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember) {
 
         memberService.updateMemberPhoneNumber(securityMember.getId(), phoneNumber);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
@@ -287,7 +287,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/main-phone-number")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember){
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember) {
 
         memberService.updateEmployerCompanyPhoneNumber(securityMember.getId(), phoneNumber);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
@@ -313,8 +313,8 @@ public class MemberController {
 
     @Operation(
             summary = "고용주 약관 동의 수정 API",
-            description = "고용주의 약관 동의를 수정합니다.<br>"+
-                          "<p>" +
+            description = "고용주의 약관 동의를 수정합니다.<br>" +
+                    "<p>" +
                     "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
                     "isOver15 : 만 15세 이상 확인<br>" +
                     "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
@@ -364,7 +364,7 @@ public class MemberController {
                                                                            @RequestParam List<BusinessField> businessFields) {
         memberService.updateBusinessFiledOfEmployer(securityMember.getId(), businessFields);
 
-        if(businessFields.size()>=5) {
+        if (businessFields.size() >= 5) {
             throw new BadRequestException("최대 5개까지 가능합니다.");
         }
 
@@ -442,7 +442,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회사 이미지 변경 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PatchMapping(value="/employer/company-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/employer/company-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> updateCompanyImage(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @RequestPart(value = "companyImage", required = false) MultipartFile companyImage) {
 
@@ -474,7 +474,7 @@ public class MemberController {
     }
 
     @Operation(summary = "사업자번호 정보 변경. API",
-            description = "사업자번호 정보를 변경합니다.<br>"+
+            description = "사업자번호 정보를 변경합니다.<br>" +
                     "<p>" +
                     "businessNo: 사업자등록번호<br>" +
                     "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
@@ -484,7 +484,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 변경 성공."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PatchMapping(value="/employer/business-info")
+    @PatchMapping(value = "/employer/business-info")
     public ResponseEntity<ApiResponse<Void>> updateEmployerBusinessInfo(@AuthenticationPrincipal SecurityMember securityMember,
                                                                         @RequestParam String businessNo,
                                                                         @RequestParam String startDate,
@@ -495,7 +495,7 @@ public class MemberController {
     }
 
     @Operation(summary = "피고용인 포트폴리오 등록 API",
-            description = "피고용인의 포트폴리오를 등록합니다.<br>"+
+            description = "피고용인의 포트폴리오를 등록합니다.<br>" +
                     "<p>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
@@ -503,7 +503,7 @@ public class MemberController {
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topic: 주제<br>" +
                     "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>"+
+                    "englishTestScore: 영어능력시험 점수<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -522,14 +522,14 @@ public class MemberController {
     })
     @PostMapping("/employee/portfolio")
     public ResponseEntity<ApiResponse<Void>> createEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                        @RequestBody EmployeePortfolioDTO dto) {
+                                                                     @RequestBody EmployeePortfolioDTO dto) {
 
         employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.COMPLETED);
         return ApiResponse.success_only(CREATE_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
     @Operation(summary = "피고용인 포트폴리오 임시 등록 API",
-            description = "피고용인의 포트폴리오를 임시 등록합니다.<br>"+
+            description = "피고용인의 포트폴리오를 임시 등록합니다.<br>" +
                     "<p>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
@@ -537,7 +537,7 @@ public class MemberController {
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topic: 주제<br>" +
                     "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>"+
+                    "englishTestScore: 영어능력시험 점수<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -556,14 +556,14 @@ public class MemberController {
     })
     @PostMapping("/employee/temp-portfolio")
     public ResponseEntity<ApiResponse<Void>> createTempEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                     @RequestBody EmployeePortfolioDTO dto) {
+                                                                         @RequestBody EmployeePortfolioDTO dto) {
 
         employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.TEMPORARY);
         return ApiResponse.success_only(CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
     @Operation(summary = "피고용인 포트폴리오 조회 API",
-            description = "피고용인의 포트폴리오를 조회합니다.<br>"+
+            description = "피고용인의 포트폴리오를 조회합니다.<br>" +
                     "<p>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
@@ -571,7 +571,7 @@ public class MemberController {
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topic: 주제<br>" +
                     "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>"+
+                    "englishTestScore: 영어능력시험 점수<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -597,7 +597,7 @@ public class MemberController {
     }
 
     @Operation(summary = "피고용인 포트폴리오 임시 저장 조회 API",
-            description = "피고용인의 임시 저장된 포트폴리오를 조회합니다.<br>"+
+            description = "피고용인의 임시 저장된 포트폴리오를 조회합니다.<br>" +
                     "<p>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
@@ -605,7 +605,7 @@ public class MemberController {
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topic: 주제<br>" +
                     "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>"+
+                    "englishTestScore: 영어능력시험 점수<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -631,7 +631,7 @@ public class MemberController {
     }
 
     @Operation(summary = "피고용인 포트폴리오 수정 API",
-            description = "피고용인의 포트폴리오를 수정합니다.<br>"+
+            description = "피고용인의 포트폴리오를 수정합니다.<br>" +
                     "<p>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
@@ -639,7 +639,7 @@ public class MemberController {
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topic: 주제<br>" +
                     "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>"+
+                    "englishTestScore: 영어능력시험 점수<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -658,7 +658,7 @@ public class MemberController {
     })
     @PatchMapping("/employee/portfolio")
     public ResponseEntity<ApiResponse<Void>> updateEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                  @RequestBody EmployeePortfolioDTO dto) {
+                                                                     @RequestBody EmployeePortfolioDTO dto) {
 
         employeePortfolioService.updateEmployeePortfolio(securityMember.getId(), dto);
         return ApiResponse.success_only(SEND_EMPLOYER_PORTFOLIO_UPDATE_SUCCESS);
@@ -673,7 +673,7 @@ public class MemberController {
     })
     @PostMapping("/verify-password")
     public ResponseEntity<ApiResponse<Boolean>> checkPassword(@AuthenticationPrincipal SecurityMember securityMember,
-                                                           @RequestBody PasswordDTO passwordDTO) {
+                                                              @RequestBody PasswordDTO passwordDTO) {
 
         boolean b = memberService.checkPassword(securityMember.getId(), passwordDTO.getPassword());
         return ApiResponse.success(SEND_PASSWORD_VERIFICATION_COMPLETED, b);
@@ -688,9 +688,9 @@ public class MemberController {
     })
     @PatchMapping("/user-id")
     public ResponseEntity<ApiResponse<Void>> updateUserId(@AuthenticationPrincipal SecurityMember securityMember,
-                                                              @RequestBody UserIdDTO userIdDTO) {
+                                                          @RequestBody UserIdDTO userIdDTO) {
 
-         memberService.updateUserId(securityMember.getId(), userIdDTO.getUserId());
+        memberService.updateUserId(securityMember.getId(), userIdDTO.getUserId());
         return ApiResponse.success_only(SEND_UPDATE_USERID_SUCCESS);
     }
 
@@ -703,7 +703,7 @@ public class MemberController {
     })
     @PatchMapping("/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(@AuthenticationPrincipal SecurityMember securityMember,
-                                                          @RequestBody PasswordDTO passwordDTO) {
+                                                            @RequestBody PasswordDTO passwordDTO) {
 
         memberService.updateMemberPassword(securityMember.getId(), passwordDTO.getPassword());
         return ApiResponse.success_only(SEND_UPDATE_USERID_PASSWORD);
@@ -741,13 +741,13 @@ public class MemberController {
 
     @Operation(
             summary = "고용인이 피고용인 평가 API",
-            description = "고용인이 피고용인을 평가합니다."+
-            "<p>" +
-            "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
-            "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
-            "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
-            "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
-            "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"
+            description = "고용인이 피고용인을 평가합니다." +
+                    "<p>" +
+                    "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
+                    "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
+                    "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
+                    "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
+                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 성공"),
@@ -757,7 +757,7 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> evaluateEmployee(@AuthenticationPrincipal SecurityMember securityMember,
                                                               @RequestBody EmployerToEmployeeEvaluationRequestDTO dto) {
 
-        if(dto.getEvaluationCategory().isEmpty()){
+        if (dto.getEvaluationCategory().isEmpty()) {
             throw new BadRequestException(ErrorStatus.EVALUATION_CATEGORY_IS_EMPTY_EXCEPTION.getMessage());
         }
 
@@ -793,13 +793,13 @@ public class MemberController {
 
     @Operation(
             summary = "평가보기. API",
-            description = "평가보기입니다."+
+            description = "평가보기입니다." +
                     "<p>" +
                     "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
                     "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
                     "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
                     "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
-                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"+
+                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>" +
                     "<p>" +
                     "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
                     "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
@@ -814,7 +814,7 @@ public class MemberController {
     })
     @GetMapping("/evaluations")
     public ResponseEntity<ApiResponse<List<EvaluationCategory>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                               @RequestParam("resumeId")Long resumeId) {
+                                                                               @RequestParam("resumeId") Long resumeId) {
 
         List<EvaluationCategory> evaluation = evaluationService.getEvaluation(securityMember.getId(), resumeId);
         return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
@@ -831,9 +831,9 @@ public class MemberController {
     })
     @GetMapping("/tags")
     public ResponseEntity<ApiResponse<PageResponseDTO<TagResponseDTO>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                           @RequestParam("evaluationStatus") EvaluationStatus evaluationStatus,
-                                                                           @RequestParam("page") Integer page,
-                                                                           @RequestParam("size") Integer size) {
+                                                                                      @RequestParam("evaluationStatus") EvaluationStatus evaluationStatus,
+                                                                                      @RequestParam("page") Integer page,
+                                                                                      @RequestParam("size") Integer size) {
 
         PageResponseDTO<TagResponseDTO> tags = resumeService.getTags(securityMember.getId(), evaluationStatus, page, size);
         return ApiResponse.success(SuccessStatus.TAG_VIEW_SUCCESS, tags);
@@ -848,8 +848,9 @@ public class MemberController {
     })
     @GetMapping(value = "/employee/complete-contract")
     public ResponseEntity<ApiResponse<PageResponseDTO<EmployeeCompletedContractResponseDTO>>> getCompletedContractOfEmployee(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployee(securityMember.getId(), page);
+                                                                                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                             @RequestParam("size") Integer size) {
+        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployee(securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
@@ -863,8 +864,9 @@ public class MemberController {
     })
     @GetMapping(value = "/employer/complete-contract")
     public ResponseEntity<ApiResponse<PageResponseDTO<EmployerCompletedContractResponseDTO>>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployer(securityMember.getId(), page);
+                                                                                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                             @RequestParam("size") Integer size) {
+        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractService.getCompletedContractMetadataOfEmployer(securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
@@ -878,7 +880,7 @@ public class MemberController {
     })
     @GetMapping(value = "/employer/complete-contract/recruit")
     public ResponseEntity<ApiResponse<RecruitPreviewInContractResponseDTO>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                  @RequestParam("recruitId")Long recruitId) {
+                                                                                                           @RequestParam("recruitId") Long recruitId) {
         RecruitPreviewInContractResponseDTO response = recruitService.getRecruitPreviewInContract(recruitId);
 
 

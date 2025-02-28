@@ -36,8 +36,8 @@ public class ContractService {
     private final ContractReader contractReader;
 
 
-    public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
-        PageResponseDTO<ContractPreviewResponseDTO> response = contractReader.getNotCompletedContractMetadata(role, memberId, page);
+    public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page, Integer size) {
+        PageResponseDTO<ContractPreviewResponseDTO> response = contractReader.getNotCompletedContractMetadata(role, memberId, page, size);
 
         return response;
     }
@@ -108,14 +108,14 @@ public class ContractService {
         return url;
     }
 
-    public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page){
-        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployee(employeeId, page);
+    public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page, Integer size){
+        PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployee(employeeId, page, size);
 
         return response;
     }
 
-    public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page){
-        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployer(employerId, page);
+    public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page, Integer size){
+        PageResponseDTO<EmployerCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployer(employerId, page, size);
 
         return response;
     }

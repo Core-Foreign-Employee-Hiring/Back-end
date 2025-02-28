@@ -48,8 +48,8 @@ public class PortfolioService {
 
 
 
-    public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page) {
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "updatedAt"));
+    public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page, Integer size) {
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Employee> by = employeeRepository.findAllBy(pageable);
 
@@ -72,8 +72,8 @@ public class PortfolioService {
     /**
      * 필터는 공고 부분 업직종 수정 후 가능함.
      */
-    public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, BusinessField field) {
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "updatedAt"));
+    public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, Integer size, BusinessField field) {
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Resume> applicationPortfolio = resumeRepository.getApplicationPortfolio(field, pageable);
 

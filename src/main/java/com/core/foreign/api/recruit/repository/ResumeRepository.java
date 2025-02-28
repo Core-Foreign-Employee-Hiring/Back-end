@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRepositoryQueryDSL {
 
     @Query(nativeQuery = true,
-            value = "select recruit_id as recruitId, count(*) as resumeCount from Resume" +
+            value = "select recruit_id as recruitId, count(*) as resumeCount from resume" +
                     " where recruit_id in :recruitIds and is_deleted=false" +
                     " group by recruit_id")
     List<RecruitWithResumeCountDTO> findRecruitWithResumeCount(@Param("recruitIds") List<Long> recruitIds);

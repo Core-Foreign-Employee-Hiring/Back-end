@@ -492,10 +492,10 @@ public class RecruitController {
     })
     @PostMapping("/general/{recruit-id}/apply")
     public ResponseEntity<ApiResponse<Void>> applyGeneralRecruit(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                       @PathVariable("recruit-id") Long recruitId,
-                                                                       @RequestBody GeneralResumeRequestDTO dto) {
+                                                                 @PathVariable("recruit-id") Long recruitId,
+                                                                 @RequestBody GeneralResumeRequestDTO dto) {
 
-        resumeService.applyResume(securityMember.getId(), recruitId,dto);
+        resumeService.applyResume(securityMember.getId(), recruitId, dto);
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
@@ -507,10 +507,10 @@ public class RecruitController {
     })
     @PostMapping("/premium/{recruit-id}/apply")
     public ResponseEntity<ApiResponse<Void>> applyPremiumResume(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                 @PathVariable("recruit-id") Long recruitId,
-                                                                 @RequestBody PremiumResumeRequestDTO dto) {
+                                                                @PathVariable("recruit-id") Long recruitId,
+                                                                @RequestBody PremiumResumeRequestDTO dto) {
 
-        resumeService.applyPremiumResume(securityMember.getId(), recruitId,dto);
+        resumeService.applyPremiumResume(securityMember.getId(), recruitId, dto);
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
@@ -550,13 +550,13 @@ public class RecruitController {
 
     @Operation(summary = "공고 상세 조회 API",
             description = "공고 ID를 받아 해당 공고의 상세 정보를 반환합니다.<br>" +
-                    "반환 정보: 회사(점포) 명, 회사 아이콘 이미지, 공고 제목, 급여(시급) 정보 등 공고 등록된 모든 정보를 포함합니다.<br>"+
+                    "반환 정보: 회사(점포) 명, 회사 아이콘 이미지, 공고 제목, 급여(시급) 정보 등 공고 등록된 모든 정보를 포함합니다.<br>" +
                     "<p>" +
-                    "employerAddress : 회사 주소<br>"+
-                    "employerContact : 연락처<br>"+
-                    "representative : 담당자명<br>"+
+                    "employerAddress : 회사 주소<br>" +
+                    "employerContact : 연락처<br>" +
+                    "representative : 담당자명<br>" +
                     "employerEmail : 이메일<br>" +
-                    "businessRegistrationNumber : 사업자등록번호<br>"+
+                    "businessRegistrationNumber : 사업자등록번호<br>" +
                     "paysOnTime: 약속된 급여를 제때 줘요 (개수)<br>" +
                     "keepsContractDates: 계약된 날짜를 잘 지켰어요 (개수)<br>" +
                     "respectsEmployees: 알바생을 존중해줘요 (개수)<br>" +
@@ -585,8 +585,9 @@ public class RecruitController {
     })
     @GetMapping(value = "/apply-status")
     public ResponseEntity<ApiResponse<PageResponseDTO<RecruitmentApplyStatusDTO>>> getRecruitmentApplicationStatus(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                @RequestParam("page") Integer page) {
-        PageResponseDTO<RecruitmentApplyStatusDTO> recruitmentApplyStatus = recruitService.getRecruitmentApplyStatus(securityMember.getId(), page);
+                                                                                                                   @RequestParam("page") Integer page,
+                                                                                                                   @RequestParam("size") Integer size) {
+        PageResponseDTO<RecruitmentApplyStatusDTO> recruitmentApplyStatus = recruitService.getRecruitmentApplyStatus(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
     }
 
@@ -599,7 +600,7 @@ public class RecruitController {
     })
     @GetMapping(value = "/resumes/{resume-id}")
     public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getResume(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                        @PathVariable("resume-id") Long resumeId) {
+                                                                               @PathVariable("resume-id") Long resumeId) {
         ApplicationResumeResponseDTO resume = resumeService.getResume(securityMember.getId(), resumeId);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
     }
@@ -622,13 +623,14 @@ public class RecruitController {
     })
     @GetMapping(value = "/{recruit-id}/resumes")
     public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationResumePreviewResponseDTO>>> searchApplicationResume(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                  @PathVariable("recruit-id") Long recruitId,
-                                                                                                                  @RequestParam(value = "keyword", required = false) String keyword,
-                                                                                                                  @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
-                                                                                                                  @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
-                                                                                                                  @RequestParam("page") Integer page) {
+                                                                                                                     @PathVariable("recruit-id") Long recruitId,
+                                                                                                                     @RequestParam(value = "keyword", required = false) String keyword,
+                                                                                                                     @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
+                                                                                                                     @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
+                                                                                                                     @RequestParam("page") Integer page,
+                                                                                                                     @RequestParam("size") Integer size) {
 
-        PageResponseDTO<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page);
+        PageResponseDTO<ApplicationResumePreviewResponseDTO> responseDTOS = resumeService.searchApplicationResume(recruitId, keyword, recruitmentStatus, contractStatus, page, size);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANTS_FOR_RECRUIT_SUCCESS, responseDTOS);
     }
 
@@ -656,7 +658,7 @@ public class RecruitController {
     })
     @PostMapping(value = "/resumes/{resume-id}/approve")
     public ResponseEntity<ApiResponse<Void>> approveApprove(@AuthenticationPrincipal SecurityMember securityMember,
-                                                          @PathVariable("resume-id") Long resumeId
+                                                            @PathVariable("resume-id") Long resumeId
     ) {
         resumeService.approveOrRejectResume(securityMember.getId(), resumeId, RecruitmentStatus.APPROVED);
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
@@ -671,9 +673,10 @@ public class RecruitController {
     })
     @GetMapping(value = "/my-resumes")
     public ResponseEntity<ApiResponse<PageResponseDTO<EmployeeApplicationStatusResponseDTO>>> getMyResumes(@AuthenticationPrincipal SecurityMember securityMember,
-                                                           @RequestParam("page") Integer page) {
+                                                                                                           @RequestParam("page") Integer page,
+                                                                                                           @RequestParam("size") Integer size) {
 
-        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page);
+        PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = resumeService.getMyResumes(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, response);
     }
 
@@ -701,7 +704,7 @@ public class RecruitController {
     })
     @PatchMapping(value = "/{recruit-id}/bookmark")
     public ResponseEntity<ApiResponse<Boolean>> flipRecruitBookmark(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                 @PathVariable("recruit-id") Long recruitId) {
+                                                                    @PathVariable("recruit-id") Long recruitId) {
 
         boolean b = recruitService.flipRecruitBookmark(securityMember.getId(), recruitId);
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, b);
@@ -716,9 +719,10 @@ public class RecruitController {
     })
     @GetMapping(value = "/bookmarks")
     public ResponseEntity<ApiResponse<PageResponseDTO<RecruitBookmarkResponseDTO>>> getRecruitBookmarks(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                 @RequestParam(value = "page", defaultValue = "0") Integer  page) {
+                                                                                                        @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                        @RequestParam("size") Integer size) {
 
-        PageResponseDTO<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page);
+        PageResponseDTO<RecruitBookmarkResponseDTO> response = recruitService.getMyRecruitBookmark(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_BOOKMARKED_RECRUITS_SUCCESS, response);
     }
 
@@ -740,10 +744,10 @@ public class RecruitController {
     })
     @GetMapping(value = "/my")
     public ResponseEntity<ApiResponse<PageResponseDTO<MyRecruitResponseDTO>>> getMyRecruits(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                         @RequestParam(value = "page", defaultValue = "0") Integer  page,
-                                                                         @RequestParam("size")Integer size,
-                                                                         @RequestParam(value = "recruitType", required = false)RecruitType recruitType,
-                                                                         @RequestParam(value = "excludeExpired", defaultValue = "false")boolean excludeExpired) {
+                                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                            @RequestParam("size") Integer size,
+                                                                                            @RequestParam(value = "recruitType", required = false) RecruitType recruitType,
+                                                                                            @RequestParam(value = "excludeExpired", defaultValue = "false") boolean excludeExpired) {
 
         PageResponseDTO<MyRecruitResponseDTO> recruits = recruitService.getMyRecruits(securityMember.getId(), page, size, recruitType, excludeExpired);
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
@@ -758,8 +762,8 @@ public class RecruitController {
     })
     @GetMapping(value = "/draft/my")
     public ResponseEntity<ApiResponse<PageResponseDTO<MyDraftRecruitResponseDTO>>> getMyDraftRecruits(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                 @RequestParam(value = "page", defaultValue = "0") Integer  page,
-                                                                                 @RequestParam("size")Integer size) {
+                                                                                                      @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                      @RequestParam("size") Integer size) {
 
         PageResponseDTO<MyDraftRecruitResponseDTO> recruits = recruitService.getMyDraftRecruits(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);

@@ -340,8 +340,8 @@ public class PaymentService {
         return "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
     }
 
-    public PageResponseDTO<PaymentHistoryResponseDTO> getPaymentHistory(Long memberId, Integer page){
-        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
+    public PageResponseDTO<PaymentHistoryResponseDTO> getPaymentHistory(Long memberId, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<PaymentHistoryResponseDTO> dto= paymentRepository.findAllByMemberId(memberId, pageable)
                 .map(PaymentHistoryResponseDTO::from);
