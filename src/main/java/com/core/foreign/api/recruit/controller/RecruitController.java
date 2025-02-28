@@ -764,7 +764,7 @@ public class RecruitController {
     public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationResumePreviewResponseDTO>>> searchApplicationResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                      @PathVariable("recruit-id") Long recruitId,
                                                                                                                      @RequestParam(value = "keyword", required = false) String keyword,
-                                                                                                                     @RequestParam("recruitmentStatus") RecruitmentStatus recruitmentStatus,
+                                                                                                                     @RequestParam(value = "recruitmentStatus", required = false) RecruitmentStatus recruitmentStatus,
                                                                                                                      @RequestParam(value = "contractStatus", required = false) ContractStatus contractStatus,
                                                                                                                      @RequestParam("page") Integer page,
                                                                                                                      @RequestParam("size") Integer size) {
