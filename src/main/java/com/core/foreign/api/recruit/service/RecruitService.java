@@ -643,8 +643,8 @@ public class RecruitService {
         return response;
     }
 
-    public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page){
-        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "id"));
+    public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Recruit> byEmployerId = recruitRepository.findPublishedRecruitsByEmployerId(employerId, pageable);
         List<Long> recruitIds=new ArrayList<>();
@@ -690,9 +690,9 @@ public class RecruitService {
     }
 
 
-    public PageResponseDTO<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page){
+    public PageResponseDTO<RecruitBookmarkResponseDTO> getMyRecruitBookmark(Long memberId, Integer page, Integer size){
 
-        Pageable pageable = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<RecruitBookmarkResponseDTO> dto = recruitBookmarkRepository.findByMemberId(memberId, pageable)
                 .map(RecruitBookmarkResponseDTO::from);
 

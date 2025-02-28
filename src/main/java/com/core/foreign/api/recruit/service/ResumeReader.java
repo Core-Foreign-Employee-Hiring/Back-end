@@ -108,9 +108,9 @@ public class ResumeReader {
     }
 
     public PageResponseDTO<ApplicationResumePreviewResponseDTO> searchApplicationResume(Long recruitId,
-                                                                             String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
-                                                                             Integer page){
-        Pageable pageable = PageRequest.of(page, 5);
+                                                                                        String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
+                                                                                        Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Resume> resumes = resumeRepository.searchResumedByRecruitId(recruitId, keyword, recruitmentStatus, contractStatus, pageable);
         Page<ApplicationResumePreviewResponseDTO> dto = resumes.map(ApplicationResumePreviewResponseDTO::from);
@@ -119,8 +119,8 @@ public class ResumeReader {
         return response;
     }
 
-    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+    public PageResponseDTO<EmployeeApplicationStatusResponseDTO> getMyResumes(Long employeeId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<EmployeeApplicationStatusResponseDTO> dto = resumeRepository.findResumeByEmployeeId(employeeId, pageable)
                 .map(EmployeeApplicationStatusResponseDTO::from);
 

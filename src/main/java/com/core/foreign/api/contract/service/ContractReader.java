@@ -1,6 +1,5 @@
 package com.core.foreign.api.contract.service;
 
-import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.contract.dto.AdminContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.ContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.EmployeeCompletedContractResponseDTO;
@@ -29,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContractReader {
     private final ContractMetadataRepository contractMetadataRepository;
 
-    public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page) {
+    public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page, Integer size) {
 
-        Pageable pageable= PageRequest.of(page, 4, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata=null;
 
         if(role.equals(Role.EMPLOYEE)){
@@ -48,8 +47,8 @@ public class ContractReader {
         return response;
     }
 
-    public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+    public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployeeIdWithContract(employeeId, ContractStatus.COMPLETED, pageable);
 
         Page<EmployeeCompletedContractResponseDTO> dto = contractMetadata
@@ -60,8 +59,8 @@ public class ContractReader {
         return response;
     }
 
-    public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page){
-        Pageable pageable= PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "id"));
+    public PageResponseDTO<EmployerCompletedContractResponseDTO>getCompletedContractMetadataOfEmployer(Long employerId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<ContractMetadata> contractMetadata = contractMetadataRepository.findByEmployerIdWithContract(employerId, ContractStatus.COMPLETED, pageable);
 
         Page<EmployerCompletedContractResponseDTO> dto = contractMetadata

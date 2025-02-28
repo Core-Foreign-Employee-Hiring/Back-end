@@ -39,8 +39,9 @@ public class ContractController {
     })
     @GetMapping(value = "/not-completed")
     public ResponseEntity<ApiResponse<PageResponseDTO<ContractPreviewResponseDTO>>> getNotCompletedContract(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                 @RequestParam(value = "page", defaultValue = "0")Integer page) {
-        PageResponseDTO<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getNotCompletedContractMetadata(securityMember.getRole(), securityMember.getId(), page);
+                                                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                            @RequestParam("size") Integer size) {
+        PageResponseDTO<ContractPreviewResponseDTO> contractMetadataOfEmployee = contractService.getNotCompletedContractMetadata(securityMember.getRole(), securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.INCOMPLETE_CONTRACT_VIEW_SUCCESS, contractMetadataOfEmployee);
     }

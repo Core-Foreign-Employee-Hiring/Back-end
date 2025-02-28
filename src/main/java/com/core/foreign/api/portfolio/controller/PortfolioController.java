@@ -35,8 +35,9 @@ public class PortfolioController {
     })
     @GetMapping(value = "/basics")
     public ResponseEntity<ApiResponse<PageResponseDTO<BasicPortfolioPreviewResponseDTO>>> getBasicPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        PageResponseDTO<BasicPortfolioPreviewResponseDTO> basicPortfolios = portfolioService.getBasicPortfolios(page);
+                                                                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                             @RequestParam("size") Integer size) {
+        PageResponseDTO<BasicPortfolioPreviewResponseDTO> basicPortfolios = portfolioService.getBasicPortfolios(page, size);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolios);
     }
@@ -50,7 +51,7 @@ public class PortfolioController {
     })
     @GetMapping(value = "/basics/{employee-id}")
     public ResponseEntity<ApiResponse<BasicPortfolioResponseDTO>> getBasicPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                  @PathVariable("employee-id") Long employeeId) {
+                                                                                    @PathVariable("employee-id") Long employeeId) {
         BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(employeeId);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolio);
@@ -66,9 +67,10 @@ public class PortfolioController {
     })
     @GetMapping(value = "/applications")
     public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationPortfolioPreviewResponseDTO>>> getApplicationPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                              @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                                                              @RequestParam("filter") BusinessField businessField) {
-        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> applicationPortfolios = portfolioService.getApplicationPortfolios(page, businessField);
+                                                                                                                         @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                         @RequestParam("filter") BusinessField businessField,
+                                                                                                                         @RequestParam("size") Integer size) {
+        PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> applicationPortfolios = portfolioService.getApplicationPortfolios(page, size, businessField);
 
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolios);
     }
@@ -82,7 +84,7 @@ public class PortfolioController {
     })
     @GetMapping(value = "/applications/{resume-id}")
     public ResponseEntity<ApiResponse<ApplicationPortfolioResponseDTO>> getApplicationPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                              @PathVariable("resume-id") Long resumeId) {
+                                                                                                @PathVariable("resume-id") Long resumeId) {
         ApplicationPortfolioResponseDTO applicationPortfolio = portfolioService.getApplicationPortfolio(resumeId);
 
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolio);
@@ -97,7 +99,7 @@ public class PortfolioController {
     })
     @PostMapping(value = "/basics/{employee-id}")
     public ResponseEntity<ApiResponse<Boolean>> flipEmployerEmployee(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                @PathVariable("employee-id") Long employeeId) {
+                                                                     @PathVariable("employee-id") Long employeeId) {
         boolean flip = portfolioService.flipEmployerEmployee(securityMember.getId(), employeeId);
 
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, flip);
@@ -112,7 +114,7 @@ public class PortfolioController {
     })
     @PostMapping(value = "/applications/{resume-id}")
     public ResponseEntity<ApiResponse<Boolean>> flipEmployerResume(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                     @PathVariable("resume-id") Long resumeId) {
+                                                                   @PathVariable("resume-id") Long resumeId) {
         boolean flip = portfolioService.flipEmployerResume(securityMember.getId(), resumeId);
 
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, flip);

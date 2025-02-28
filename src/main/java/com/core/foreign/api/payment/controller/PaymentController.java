@@ -104,9 +104,9 @@ public class PaymentController {
     })
     @GetMapping("/history")
     public ResponseEntity<ApiResponse<PageResponseDTO<PaymentHistoryResponseDTO>>> getPaymentHistory(@AuthenticationPrincipal SecurityMember securityMember,
-                                                           @RequestParam("page") Integer page) {
-
-        PageResponseDTO<PaymentHistoryResponseDTO> paymentHistory = paymentService.getPaymentHistory(securityMember.getId(), page);
+                                                                                                     @RequestParam("page") Integer page,
+                                                                                                     @RequestParam("size") Integer size) {
+        PageResponseDTO<PaymentHistoryResponseDTO> paymentHistory = paymentService.getPaymentHistory(securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.SEND_PAYMENT_HISTORY_SUCCESS, paymentHistory);
     }
