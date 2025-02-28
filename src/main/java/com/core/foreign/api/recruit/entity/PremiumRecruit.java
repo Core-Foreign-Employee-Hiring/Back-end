@@ -3,6 +3,7 @@ package com.core.foreign.api.recruit.entity;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.recruit.dto.RecruitRequestDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -90,6 +91,52 @@ public class PremiumRecruit extends Recruit {
     public void addPortfolios(List<Portfolio> portfolioList) {
         for (Portfolio portfolio : portfolioList) {
             this.addPortfolio(portfolio);
+        }
+    }
+
+    public void updateFrom(RecruitRequestDTO.PremiumRecruitRequest request, String posterImageUrl) {
+        this.title = request.getTitle();
+        this.address = request.getAddress();
+        if (request.getBusinessFields() != null) {
+            this.businessFields = new java.util.HashSet<>(request.getBusinessFields());
+        }
+        this.latitude = request.getLatitude();
+        this.longitude = request.getLongitude();
+        this.recruitStartDate = request.getRecruitStartDate();
+        this.recruitEndDate = request.getRecruitEndDate();
+        this.gender = request.getGender();
+        this.education = request.getEducation();
+        this.otherConditions = request.getOtherConditions();
+        this.preferredConditions = request.getPreferredConditions();
+        this.workDuration = request.getWorkDuration();
+        this.workDurationOther = request.getWorkDurationOther();
+        this.workTime = request.getWorkTime();
+        this.workTimeOther = request.getWorkTimeOther();
+        this.workDays = request.getWorkDays();
+        this.workDaysOther = request.getWorkDaysOther();
+        this.salary = request.getSalary();
+        this.salaryType = request.getSalaryType();
+        this.salaryOther = request.getSalaryOther();
+        if (request.getApplicationMethods() != null) {
+            this.applicationMethods = new java.util.HashSet<>(request.getApplicationMethods());
+        }
+        if (posterImageUrl != null) {
+            this.posterImageUrl = posterImageUrl;
+        }
+    }
+
+    public void updatePortfolios(java.util.List<RecruitRequestDTO.PremiumRecruitRequest.PortfolioRequest> portfolioDTOs) {
+        this.portfolios.clear();
+        if (portfolioDTOs != null) {
+            for (RecruitRequestDTO.PremiumRecruitRequest.PortfolioRequest dto : portfolioDTOs) {
+                Portfolio portfolio = Portfolio.builder()
+                        .title(dto.getTitle())
+                        .type(dto.getType())
+                        .isRequired(dto.isRequired())
+                        .maxFileCount(dto.getMaxFileCount())
+                        .build();
+                this.addPortfolio(portfolio);
+            }
         }
     }
 }

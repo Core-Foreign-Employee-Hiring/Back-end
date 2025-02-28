@@ -100,6 +100,10 @@ public abstract class Recruit extends BaseTimeEntity {
         this.jumpDate = LocalDateTime.now();
     }
 
+    public void updatePublishStatus(RecruitPublishStatus status) {
+        this.recruitPublishStatus = status;
+    }
+
     protected Recruit(String title,
                       Member employer,
                       Address address,

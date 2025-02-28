@@ -144,7 +144,6 @@ public class RecruitService {
                 .toList();
 
         portfolios.forEach(premiumRecruit::addPortfolio);
-        recruitRepository.save(premiumRecruit);
 
         // 프리미엄 공고 등록 횟수 감소
         int updatedRows = premiumManageRepository.decreasePremiumCount(employer.getId());
@@ -152,28 +151,22 @@ public class RecruitService {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
 
+        recruitRepository.save(premiumRecruit);
     }
 
     // 일반 공고 임시저장
     @Transactional
-    public void saveGeneralRecruitDraft(
-            Long memberId,
-            RecruitRequestDTO.GeneralRecruitRequest request,
-            MultipartFile posterImage
-    ) {
+    public void createGeneralDraft(Long memberId, RecruitRequestDTO.GeneralRecruitRequest request, MultipartFile posterImage) {
+
         Member employer = getEmployer(memberId);
 
-        // 임시 저장 한 데이터 삭제
-        deleteDraft(employer);
-
-        // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
-        GeneralRecruit draftRecruit = GeneralRecruit.builder()
+        GeneralRecruit draft = GeneralRecruit.builder()
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new HashSet<>(request.getBusinessFields()))
+                .businessFields(request.getBusinessFields() != null ? new java.util.HashSet<>(request.getBusinessFields()) : null)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -181,23 +174,62 @@ public class RecruitService {
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
-                .preferredConditions(new ArrayList<>(request.getPreferredConditions()))
-                .workDuration(new ArrayList<>(request.getWorkDuration()))
+                .preferredConditions(request.getPreferredConditions())
+                .workDuration(request.getWorkDuration())
                 .workDurationOther(request.getWorkDurationOther())
-                .workTime(new ArrayList<>(request.getWorkTime()))
+                .workTime(request.getWorkTime())
                 .workTimeOther(request.getWorkTimeOther())
-                .workDays(new ArrayList<>(request.getWorkDays()))
+                .workDays(request.getWorkDays())
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
                 .salaryOther(request.getSalaryOther())
-                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
+                .applicationMethods(request.getApplicationMethods() != null ? new java.util.HashSet<>(request.getApplicationMethods()) : null)
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
                 .jumpDate(null)
                 .build();
+        recruitRepository.save(draft);
+    }
 
-        recruitRepository.save(draftRecruit);
+    // 임시 저장된 일반 공고 수정
+    @Transactional
+    public void updateGeneralDraft(Long memberId, Long draftId, RecruitRequestDTO.GeneralRecruitRequest request, MultipartFile posterImage) {
+        // 공고를 찾을 수 없을 경우 예외처리
+        GeneralRecruit draft = recruitRepository.findGeneralDraftById(draftId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 원 작성자와 요청 사용자가 다를경우 예외처리
+        if (!draft.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        String posterImageUrl = uploadPosterImage(posterImage);
+        draft.updateFrom(request, posterImageUrl);
+        recruitRepository.save(draft);
+    }
+
+    // 일반 공고 퍼블리싱
+    @Transactional
+    public void publishGeneralDraft(Long memberId, Long draftId, RecruitRequestDTO.GeneralRecruitRequest request, MultipartFile posterImage) {
+        // 공고를 찾을 수 없을 경우 예외처리
+        GeneralRecruit draft = recruitRepository.findGeneralDraftById(draftId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 원 작성자와 요청 사용자가 다를경우 예외처리
+        if (!draft.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        // 이미 퍼블리싱인 경우 예외처리
+        if (!draft.getRecruitPublishStatus().equals(RecruitPublishStatus.DRAFT)) {
+            throw new BadRequestException(ErrorStatus.ALEADY_PUBLISHED_RECRUIT_ARTICLE_EXCEPTION.getMessage());
+        }
+
+        String posterImageUrl = uploadPosterImage(posterImage);
+        draft.updateFrom(request, posterImageUrl);
+        draft.updatePublishStatus(RecruitPublishStatus.PUBLISHED);
+        recruitRepository.save(draft);
     }
 
     // 프리미엄 공고 임시저장
@@ -216,17 +248,15 @@ public class RecruitService {
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
-        // 임시 저장 한 데이터 삭제
-        deleteDraft(employer);
 
         // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
-        PremiumRecruit draftRecruit = PremiumRecruit.builder()
+        PremiumRecruit draft = PremiumRecruit.builder()
                 .title(request.getTitle())
                 .address(request.getAddress())
                 .employer(employer)
-                .businessFields(new HashSet<>(request.getBusinessFields()))
+                .businessFields(request.getBusinessFields() != null ? new java.util.HashSet<>(request.getBusinessFields()) : null)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
@@ -234,161 +264,98 @@ public class RecruitService {
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
-                .preferredConditions(new ArrayList<>(request.getPreferredConditions()))
-                .workDuration(new ArrayList<>(request.getWorkDuration()))
+                .preferredConditions(request.getPreferredConditions())
+                .workDuration(request.getWorkDuration())
                 .workDurationOther(request.getWorkDurationOther())
-                .workTime(new ArrayList<>(request.getWorkTime()))
+                .workTime(request.getWorkTime())
                 .workTimeOther(request.getWorkTimeOther())
-                .workDays(new ArrayList<>(request.getWorkDays()))
+                .workDays(request.getWorkDays())
                 .workDaysOther(request.getWorkDaysOther())
                 .salary(request.getSalary())
                 .salaryType(request.getSalaryType())
                 .salaryOther(request.getSalaryOther())
-                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
+                .applicationMethods(request.getApplicationMethods() != null ? new java.util.HashSet<>(request.getApplicationMethods()) : null)
                 .posterImageUrl(posterImageUrl)
                 .recruitPublishStatus(RecruitPublishStatus.DRAFT)
                 .jumpDate(null)
                 .build();
-
-        List<Portfolio> portfolios = Optional.ofNullable(request.getPortfolios())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(p -> Portfolio.builder()
-                        .title(p.getTitle())
-                        .type(p.getType())
-                        .isRequired(p.isRequired())
-                        .maxFileCount(p.getMaxFileCount())
-                        .build())
-                .toList();
-
-        portfolios.forEach(draftRecruit::addPortfolio);
-        recruitRepository.save(draftRecruit);
+        // 포트폴리오 저장
+        if(request.getPortfolios() != null) {
+            for (RecruitRequestDTO.PremiumRecruitRequest.PortfolioRequest dto : request.getPortfolios()) {
+                Portfolio portfolio = Portfolio.builder()
+                        .title(dto.getTitle())
+                        .type(dto.getType())
+                        .isRequired(dto.isRequired())
+                        .maxFileCount(dto.getMaxFileCount())
+                        .build();
+                draft.addPortfolio(portfolio);
+            }
+        }
+        recruitRepository.save(draft);
     }
 
-    // 일반 공고 퍼블리싱
+    // 임시 저장된 프리미엄 공고 수정
     @Transactional
-    public void publishGeneralRecruit(
-            Long recruitId,
-            RecruitRequestDTO.GeneralRecruitRequest request,
-            MultipartFile posterImage
-    ) {
-        GeneralRecruit recruit = getGeneralRecruit(recruitId);
-        validateDraftStatus(recruit);
+    public void updatePremiumDraft(Long memberId, Long draftId, RecruitRequestDTO.PremiumRecruitRequest request, MultipartFile posterImage) {
+        // 공고를 찾을 수 없을 경우 예외처리
+        PremiumRecruit draft = recruitRepository.findPremiumDraftById(draftId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
 
-        // 이전 데이터 삭제
-        recruitRepository.delete(recruit);
+        // 원 작성자와 요청 사용자가 다를경우 예외처리
+        if (!draft.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
 
-        // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
-
-        GeneralRecruit newRecruit = GeneralRecruit.builder()
-                .title(request.getTitle())
-                .address(request.getAddress())
-                .employer(recruit.getEmployer())
-                .businessFields(new HashSet<>(request.getBusinessFields()))
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .recruitStartDate(request.getRecruitStartDate())
-                .recruitEndDate(request.getRecruitEndDate())
-                .gender(request.getGender())
-                .education(request.getEducation())
-                .otherConditions(request.getOtherConditions())
-                .preferredConditions(new ArrayList<>(request.getPreferredConditions()))
-                .workDuration(new ArrayList<>(request.getWorkDuration()))
-                .workDurationOther(request.getWorkDurationOther())
-                .workTime(new ArrayList<>(request.getWorkTime()))
-                .workTimeOther(request.getWorkTimeOther())
-                .workDays(new ArrayList<>(request.getWorkDays()))
-                .workDaysOther(request.getWorkDaysOther())
-                .salary(request.getSalary())
-                .salaryType(request.getSalaryType())
-                .salaryOther(request.getSalaryOther())
-                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
-                .posterImageUrl(posterImageUrl)
-                .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
-                .jumpDate(null)
-                .build();
-
-        recruitRepository.save(newRecruit);
+        draft.updateFrom(request, posterImageUrl);
+        draft.updatePortfolios(request.getPortfolios());
+        recruitRepository.save(draft);
     }
 
     // 프리미엄 공고 퍼블리싱
     @Transactional
-    public void publishPremiumRecruit(
-            Long recruitId,
-            RecruitRequestDTO.PremiumRecruitRequest request,
-            MultipartFile posterImage
-    ) {
-        PremiumRecruit recruit = getPremiumRecruit(recruitId);
-        validateDraftStatus(recruit);
+    public void publishPremiumDraft(Long memberId, Long draftId, RecruitRequestDTO.PremiumRecruitRequest request, MultipartFile posterImage) {
+        // 공고를 찾을 수 없을 경우 예외처리
+        PremiumRecruit draft = recruitRepository.findPremiumDraftById(draftId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
 
-        // 프리미엄 공고 등록 가능 체크
-        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(recruit.getEmployer().getId())
+        // 원 작성자와 요청 사용자가 다를경우 예외처리
+        if (!draft.getEmployer().getId().equals(memberId)) {
+            throw new BadRequestException(ErrorStatus.ONLY_MODIFY_WRITER_USER_EXCEPTION.getMessage());
+        }
+
+        // 이미 퍼블리싱인 경우 예외처리
+        if (!draft.getRecruitPublishStatus().equals(RecruitPublishStatus.DRAFT)) {
+            throw new BadRequestException(ErrorStatus.ALEADY_PUBLISHED_RECRUIT_ARTICLE_EXCEPTION.getMessage());
+        }
+
+        // 프리미엄 공고 등록 가능 여부 체크
+        PremiumManage premiumManage = premiumManageRepository.findByEmployerId(draft.getEmployer().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PREMIUM_MANAGE_NOT_FOUND_EXCEPTION.getMessage()));
-
         if (premiumManage.getPremiumCount() == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
 
-        // 이전 데이터 삭제
-        recruitRepository.delete(recruit);
-
-        // 포스터 이미지 업로드
         String posterImageUrl = uploadPosterImage(posterImage);
 
-        PremiumRecruit newRecruit = PremiumRecruit.builder()
-                .title(request.getTitle())
-                .address(request.getAddress())
-                .employer(recruit.getEmployer())
-                .businessFields(new HashSet<>(request.getBusinessFields()))
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .recruitStartDate(request.getRecruitStartDate())
-                .recruitEndDate(request.getRecruitEndDate())
-                .gender(request.getGender())
-                .education(request.getEducation())
-                .otherConditions(request.getOtherConditions())
-                .preferredConditions(new ArrayList<>(request.getPreferredConditions()))
-                .workDuration(new ArrayList<>(request.getWorkDuration()))
-                .workDurationOther(request.getWorkDurationOther())
-                .workTime(new ArrayList<>(request.getWorkTime()))
-                .workTimeOther(request.getWorkTimeOther())
-                .workDays(new ArrayList<>(request.getWorkDays()))
-                .workDaysOther(request.getWorkDaysOther())
-                .salary(request.getSalary())
-                .salaryType(request.getSalaryType())
-                .salaryOther(request.getSalaryOther())
-                .applicationMethods(new HashSet<>(request.getApplicationMethods()))
-                .posterImageUrl(posterImageUrl)
-                .recruitPublishStatus(RecruitPublishStatus.PUBLISHED)
-                .jumpDate(null)
-                .build();
+        draft.updateFrom(request, posterImageUrl);
+        draft.updatePortfolios(request.getPortfolios());
+        draft.updatePublishStatus(RecruitPublishStatus.PUBLISHED);
 
-        // Portfolio 추가
-        List<Portfolio> portfolios = request.getPortfolios().stream()
-                .map(p -> Portfolio.builder()
-                        .title(p.getTitle())
-                        .type(p.getType())
-                        .isRequired(p.isRequired())
-                        .maxFileCount(p.getMaxFileCount())
-                        .build())
-                .toList();
-        portfolios.forEach(newRecruit::addPortfolio);
-        recruitRepository.save(newRecruit);
-
-        // 프리미엄 공고 등록 횟수 감소
-        int updatedRows = premiumManageRepository.decreasePremiumCount(recruit.getEmployer().getId());
+        // 프리미엄 등록 횟수 차감
+        int updatedRows = premiumManageRepository.decreasePremiumCount(draft.getEmployer().getId());
         if (updatedRows == 0) {
             throw new BadRequestException(ErrorStatus.LEAK_PREMIUM_RECRUIT_PUBLISH_COUNT_EXCEPTION.getMessage());
         }
+
+        recruitRepository.save(draft);
     }
 
     // 사용자 임시저장 공고 존재 여부 확인
     @Transactional(readOnly = true)
     public boolean hasDrafts(Long memberId) {
         Member employer = getEmployer(memberId);
-        Optional<Recruit> draft = recruitRepository.findAllByEmployerAndRecruitPublishStatus(employer, RecruitPublishStatus.DRAFT);
-        return draft.isPresent();
+        return recruitRepository.existsByEmployerAndRecruitPublishStatus(employer, RecruitPublishStatus.DRAFT);
     }
 
     // 임시 저장 공고 데이터 조회
