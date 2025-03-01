@@ -69,12 +69,13 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
     }
 
     @Override
-    public Page<Resume> getApplicationPortfolio(BusinessField businessField, Pageable pageable) {
+    public Page<Resume> getApplicationPortfolio(List<BusinessField> businessField, Pageable pageable) {
         List<Resume> content = queryFactory
                 .select(resume)
                 .from(resume)
                 .innerJoin(resume.employee).fetchJoin()
                 .innerJoin(resume.recruit).fetchJoin()
+                .innerJoin(resume.recruit.businessFields)
                 .where(
                         isPublic(),
                         businessFieldEq(businessField)
@@ -113,8 +114,8 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
     }
 
 
-    private BooleanExpression businessFieldEq(BusinessField businessField){
-        return null;
+    private BooleanExpression businessFieldEq(List<BusinessField> businessField){
+        return (businessField==null||businessField.isEmpty()) ? null : resume.recruit.businessFields.any().in(businessField);
     }
     private BooleanExpression isPublic(){
         return resume.isPublic.eq(true).and(resume.employee.isPortfolioPublic.eq(true));
