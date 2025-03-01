@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Portfolio", description = "Portfolio 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v1/portfolio")
@@ -68,7 +70,7 @@ public class PortfolioController {
     @GetMapping(value = "/applications")
     public ResponseEntity<ApiResponse<PageResponseDTO<ApplicationPortfolioPreviewResponseDTO>>> getApplicationPortfolios(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                                          @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                                                                         @RequestParam("filter") BusinessField businessField,
+                                                                                                                         @RequestParam(value = "filter", required = false) List<BusinessField> businessField,
                                                                                                                          @RequestParam("size") Integer size) {
         PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> applicationPortfolios = portfolioService.getApplicationPortfolios(page, size, businessField);
 

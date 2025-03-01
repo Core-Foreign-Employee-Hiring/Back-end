@@ -7,10 +7,12 @@ import com.core.foreign.api.recruit.entity.Resume;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface ResumeRepositoryQueryDSL {
     Page<Resume> searchResumedByRecruitId(Long recruitId,
                                           String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
                                           Pageable pageable);
 
-    Page<Resume> getApplicationPortfolio(BusinessField businessField, Pageable pageable);
+    Page<Resume> getApplicationPortfolio(List<BusinessField> businessField, Pageable pageable);
 }
