@@ -790,4 +790,16 @@ public class RecruitService {
         Page<Recruit> recruitPage = recruitRepository.findByRecruitTypeAndJumpDateIsNotNullOrderByJumpDateDesc(recruitType, pageable);
         return recruitPage.map(this::convertToRecruitListResponseDTO);
     }
+
+    // 공고 검색
+    @Transactional(readOnly = true)
+    public PageResponseDTO<RecruitListResponseDTO> searchRecruits(String query, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Recruit> recruitPage = recruitRepository.searchRecruit(query, pageable);
+        Page<RecruitListResponseDTO> dtoPage = recruitPage.map(this::convertToRecruitListResponseDTO);
+
+        return PageResponseDTO.of(dtoPage);
+    }
+
 }

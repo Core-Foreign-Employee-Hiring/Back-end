@@ -1001,4 +1001,21 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
+    @Operation(summary = "메인 공고 조회 API",
+            description = "공고 명, 회사점표명을 입력받아 관련된 공고를 연관도 높은순으로 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 검색 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/keyword/search")
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitListResponseDTO>>> searchRecruit(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+        PageResponseDTO<RecruitListResponseDTO> response = recruitService.searchRecruits(query, page, size);
+        return ApiResponse.success(SuccessStatus.SEARCH_RECRUIT_SUCESS, response);
+    }
+
+
 }
