@@ -71,8 +71,8 @@ public class SecurityConfig {
                                 "/api/v1/member/verification-phone-code", "/api/v1/member/find-user-id", "/api/v1/member/employer/company-validate"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증, 사업자등록 번호 인증 허가
                         .requestMatchers(
-                                "/api/v1/recruit/search","/api/v1/recruit/view", "/api/v1/recruit/general/jump", "/api/v1/recruit/premium/jump"
-                        ).permitAll() // 공고 전체 조회, 공고 상세 조회, 프리미엄 공고 상단 점프 목록 조회, 일반 공고 점프 목록 조회 인증 허가
+                                "/api/v1/recruit/search","/api/v1/recruit/view", "/api/v1/recruit/general/jump", "/api/v1/recruit/premium/jump", "/api/v1/recruit/keyword/search"
+                        ).permitAll() // 공고 전체 조회, 공고 검색, 공고 상세 조회, 프리미엄 공고 상단 점프 목록 조회, 일반 공고 점프 목록 조회 인증 허가
                         .requestMatchers(
                                 HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview","/api/v1/albareview/comment","/api/v1/albareview/search"
                         ).permitAll() // 알바 후기 조회, 검색 관련 API

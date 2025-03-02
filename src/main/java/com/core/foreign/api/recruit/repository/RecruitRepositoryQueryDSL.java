@@ -9,4 +9,6 @@ import org.springframework.data.domain.Pageable;
 public interface RecruitRepositoryQueryDSL {
     Page<Recruit> getMyRecruits(Long employerId, RecruitType recruitType, RecruitPublishStatus recruitPublishStatus,
                                 boolean excludeExpired , Pageable pageable);
+
+    Page<Recruit> searchRecruit(String searchQuery, Pageable pageable);
 }
