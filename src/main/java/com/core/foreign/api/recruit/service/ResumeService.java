@@ -236,7 +236,7 @@ public class ResumeService {
                 .isDeleted(false)
                 .isEmployeeEvaluatedByEmployer(EvaluationStatus.NONE)
                 .isEmployerEvaluatedByEmployee(EvaluationStatus.NONE)
-                .approvedAt(LocalDate.MAX)
+                .approvedAt(LocalDate.of(9999, 12, 31))
                 .viewCount(0)
                 .isPublic(false)
                 .build();
