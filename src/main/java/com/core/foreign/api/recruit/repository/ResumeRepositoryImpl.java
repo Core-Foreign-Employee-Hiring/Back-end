@@ -9,6 +9,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 import static com.core.foreign.api.recruit.entity.QRecruit.recruit;
 import static com.core.foreign.api.recruit.entity.QResume.resume;
 
+@Slf4j
 public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
     private final JPAQueryFactory queryFactory;
 
@@ -74,6 +76,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
 
     @Override
     public Page<Resume> getApplicationPortfolio(List<BusinessField> businessField, Pageable pageable) {
+        log.info("[getApplicationPortfolio][resumeId 조회]");
         //  특정 BusinessField와 연관된 Resume ID만 DISTINCT로 조회
         List<Long> resumeIds = queryFactory
                 .selectDistinct(resume.id)
@@ -93,6 +96,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
+        log.info("[getApplicationPortfolio][resume 조회]");
         // ID를 이용해 Resume 엔티티들을 조회 (연관 데이터도 fetch join)
         List<Resume> content = queryFactory
                 .selectFrom(resume)
