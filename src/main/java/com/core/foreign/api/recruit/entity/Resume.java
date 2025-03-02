@@ -47,10 +47,8 @@ public class Resume {
     @Enumerated(STRING)
     private EvaluationStatus isEmployerEvaluatedByEmployee; // 피고용인이 고용인을 평가했는지 여부
     private LocalDate employerEvaluationDate; // 피고용인이 고용인을 평가한 날짜
-
-
     private boolean isPublic;  // 프리미엄 공고일 때만 유효함.
-
+    private Integer viewCount;  // 프리미엄 공고일 때만 유효함.
 
     @Enumerated(STRING)
     private ContractStatus contractStatus;

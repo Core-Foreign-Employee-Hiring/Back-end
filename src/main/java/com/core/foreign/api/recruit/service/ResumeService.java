@@ -81,7 +81,7 @@ public class ResumeService {
             }
         }
 
-        List<ResumePortfolio> resumePortfolioEntities = resumePortfolios.stream().map((p) -> p.toEntity(resume)).toList();
+        List<ResumePortfolio> resumePortfolioEntities = resumePortfolios.stream().map((p) -> p.toEntity(resume, map3)).toList();
         Map<Long, Integer> map2=new HashMap<>();  //  request: key: portfolioId, value: 개수
         for (ResumePortfolio resumePortfolioEntity : resumePortfolioEntities) {
             map2.merge(resumePortfolioEntity.getRecruitPortfolioId(), 1, Integer::sum);
@@ -237,6 +237,8 @@ public class ResumeService {
                 .isEmployeeEvaluatedByEmployer(EvaluationStatus.NONE)
                 .isEmployerEvaluatedByEmployee(EvaluationStatus.NONE)
                 .approvedAt(LocalDate.MAX)
+                .viewCount(0)
+                .isPublic(false)
                 .build();
 
         // IDENTITY 전략이라 바로 사용해도 상관 x

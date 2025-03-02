@@ -112,7 +112,8 @@ public class PortfolioService {
     }
 
 
-    public BasicPortfolioResponseDTO getBasicPortfolio(Long employeeId) {
+    @Transactional
+    public BasicPortfolioResponseDTO getBasicPortfolio(Long employeeId, boolean isBasic) {
         Employee employee = employeeRepository.findPublicEmployeeById(employeeId)
                 .orElseThrow(() -> {
                     log.error("피고용인 찾을 수 없음. employeeId= {}", employeeId);
@@ -128,22 +129,30 @@ public class PortfolioService {
 
         EmployeeEvaluationCountDTO employeeEvaluation = evaluationReader.getEmployeeEvaluation(employee);
 
+        if(isBasic) employeeRepository.increaseViewCount(employeeId);
+
         BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(employee, employeePortfolio, employeeEvaluation);
 
         return response;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ApplicationPortfolioResponseDTO getApplicationPortfolio(Long resumeId){
         ApplicationResumeResponseDTO resume = resumeReader.getResume(resumeId);
         Long employeeId = resume.getEmployeeId();
 
-        BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(employeeId);
+        BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(employeeId, false);
         EmployeePortfolioDTO employeePortfolioDTO = resume.getEmployeePortfolioDTO();
         List<ResumePortfolioTextResponseDTO> texts = resume.getTexts();
         List<ResumePortfolioFileResponseDTO> files = resume.getFiles();
 
-        ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files);
+        // 1차 캐시 이용 쿼리 안 나감.
+        Resume resume1 = resumeRepository.findById(resumeId).get();
+        Integer viewCount = resume1.getViewCount()+1;
+
+        resumeRepository.increaseViewCount(resumeId);
+
+        ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files, viewCount);
 
         return response;
     }
