@@ -28,7 +28,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.core.foreign.common.response.ErrorStatus.RESUME_NOT_FOUND_EXCEPTION;
 import static com.core.foreign.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
@@ -82,24 +84,13 @@ public class PortfolioService {
         Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(employees);
 
 
-        // 업직종 갖고 온다.
-        List<Recruit> recruits = applicationPortfolio.map(Resume::getRecruit).toList();
-        Map<Recruit, List<BusinessField>> businessMap=new HashMap<>();
-
-        for (Recruit recruit : recruits) {
-            businessMap.put(recruit, new ArrayList<>());
-        }
-
-        /**
-         * 갖고 오는 로직.
-         */
 
         Page<ApplicationPortfolioPreviewResponseDTO> dto = applicationPortfolio.map((resume) -> {
             Employee employee = resume.getEmployee();
             Recruit recruit = resume.getRecruit();
 
             EmployeeEvaluationCountDTO employeeEvaluationCountDTO = employeeEvaluations.get(employee.getId());
-            List<BusinessField> businessFields = businessMap.get(recruit);
+            List<BusinessField> businessFields = recruit.getBusinessFields().stream().toList();
 
             return new ApplicationPortfolioPreviewResponseDTO(resume, employeeEvaluationCountDTO, businessFields);
 
