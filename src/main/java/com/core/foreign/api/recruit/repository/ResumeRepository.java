@@ -6,6 +6,7 @@ import com.core.foreign.api.recruit.entity.Resume;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -68,5 +69,9 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " join fetch r.recruit" +
             " where r.recruitmentStatus='APPROVED' and r.isEmployerEvaluatedByEmployee= :evaluationStatus")
     Page<Resume> findResumeByEmployeeIdAndEvaluationStatus(@Param("employeeId")Long employeeId,  @Param("evaluationStatus") EvaluationStatus evaluationStatus, Pageable pageable);
+
+    @Modifying
+    @Query("update Resume resume set resume.viewCount=resume.viewCount+1 where resume.id=:resumeId")
+    void increaseViewCount(@Param("resumeId") Long resumeId);
 
 }

@@ -54,7 +54,7 @@ public class PortfolioController {
     @GetMapping(value = "/basics/{employee-id}")
     public ResponseEntity<ApiResponse<BasicPortfolioResponseDTO>> getBasicPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                     @PathVariable("employee-id") Long employeeId) {
-        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(employeeId);
+        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(employeeId, true);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolio);
     }

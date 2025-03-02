@@ -23,6 +23,8 @@ public class Employee extends Member {
     @Column(name = "is_portfolio_public")
     private boolean isPortfolioPublic;
 
+    private Integer viewCount;
+
     public Employee(String userId,
                     String password,
                     String name,
@@ -43,7 +45,8 @@ public class Employee extends Member {
         this.nationality = nationality;
         this.education = education;
         this.visa = visa;
-        this.isPortfolioPublic = true;
+        this.isPortfolioPublic = false;
+        this.viewCount = 0;
     }
 
 

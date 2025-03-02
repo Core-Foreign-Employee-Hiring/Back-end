@@ -19,6 +19,7 @@ public class BasicPortfolioResponseDTO {
     private String email;        // 이메일
     private EmployeePortfolioDTO employeePortfolioDTO;
     private EmployeeEvaluationCountDTO employeeEvaluationCountDTO;
+    private Integer viewCount;
 
 
     public static BasicPortfolioResponseDTO from(Employee employee, EmployeePortfolio employeePortfolio, EmployeeEvaluationCountDTO employeeEvaluationCountDTO){
@@ -34,7 +35,8 @@ public class BasicPortfolioResponseDTO {
         dto.email = employee.getEmail();
         dto.employeePortfolioDTO = employeePortfolioDTO;
         dto.employeeEvaluationCountDTO = employeeEvaluationCountDTO;
-        return dto;
+        dto.viewCount = employee.getViewCount()+1;
 
+        return dto;
     }
 }
