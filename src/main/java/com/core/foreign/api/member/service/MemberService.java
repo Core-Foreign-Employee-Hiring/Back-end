@@ -379,7 +379,7 @@ public class MemberService {
                 address1,
                 address2
         );
-        employer.updateAddress(address);
+        employer.updateCompanyAddress(address);
     }
 
     @Transactional
