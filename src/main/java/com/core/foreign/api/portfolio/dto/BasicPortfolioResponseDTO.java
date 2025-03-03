@@ -20,6 +20,7 @@ public class BasicPortfolioResponseDTO {
     private EmployeePortfolioDTO employeePortfolioDTO;
     private EmployeeEvaluationCountDTO employeeEvaluationCountDTO;
     private Integer viewCount;
+    private boolean isLiked;
 
 
     public static BasicPortfolioResponseDTO from(Employee employee, EmployeePortfolio employeePortfolio, EmployeeEvaluationCountDTO employeeEvaluationCountDTO){
@@ -37,6 +38,12 @@ public class BasicPortfolioResponseDTO {
         dto.employeeEvaluationCountDTO = employeeEvaluationCountDTO;
         dto.viewCount = employee.getViewCount()+1;
 
+        dto.isLiked=false;
+
         return dto;
+    }
+
+    public void like(){
+        isLiked=true;
     }
 }

@@ -48,8 +48,6 @@ public class PortfolioService {
     private final EmployerResumeRepository employerResumeRepository;
     private final MemberRepository memberRepository;
 
-
-
     public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
@@ -104,7 +102,7 @@ public class PortfolioService {
 
 
     @Transactional
-    public BasicPortfolioResponseDTO getBasicPortfolio(Long employeeId, boolean isBasic) {
+    public BasicPortfolioResponseDTO getBasicPortfolio(Long employerId, Long employeeId, boolean isBasic) {
         Employee employee = employeeRepository.findPublicEmployeeById(employeeId)
                 .orElseThrow(() -> {
                     log.error("피고용인 찾을 수 없음. employeeId= {}", employeeId);
@@ -124,15 +122,19 @@ public class PortfolioService {
 
         BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(employee, employeePortfolio, employeeEvaluation);
 
+        if(employerId!=null && employerEmployeeRepository.existsByEmployerIdAndEmployeeId(employerId, employeeId)){
+            response.like();
+        }
+
         return response;
     }
 
     @Transactional
-    public ApplicationPortfolioResponseDTO getApplicationPortfolio(Long resumeId){
+    public ApplicationPortfolioResponseDTO getApplicationPortfolio(Long employerId, Long resumeId){
         ApplicationResumeResponseDTO resume = resumeReader.getResume(resumeId);
         Long employeeId = resume.getEmployeeId();
 
-        BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(employeeId, false);
+        BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(null, employeeId, false);
         EmployeePortfolioDTO employeePortfolioDTO = resume.getEmployeePortfolioDTO();
         List<ResumePortfolioTextResponseDTO> texts = resume.getTexts();
         List<ResumePortfolioFileResponseDTO> files = resume.getFiles();
@@ -144,6 +146,10 @@ public class PortfolioService {
         resumeRepository.increaseViewCount(resumeId);
 
         ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files, viewCount);
+
+        if(employerResumeRepository.existsByEmployerIdAndResumeId(employerId, resumeId)){
+            response.like();
+        }
 
         return response;
     }
