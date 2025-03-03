@@ -54,6 +54,7 @@ public class Employer extends Member {
         this.mainPhoneNumber=phoneNumber;
 
         this.premiumManage = new PremiumManage(this);
+        this.companyAddress=address;
     }
 
     public void updateCompanyEmail(String companyEmail){
