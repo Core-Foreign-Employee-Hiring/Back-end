@@ -22,4 +22,7 @@ public interface EmployerResumeRepository extends JpaRepository<EmployerResume, 
             " join fetch resume.recruit" +
             " where er.employer.id= :employerId")
     Page<EmployerResume> findByEmployerId(@Param("employerId")Long employerId, Pageable pageable);
+
+
+    boolean existsByEmployerIdAndResumeId(@Param("employerId")Long employerId, @Param("resumeId")Long resumeId);
 }

@@ -1,6 +1,5 @@
 package com.core.foreign.api.member.repository;
 
-import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.EmployerEmployee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +19,6 @@ public interface EmployerEmployeeRepository extends JpaRepository<EmployerEmploy
             " join fetch ee.employee" +
             " where ee.employer.id= :employerId")
     Page<EmployerEmployee> findByEmployerId(@Param("employerId")Long employerId, Pageable pageable);
+
+    boolean existsByEmployerIdAndEmployeeId(Long employerId, Long employeeId);
 }

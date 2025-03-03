@@ -24,6 +24,7 @@ public class ApplicationPortfolioResponseDTO {
     private List<ResumePortfolioTextResponseDTO> texts;
     private List<ResumePortfolioFileResponseDTO> files;
     private Integer viewCount;
+    private boolean isLiked;
 
 
     public ApplicationPortfolioResponseDTO(Long resumeId, BasicPortfolioResponseDTO basicPortfolioResponseDTO,
@@ -43,6 +44,11 @@ public class ApplicationPortfolioResponseDTO {
         this.texts = texts;
         this.files = files;
         this.viewCount = viewCount;
+        this.isLiked = false;
 
+    }
+
+    public void like(){
+        this.isLiked=true;
     }
 }
