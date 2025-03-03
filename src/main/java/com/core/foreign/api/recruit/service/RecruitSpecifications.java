@@ -2,6 +2,7 @@ package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.recruit.entity.Recruit;
+import com.core.foreign.api.recruit.entity.RecruitType;
 import com.core.foreign.api.recruit.entity.RecruitPublishStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -103,4 +104,15 @@ public class RecruitSpecifications {
             return cb.equal(root.get("salaryType"), salaryType);
         };
     }
+
+    // 프리미엄 필터
+    public static Specification<Recruit> isPremium() {
+        return (root, query, cb) -> {
+            if (query != null) {
+                query.distinct(true);
+            }
+            return cb.equal(root.get("recruitType"), RecruitType.PREMIUM);
+        };
+    }
+
 }

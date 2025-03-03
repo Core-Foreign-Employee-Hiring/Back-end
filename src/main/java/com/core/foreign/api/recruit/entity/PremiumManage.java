@@ -29,7 +29,7 @@ public class PremiumManage {
     public PremiumManage(Employer employer) {
         this.employer = employer;
         this.premiumCount = 0;
-        this.premiumJumpCount = 5;
-        this.normalJumpCount = 5;
+        this.premiumJumpCount = 0;
+        this.normalJumpCount = 0;
     }
 }
