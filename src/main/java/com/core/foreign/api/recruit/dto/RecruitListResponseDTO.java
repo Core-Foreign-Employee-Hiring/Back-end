@@ -31,4 +31,5 @@ public class RecruitListResponseDTO {
     private String recruitPeriod;              // 모집기간
     private Set<ApplyMethod> applicationMethods;    // 접수방법
     private RecruitType recruitType;           // GENERAL or PREMIUM
+    private boolean isJump;                     // 상단 점프 여부
 }

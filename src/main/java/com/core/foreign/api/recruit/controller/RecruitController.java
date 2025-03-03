@@ -654,7 +654,8 @@ public class RecruitController {
     }
 
     @Operation(summary = "공고 전체 조회 API",
-            description = "등록되어있는 공고들을 전체 조회 합니다.")
+            description = "등록되어있는 공고들을 전체 조회 합니다. <br>"+
+                    "상단 점프한 공고는 jump = true로 표시됩니다.")
     @GetMapping("/search")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 전체 조회 성공"),
@@ -683,6 +684,43 @@ public class RecruitController {
                 .build();
 
         Page<RecruitListResponseDTO> recruitPage = recruitService.getRecruitsWithFilters(condition);
+        PageResponseDTO<RecruitListResponseDTO> pageResponse = PageResponseDTO.of(recruitPage);
+        return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, pageResponse);
+    }
+
+    @Operation(
+            summary = "프리미엄 공고 전체 조회 API",
+            description = "프리미엄 공고 만 조회합니다. " +
+                    "상단 점프한 공고는 jump = true로 표시됩니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 전체 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @GetMapping("/premium/search")
+    public ResponseEntity<ApiResponse<PageResponseDTO<RecruitListResponseDTO>>> getPremiumRecruits(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) List<BusinessField> businessFields,
+            @RequestParam(required = false) List<String> workDurations,
+            @RequestParam(required = false) List<String> workDays,
+            @RequestParam(required = false) List<String> workTimes,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String salaryType
+    ) {
+        // 검색조건 생성
+        RecruitSearchConditionDTO condition = RecruitSearchConditionDTO.builder()
+                .page(page)
+                .size(size)
+                .businessFields(businessFields)
+                .workDurations(workDurations)
+                .workDays(workDays)
+                .workTimes(workTimes)
+                .gender(gender)
+                .salaryType(salaryType)
+                .build();
+
+        Page<RecruitListResponseDTO> recruitPage = recruitService.getPremiumRecruitsWithFilters(condition);
         PageResponseDTO<RecruitListResponseDTO> pageResponse = PageResponseDTO.of(recruitPage);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, pageResponse);
     }

@@ -15,6 +15,8 @@ import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -491,34 +493,65 @@ public class RecruitService {
     // 필터를 통한 공고 전체 조회
     @Transactional(readOnly = true)
     public Page<RecruitListResponseDTO> getRecruitsWithFilters(RecruitSearchConditionDTO condition) {
-
         int page = (condition.getPage() != null) ? condition.getPage() : 0;
         int size = (condition.getSize() != null) ? condition.getSize() : 10;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        // 조회 필터
-        Specification<Recruit> spec = Specification
-                .where(RecruitSpecifications.isPublished())  // PUBLISHED 상태만
-                .and(RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()))
-                .and(RecruitSpecifications.workDurationIn(condition.getWorkDurations()))
-                .and(RecruitSpecifications.workDaysIn(condition.getWorkDays()))
-                .and(RecruitSpecifications.workTimeIn(condition.getWorkTimes()))
-                .and(RecruitSpecifications.genderEq(condition.getGender()))
-                .and(RecruitSpecifications.salaryTypeEq(condition.getSalaryType()));
+        // 필터 조건 적용 여부 체크
+        boolean isFilterApplied =
+                (condition.getBusinessFields() != null && !condition.getBusinessFields().isEmpty()) ||
+                        (condition.getWorkDurations() != null && !condition.getWorkDurations().isEmpty()) ||
+                        (condition.getWorkDays() != null && !condition.getWorkDays().isEmpty()) ||
+                        (condition.getWorkTimes() != null && !condition.getWorkTimes().isEmpty()) ||
+                        (condition.getGender() != null && !condition.getGender().trim().isEmpty()) ||
+                        (condition.getSalaryType() != null && !condition.getSalaryType().trim().isEmpty());
+
+        // 페이징 객체 생성: 필터가 적용되면 createdAt 내림차순 정렬, 그렇지 않으면 정렬 없이 Specification에서 커스텀 정렬 적용
+        Pageable pageable;
+        if (isFilterApplied) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        Specification<Recruit> spec = (root, query, cb) -> {
+            // 기본 조건 : PUBLISHED 상태여야 함
+            Predicate predicate = cb.conjunction();
+            predicate = cb.and(predicate, RecruitSpecifications.isPublished().toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.workDurationIn(condition.getWorkDurations()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.workDaysIn(condition.getWorkDays()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.workTimeIn(condition.getWorkTimes()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.genderEq(condition.getGender()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.salaryTypeEq(condition.getSalaryType()).toPredicate(root, query, cb));
+
+            // 필터 조건이 없는 경우에만 커스텀 정렬 적용
+            if (!isFilterApplied && query.getOrderList().isEmpty()) {
+                // jumpDate가 null이면 1, null이 아니면 0을 반환하는 CASE 식
+                Expression<Integer> jumpDateIsNull = cb.<Integer>selectCase()
+                        .when(cb.isNull(root.get("jumpDate")), 1)
+                        .otherwise(0);
+                // jumpDate가 있는 경우(0)가 먼저 오고, 그 후 jumpDate 내림차순, jumpDate가 null인 경우 createdAt 내림차순
+                query.orderBy(
+                        cb.asc(jumpDateIsNull),
+                        cb.desc(root.get("jumpDate")),
+                        cb.desc(root.get("createdAt"))
+                );
+            }
+            return predicate;
+        };
 
         Page<Recruit> recruitPage = recruitRepository.findAll(spec, pageable);
         return recruitPage.map(this::convertToRecruitListResponseDTO);
     }
 
     private RecruitListResponseDTO convertToRecruitListResponseDTO(Recruit recruit) {
-
         List<String> workTime = (recruit.getWorkTime() != null) ? new ArrayList<>(recruit.getWorkTime()) : null;
         List<String> workDays = (recruit.getWorkDays() != null) ? new ArrayList<>(recruit.getWorkDays()) : null;
         List<String> workDuration = (recruit.getWorkDuration() != null) ? new ArrayList<>(recruit.getWorkDuration()) : null;
         Set<ApplyMethod> applicationMethods = (recruit.getApplicationMethods() != null) ? new HashSet<>(recruit.getApplicationMethods()) : null;
         Set<BusinessField> businessFields = (recruit.getBusinessFields() != null) ? new HashSet<>(recruit.getBusinessFields()) : null;
 
-        // 회사명 처리 (고용주가 Employer 타입이면 회사명을 사용)
+        // 고용주가 Employer 타입이면 회사명을 사용
         String companyName;
         Member employer = recruit.getEmployer();
         if (employer instanceof com.core.foreign.api.member.entity.Employer emp) {
@@ -530,11 +563,10 @@ public class RecruitService {
         // 모집 기간 문자열 구성
         String recruitPeriod = null;
         if (recruit.getRecruitStartDate() != null && recruit.getRecruitEndDate() != null) {
-            if("2099-12-31".equals(recruit.getRecruitEndDate().toString())){
+            if ("2099-12-31".equals(recruit.getRecruitEndDate().toString())) {
                 recruitPeriod = "상시모집";
             } else {
-                recruitPeriod = recruit.getRecruitStartDate().toString()
-                        + " ~ " + recruit.getRecruitEndDate().toString();
+                recruitPeriod = recruit.getRecruitStartDate().toString() + " ~ " + recruit.getRecruitEndDate().toString();
             }
         }
 
@@ -552,7 +584,97 @@ public class RecruitService {
                 .recruitPeriod(recruitPeriod)
                 .applicationMethods(applicationMethods)
                 .recruitType(recruit.getRecruitType())
+                // jumpDate가 설정되어 있다면 isJump 값을 true로 반환
+                .isJump(recruit.getJumpDate() != null)
                 .build();
+    }
+
+    // 필터를 통한 프리미엄 공고 목록 조회
+    @Transactional(readOnly = true)
+    public Page<RecruitListResponseDTO> getPremiumRecruitsWithFilters(RecruitSearchConditionDTO condition) {
+        int page = (condition.getPage() != null) ? condition.getPage() : 0;
+        int size = (condition.getSize() != null) ? condition.getSize() : 10;
+
+        boolean isFilterApplied =
+                (condition.getBusinessFields() != null && !condition.getBusinessFields().isEmpty()) ||
+                        (condition.getWorkDurations() != null && !condition.getWorkDurations().isEmpty()) ||
+                        (condition.getWorkDays() != null && !condition.getWorkDays().isEmpty()) ||
+                        (condition.getWorkTimes() != null && !condition.getWorkTimes().isEmpty()) ||
+                        (condition.getGender() != null && !condition.getGender().trim().isEmpty()) ||
+                        (condition.getSalaryType() != null && !condition.getSalaryType().trim().isEmpty());
+
+        Pageable pageable;
+        if (!isFilterApplied) {
+            pageable = PageRequest.of(page, size);
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        }
+
+        Specification<Recruit> spec = (root, query, cb) -> {
+            Predicate p = Specification.where(RecruitSpecifications.isPremium())
+                    .and(RecruitSpecifications.isPublished())
+                    .and(RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()))
+                    .and(RecruitSpecifications.workDurationIn(condition.getWorkDurations()))
+                    .and(RecruitSpecifications.workDaysIn(condition.getWorkDays()))
+                    .and(RecruitSpecifications.workTimeIn(condition.getWorkTimes()))
+                    .and(RecruitSpecifications.genderEq(condition.getGender()))
+                    .and(RecruitSpecifications.salaryTypeEq(condition.getSalaryType()))
+                    .toPredicate(root, query, cb);
+
+            // 필터 조건이 없으면 커스텀 정렬 로직 적용
+            // CASE 식을 이용하여 jumpDate가 null이면 1, 그렇지 않으면 0으로 하여 오름차순 정렬하면
+            // jumpDate가 있는 데이터(0)가 먼저 나오게 됨.
+            if (!isFilterApplied && query.getOrderList().isEmpty()) {
+                Expression<Integer> jumpDateIsNull = cb.<Integer>selectCase()
+                        .when(cb.isNull(root.get("jumpDate")), 1)
+                        .otherwise(0);
+                query.orderBy(
+                        cb.asc(jumpDateIsNull),    // jumpDate가 not null(0)이 먼저 오도록
+                        cb.desc(root.get("jumpDate")), // jumpDate 내림차순 정렬
+                        cb.desc(root.get("createdAt")) // jumpDate가 null인 경우 createdAt 내림차순 정렬
+                );
+            }
+            return p;
+        };
+
+        Page<Recruit> recruitPage = recruitRepository.findAll(spec, pageable);
+        return recruitPage.map(recruit -> RecruitListResponseDTO.builder()
+                .recruitId(recruit.getId())
+                .companyName(extractCompanyName(recruit))
+                .title(recruit.getTitle())
+                .address(recruit.getAddress())
+                .workTime(recruit.getWorkTime() != null ? new ArrayList<>(recruit.getWorkTime()) : null)
+                .workDays(recruit.getWorkDays() != null ? new ArrayList<>(recruit.getWorkDays()) : null)
+                .workDuration(recruit.getWorkDuration() != null ? new ArrayList<>(recruit.getWorkDuration()) : null)
+                .salary(recruit.getSalary())
+                .salaryType(recruit.getSalaryType())
+                .businessFields(recruit.getBusinessFields() != null ? new HashSet<>(recruit.getBusinessFields()) : null)
+                .recruitPeriod(composeRecruitPeriod(recruit))
+                .applicationMethods(recruit.getApplicationMethods() != null ? new HashSet<>(recruit.getApplicationMethods()) : null)
+                .recruitType(recruit.getRecruitType())
+                .isJump(recruit.getJumpDate() != null)
+                .build());
+    }
+
+    // 회사명 추출
+    private String extractCompanyName(Recruit recruit) {
+        Member employer = recruit.getEmployer();
+        if (employer instanceof com.core.foreign.api.member.entity.Employer emp) {
+            return emp.getCompanyName();
+        }
+        return employer.getName();
+    }
+
+    // 모집 기간 문자열 생성
+    private String composeRecruitPeriod(Recruit recruit) {
+        if (recruit.getRecruitStartDate() != null && recruit.getRecruitEndDate() != null) {
+            if ("2099-12-31".equals(recruit.getRecruitEndDate().toString())) {
+                return "상시모집";
+            } else {
+                return recruit.getRecruitStartDate().toString() + " ~ " + recruit.getRecruitEndDate().toString();
+            }
+        }
+        return null;
     }
 
     // 공고 상세 조회
@@ -801,5 +923,7 @@ public class RecruitService {
 
         return PageResponseDTO.of(dtoPage);
     }
+
+
 
 }
