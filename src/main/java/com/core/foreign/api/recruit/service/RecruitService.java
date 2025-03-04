@@ -19,10 +19,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -765,7 +762,7 @@ public class RecruitService {
         return response;
     }
 
-    public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page, Integer size){
+   /* public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Recruit> byEmployerId = recruitRepository.findPublishedRecruitsByEmployerId(employerId, pageable);
@@ -783,6 +780,38 @@ public class RecruitService {
         Page<RecruitmentApplyStatusDTO> dto = byEmployerId.map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId())));
 
         PageResponseDTO<RecruitmentApplyStatusDTO> response = PageResponseDTO.of(dto);
+
+        return response;
+    }*/
+
+    /**
+     * 임시로 아래 사용 추후 공고 엔티티 수정 후 위에 코드 이용
+     */
+
+    public PageResponseDTO<RecruitmentApplyStatusDTO> getRecruitmentApplyStatus(Long employerId, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Long> publishedRecruitIdsByEmployerId = recruitRepository.findPublishedRecruitIdsByEmployerId(employerId, pageable);
+        List<Long> recruitIds=publishedRecruitIdsByEmployerId.getContent();
+
+        List<Recruit> recruits = recruitRepository.findRecruitsByIds(recruitIds);
+
+        List<RecruitWithResumeCountDTO> recruitWithResumeCount = resumeRepository.findRecruitWithResumeCount(recruitIds);
+        HashMap<Long, Long> resumeCount=new HashMap<>();
+        for (RecruitWithResumeCountDTO recruitWithResumeCountDTO : recruitWithResumeCount) {
+            resumeCount.put(recruitWithResumeCountDTO.getRecruitId(), recruitWithResumeCountDTO.getResumeCount());
+        }
+
+        List<RecruitmentApplyStatusDTO> content = recruits.stream().map(recruit -> RecruitmentApplyStatusDTO.from(recruit, resumeCount.get(recruit.getId()))).toList();
+
+
+        PageResponseDTO<RecruitmentApplyStatusDTO> response = PageResponseDTO.<RecruitmentApplyStatusDTO>builder()
+                .content(content)
+                .totalPages(publishedRecruitIdsByEmployerId.getTotalPages())
+                .totalElements(publishedRecruitIdsByEmployerId.getTotalElements())
+                .page(page)
+                .size(size)
+                .build();
 
         return response;
     }
