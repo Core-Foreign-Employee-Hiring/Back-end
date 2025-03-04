@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface RecruitRepository
@@ -43,6 +45,17 @@ public interface RecruitRepository
     @Query("select r from Recruit r" +
             " where r.employer.id=:employerId and r.recruitPublishStatus='PUBLISHED'")
     Page<Recruit> findPublishedRecruitsByEmployerId(Long employerId, Pageable pageable);
+
+    @Query("select r.id from Recruit r" +
+            " where r.employer.id=:employerId and r.recruitPublishStatus='PUBLISHED'")
+    Page<Long> findPublishedRecruitIdsByEmployerId(Long employerId, Pageable pageable);
+
+    @Query("select r from Recruit r" +
+            " left join fetch r.workDuration" +
+            " left join fetch r.workDays" +
+            " left join fetch r.workTime" +
+            "  where r.id in :ids")
+    List<Recruit> findRecruitsByIds(@Param("ids")List<Long> ids);
 
     // 해당 공고 유형(recruitType)이고 jumpDate가 설정된 공고를 jumpDate 내림차순으로 조회
     @Query("SELECT r FROM Recruit r WHERE r.recruitType = :recruitType AND r.jumpDate IS NOT NULL ORDER BY r.jumpDate DESC")
