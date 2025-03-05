@@ -47,4 +47,5 @@ public class RecruitDetailResponseDTO {
     private String employerEmail;            // 회사 이메일
     private String businessRegistrationNumber; // 사업자 등록번호
     private EmployerEvaluationCountDTO employerEvaluationCountDTO;
+    private Integer employerReliability;
 }

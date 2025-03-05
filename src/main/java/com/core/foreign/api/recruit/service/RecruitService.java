@@ -3,9 +3,11 @@ package com.core.foreign.api.recruit.service;
 import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
+import com.core.foreign.api.member.dto.EmployerReliabilityDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employer;
 import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.repository.EmployerRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
 import com.core.foreign.api.recruit.dto.*;
@@ -43,6 +45,7 @@ public class RecruitService {
     private final RecruitBookmarkRepository recruitBookmarkRepository;
     private final EvaluationReader evaluationReader;
     private final PortfolioRepository portfolioRepository;
+    private final EmployerRepository employerRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -704,6 +707,9 @@ public class RecruitService {
             companyIconImage = null;
         }
 
+        EmployerReliabilityDTO employerReliabilityDTO = employerRepository.getEmployerReliability(employer.getId());
+        Integer reliability = employerReliabilityDTO.getReliability();
+
         return RecruitDetailResponseDTO.builder()
                 .recruitId(recruit.getId())
                 .companyName(companyName)
@@ -737,6 +743,7 @@ public class RecruitService {
                 .employerEmail(employerEmail)
                 .businessRegistrationNumber(businessRegistrationNumber)
                 .employerEvaluationCountDTO(employerEvaluationCountDTO)
+                .employerReliability(reliability)
                 .build();
     }
 
@@ -860,14 +867,14 @@ public class RecruitService {
         return response;
     }
 
-    public RecruitPreviewInContractResponseDTO getRecruitPreviewInContract(Long recruitId){
+    public RecruitPreviewResponseDTO getRecruitPreview(Long recruitId){
         Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
                 .orElseThrow(() -> {
                     log.error("공고 찾을 수 없음. recruitId= {}", recruitId);
                     return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        return RecruitPreviewInContractResponseDTO.from(recruit);
+        return RecruitPreviewResponseDTO.from(recruit);
     }
 
     // 프리미엄 공고 상단 점프
