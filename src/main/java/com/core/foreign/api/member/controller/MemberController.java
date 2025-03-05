@@ -13,7 +13,7 @@ import com.core.foreign.api.member.service.*;
 import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
-import com.core.foreign.api.recruit.dto.RecruitPreviewInContractResponseDTO;
+import com.core.foreign.api.recruit.dto.RecruitPreviewResponseDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.service.RecruitService;
 import com.core.foreign.api.recruit.service.ResumeService;
@@ -886,17 +886,17 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 완료된 계약서에서 공고 미리보기 조회. API",
-            description = "고용인 완료된 계약서에서 공고 미리보기 조회 <br>"
+    @Operation(summary = "고용인 공고 미리보기 조회. API",
+            description = "고용인 공고 미리보기 조회 <br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @GetMapping(value = "/employer/complete-contract/recruit")
-    public ResponseEntity<ApiResponse<RecruitPreviewInContractResponseDTO>> getCompletedContractOfEmployer(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                           @RequestParam("recruitId") Long recruitId) {
-        RecruitPreviewInContractResponseDTO response = recruitService.getRecruitPreviewInContract(recruitId);
+    @GetMapping(value = "/employer/recruit-preview")
+    public ResponseEntity<ApiResponse<RecruitPreviewResponseDTO>> getRecruitPreview(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                    @RequestParam("recruitId") Long recruitId) {
+        RecruitPreviewResponseDTO response = recruitService.getRecruitPreview(recruitId);
 
 
         return ApiResponse.success(SuccessStatus.PREVIEW_RECRUIT_SUCCESS, response);
