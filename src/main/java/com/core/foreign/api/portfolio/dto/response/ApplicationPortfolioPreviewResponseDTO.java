@@ -1,4 +1,4 @@
-package com.core.foreign.api.portfolio.dto;
+package com.core.foreign.api.portfolio.dto.response;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;

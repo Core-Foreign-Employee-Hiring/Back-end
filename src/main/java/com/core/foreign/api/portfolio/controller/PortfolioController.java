@@ -1,10 +1,10 @@
 package com.core.foreign.api.portfolio.controller;
 
 import com.core.foreign.api.business_field.BusinessField;
-import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
-import com.core.foreign.api.portfolio.dto.ApplicationPortfolioResponseDTO;
-import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
-import com.core.foreign.api.portfolio.dto.BasicPortfolioResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.BasicPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.BasicPortfolioResponseDTO;
 import com.core.foreign.api.portfolio.service.PortfolioService;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.SecurityMember;
@@ -54,7 +54,7 @@ public class PortfolioController {
     @GetMapping(value = "/basics/{employee-id}")
     public ResponseEntity<ApiResponse<BasicPortfolioResponseDTO>> getBasicPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                     @PathVariable("employee-id") Long employeeId) {
-        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(securityMember.getId(), employeeId, true);
+        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(securityMember.getId(), employeeId);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolio);
     }

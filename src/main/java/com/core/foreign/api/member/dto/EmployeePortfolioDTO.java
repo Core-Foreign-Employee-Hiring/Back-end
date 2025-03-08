@@ -4,6 +4,7 @@ import com.core.foreign.api.member.entity.EmployeePortfolio;
 import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldInfo;
 import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldType;
 import com.core.foreign.api.member.entity.Topic;
+import com.core.foreign.api.portfolio.dto.internal.BasicPortfolioDTO;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -61,6 +62,24 @@ public class EmployeePortfolioDTO {
         dto.portfolioPublic = isPublic;
         return dto;
 
+    }
+
+    public static EmployeePortfolioDTO from(BasicPortfolioDTO basicPortfolio){
+        EmployeePortfolioDTO dto = new EmployeePortfolioDTO();
+        dto.introduction = basicPortfolio.getIntroduction();
+        dto.enrollmentCertificateUrl = basicPortfolio.getEnrollmentCertificateUrl();
+        dto.transcriptUrl = basicPortfolio.getTranscriptUrl();
+        dto.partTimeWorkPermitUrl = basicPortfolio.getPartTimeWorkPermitUrl();
+        dto.topic = basicPortfolio.getTopic();
+        dto.englishTestType = basicPortfolio.getEnglishTestType();
+        dto.englishTestScore = basicPortfolio.getEnglishTestScore();
+
+        dto.experiences=basicPortfolio.getExperiences();
+        dto.certifications=basicPortfolio.getCertifications();
+        dto.awards=basicPortfolio.getAwards();
+
+
+        return dto;
     }
 
 

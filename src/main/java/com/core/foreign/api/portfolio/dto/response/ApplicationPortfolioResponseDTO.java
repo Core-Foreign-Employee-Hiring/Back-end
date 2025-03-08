@@ -1,7 +1,8 @@
-package com.core.foreign.api.portfolio.dto;
+package com.core.foreign.api.portfolio.dto.response;
 
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
+import com.core.foreign.api.portfolio.dto.internal.BasicPortfolioDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioFileResponseDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioTextResponseDTO;
 import lombok.Getter;
@@ -26,21 +27,19 @@ public class ApplicationPortfolioResponseDTO {
     private Integer viewCount;
     private boolean isLiked;
 
-
-    public ApplicationPortfolioResponseDTO(Long resumeId, BasicPortfolioResponseDTO basicPortfolioResponseDTO,
-                                           EmployeePortfolioDTO employeePortfolioDTO,
+    public ApplicationPortfolioResponseDTO(Long resumeId, BasicPortfolioDTO basicPortfolioDTO,
                                            List<ResumePortfolioTextResponseDTO> texts, List<ResumePortfolioFileResponseDTO> files,
-                                           Integer viewCount) {
+                                           Integer viewCount,EmployeeEvaluationCountDTO employeeEvaluation) {
         this.resumeId = resumeId;
-        this.employeeId=basicPortfolioResponseDTO.getEmployeeId();
-        this.name=basicPortfolioResponseDTO.getName();
-        this.nationality=basicPortfolioResponseDTO.getNationality();
-        this.education=basicPortfolioResponseDTO.getEducation();
-        this.visa=basicPortfolioResponseDTO.getVisa();
-        this.birthday=basicPortfolioResponseDTO.getBirthday();
-        this.email=basicPortfolioResponseDTO.getEmail();
-        this.employeeEvaluationCountDTO=basicPortfolioResponseDTO.getEmployeeEvaluationCountDTO();
-        this.employeePortfolioDTO = employeePortfolioDTO;
+        this.employeeId=basicPortfolioDTO.getEmployeeId();
+        this.name=basicPortfolioDTO.getName();
+        this.nationality=basicPortfolioDTO.getNationality();
+        this.education=basicPortfolioDTO.getEducation();
+        this.visa=basicPortfolioDTO.getVisa();
+        this.birthday=basicPortfolioDTO.getBirthday();
+        this.email=basicPortfolioDTO.getEmail();
+        this.employeeEvaluationCountDTO=employeeEvaluation;
+        this.employeePortfolioDTO = EmployeePortfolioDTO.from(basicPortfolioDTO);
         this.texts = texts;
         this.files = files;
         this.viewCount = viewCount;

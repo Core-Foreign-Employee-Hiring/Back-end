@@ -1,9 +1,10 @@
-package com.core.foreign.api.portfolio.dto;
+package com.core.foreign.api.portfolio.dto.response;
 
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.entity.Employee;
 import com.core.foreign.api.member.entity.EmployeePortfolio;
+import com.core.foreign.api.portfolio.dto.internal.BasicPortfolioDTO;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -43,7 +44,30 @@ public class BasicPortfolioResponseDTO {
         return dto;
     }
 
+    public static BasicPortfolioResponseDTO from(BasicPortfolioDTO basicPortfolio, EmployeeEvaluationCountDTO employeeEvaluationCountDTO){
+        BasicPortfolioResponseDTO dto = new BasicPortfolioResponseDTO();
+        EmployeePortfolioDTO employeePortfolioDTO = EmployeePortfolioDTO.from(basicPortfolio);
+
+        dto.employeeId = basicPortfolio.getEmployeeId();
+        dto.name = basicPortfolio.getName();
+        dto.nationality = basicPortfolio.getNationality();
+        dto.education = basicPortfolio.getEducation();
+        dto.visa = basicPortfolio.getVisa();
+        dto.birthday = basicPortfolio.getBirthday();
+        dto.email = basicPortfolio.getEmail();
+        dto.employeePortfolioDTO = employeePortfolioDTO;
+        dto.employeeEvaluationCountDTO = employeeEvaluationCountDTO;
+
+        dto.isLiked=false;
+
+        return dto;
+    }
+
     public void like(){
         isLiked=true;
+    }
+
+    public void setViewCount(Integer viewCount){
+        this.viewCount=viewCount;
     }
 }

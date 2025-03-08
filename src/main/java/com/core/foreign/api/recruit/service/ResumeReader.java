@@ -37,59 +37,17 @@ public class ResumeReader {
 
 
     public ApplicationResumeResponseDTO getResume(Long resumeId){
-        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForPortfolio(resumeId)
+        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
                 .orElseThrow(() -> {
                     log.warn("[getResume][이력서 없음.][resumeId= {}]", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
 
-        List<ResumePortfolioTextResponseDTO> texts = new ArrayList<>();
-        List<ResumePortfolioFileResponseDTO> files = new ArrayList<>();
+        ResumePortfolioDTO resumePortfolio = getResumePortfolio(resume);
 
-        // Premium 이면 ResumePortfolio 갖고 와야 함.
-        Recruit recruit = resume.getRecruit();
-        List<Portfolio> byRecruitId = portfolioRepository.findByRecruitId(recruit.getId());
-        Map<Long,  Portfolio> map=new HashMap<>();
-        for (Portfolio portfolio : byRecruitId) {
-            map.put(portfolio.getId(), portfolio);
-        }
-
-        if(recruit.getRecruitType()== RecruitType.PREMIUM){
-            List<ResumePortfolio> resumePortfolios = resumePortfolioRepository.findByResumeId(resume.getId());
-
-
-            /**
-             * ResumePortfolio 에 외래키 제약 조건을 추가 고려.
-             * title 로 할 시 데이터 일관성 불안함.
-             */
-            Map<Long ,List<String>> fileMap=new HashMap<>();  // key: portfolioId, value: urls
-
-            for (ResumePortfolio resumePortfolio : resumePortfolios) {
-                PortfolioType portfolioType = resumePortfolio.getPortfolioType();
-                Long recruitPortfolioId = resumePortfolio.getRecruitPortfolioId();
-                String content = resumePortfolio.getContent();
-
-                if(portfolioType==PortfolioType.FILE_UPLOAD){
-                    if (fileMap.containsKey(recruitPortfolioId)) {
-                        fileMap.get(recruitPortfolioId).add(content);
-                    } else {
-                        fileMap.put(recruitPortfolioId, new ArrayList<>(List.of(content)));
-                    }
-
-                }
-                else if(portfolioType==PortfolioType.LONG_TEXT || portfolioType==PortfolioType.SHORT_TEXT){
-                    texts.add(ResumePortfolioTextResponseDTO.from(resumePortfolio));
-                }
-            }
-
-            for (Long recruitPortfolioId : fileMap.keySet()) {
-                List<String> urls = fileMap.get(recruitPortfolioId);
-                Portfolio portfolio = map.get(recruitPortfolioId);
-
-                files.add(new ResumePortfolioFileResponseDTO(PortfolioType.FILE_UPLOAD, portfolio.getTitle(), urls));
-            }
-        }
+        List<ResumePortfolioFileResponseDTO> files = resumePortfolio.getFiles();
+        List<ResumePortfolioTextResponseDTO> texts = resumePortfolio.getTexts();
 
         Employee employee = resume.getEmployee();
 
@@ -137,6 +95,59 @@ public class ResumeReader {
                 .map(TagResponseDTO::from);
 
         PageResponseDTO<TagResponseDTO> response = PageResponseDTO.of(dto);
+
+        return response;
+    }
+
+
+    public ResumePortfolioDTO getResumePortfolio(Resume resume){
+        List<ResumePortfolioTextResponseDTO> texts = new ArrayList<>();
+        List<ResumePortfolioFileResponseDTO> files = new ArrayList<>();
+
+        Recruit recruit = resume.getRecruit();
+        List<Portfolio> byRecruitId = portfolioRepository.findByRecruitId(recruit.getId());
+        Map<Long,  Portfolio> map=new HashMap<>();
+        for (Portfolio portfolio : byRecruitId) {
+            map.put(portfolio.getId(), portfolio);
+        }
+
+        if(recruit.getRecruitType()== RecruitType.PREMIUM){
+            List<ResumePortfolio> resumePortfolios = resumePortfolioRepository.findByResumeId(resume.getId());
+
+
+            /**
+             * ResumePortfolio 에 외래키 제약 조건을 추가 고려.
+             * title 로 할 시 데이터 일관성 불안함.
+             */
+            Map<Long ,List<String>> fileMap=new HashMap<>();  // key: portfolioId, value: urls
+
+            for (ResumePortfolio resumePortfolio : resumePortfolios) {
+                PortfolioType portfolioType = resumePortfolio.getPortfolioType();
+                Long recruitPortfolioId = resumePortfolio.getRecruitPortfolioId();
+                String content = resumePortfolio.getContent();
+
+                if(portfolioType==PortfolioType.FILE_UPLOAD){
+                    if (fileMap.containsKey(recruitPortfolioId)) {
+                        fileMap.get(recruitPortfolioId).add(content);
+                    } else {
+                        fileMap.put(recruitPortfolioId, new ArrayList<>(List.of(content)));
+                    }
+
+                }
+                else if(portfolioType==PortfolioType.LONG_TEXT || portfolioType==PortfolioType.SHORT_TEXT){
+                    texts.add(ResumePortfolioTextResponseDTO.from(resumePortfolio));
+                }
+            }
+
+            for (Long recruitPortfolioId : fileMap.keySet()) {
+                List<String> urls = fileMap.get(recruitPortfolioId);
+                Portfolio portfolio = map.get(recruitPortfolioId);
+
+                files.add(new ResumePortfolioFileResponseDTO(PortfolioType.FILE_UPLOAD, portfolio.getTitle(), urls));
+            }
+        }
+
+        ResumePortfolioDTO response = ResumePortfolioDTO.from(texts, files);
 
         return response;
     }
