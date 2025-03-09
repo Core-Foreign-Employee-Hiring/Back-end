@@ -2,16 +2,19 @@ package com.core.foreign.api.portfolio.service;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployeeEvaluationCountDTO;
-import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.entity.*;
-import com.core.foreign.api.member.repository.*;
+import com.core.foreign.api.member.repository.EmployeeRepository;
+import com.core.foreign.api.member.repository.EmployerEmployeeRepository;
+import com.core.foreign.api.member.repository.EmployerResumeRepository;
+import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
-import com.core.foreign.api.portfolio.dto.ApplicationPortfolioPreviewResponseDTO;
-import com.core.foreign.api.portfolio.dto.ApplicationPortfolioResponseDTO;
-import com.core.foreign.api.portfolio.dto.BasicPortfolioPreviewResponseDTO;
-import com.core.foreign.api.portfolio.dto.BasicPortfolioResponseDTO;
-import com.core.foreign.api.recruit.dto.ApplicationResumeResponseDTO;
+import com.core.foreign.api.portfolio.dto.internal.BasicPortfolioDTO;
+import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.BasicPortfolioPreviewResponseDTO;
+import com.core.foreign.api.portfolio.dto.response.BasicPortfolioResponseDTO;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
+import com.core.foreign.api.recruit.dto.ResumePortfolioDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioFileResponseDTO;
 import com.core.foreign.api.recruit.dto.ResumePortfolioTextResponseDTO;
 import com.core.foreign.api.recruit.entity.Recruit;
@@ -43,16 +46,15 @@ public class PortfolioService {
     private final EvaluationReader evaluationReader;
     private final ResumeRepository resumeRepository;
     private final ResumeReader resumeReader;
-    private final EmployeePortfolioRepository employeePortfolioRepository;
     private final EmployerEmployeeRepository employerEmployeeRepository;
     private final EmployerResumeRepository employerResumeRepository;
     private final MemberRepository memberRepository;
+    private final PortfolioReader portfolioReader;
 
     public PageResponseDTO<BasicPortfolioPreviewResponseDTO> getBasicPortfolios(Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Employee> by = employeeRepository.findAllBy(pageable);
-
 
         Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(by.getContent());
 
@@ -69,9 +71,6 @@ public class PortfolioService {
 
     }
 
-    /**
-     * 필터는 공고 부분 업직종 수정 후 가능함.
-     */
     public PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> getApplicationPortfolios(Integer page, Integer size, List<BusinessField> field) {
         Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
@@ -80,8 +79,6 @@ public class PortfolioService {
         // 평가 갖고 온다.
         List<Employee> employees = applicationPortfolio.map(Resume::getEmployee).toList();
         Map<Long, EmployeeEvaluationCountDTO> employeeEvaluations = evaluationReader.getEmployeeEvaluations(employees);
-
-
 
         Page<ApplicationPortfolioPreviewResponseDTO> dto = applicationPortfolio.map((resume) -> {
             Employee employee = resume.getEmployee();
@@ -100,52 +97,54 @@ public class PortfolioService {
 
     }
 
-
     @Transactional
-    public BasicPortfolioResponseDTO getBasicPortfolio(Long employerId, Long employeeId, boolean isBasic) {
+    public BasicPortfolioResponseDTO getBasicPortfolio(Long employerId, Long employeeId) {
         Employee employee = employeeRepository.findPublicEmployeeById(employeeId)
                 .orElseThrow(() -> {
                     log.error("피고용인 찾을 수 없음. employeeId= {}", employeeId);
                     return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findByEmployeeId(employeeId, EmployeePortfolioStatus.COMPLETED)
-                .orElseGet(() -> {
-                    log.error("완성된 포트 폴리오가 없음. employeeId= {}", employeeId);
-                    return null;
-                });
-
+        BasicPortfolioDTO basicPortfolio = portfolioReader.getBasicPortfolio(employee);
 
         EmployeeEvaluationCountDTO employeeEvaluation = evaluationReader.getEmployeeEvaluation(employee);
 
-        if(isBasic) employeeRepository.increaseViewCount(employeeId);
+        BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(basicPortfolio, employeeEvaluation);
 
-        BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(employee, employeePortfolio, employeeEvaluation);
+        Integer viewCount = employee.getViewCount();
+        response.setViewCount(viewCount);
 
         if(employerId!=null && employerEmployeeRepository.existsByEmployerIdAndEmployeeId(employerId, employeeId)){
             response.like();
         }
+
+        employeeRepository.increaseViewCount(employeeId);
 
         return response;
     }
 
     @Transactional
     public ApplicationPortfolioResponseDTO getApplicationPortfolio(Long employerId, Long resumeId){
-        ApplicationResumeResponseDTO resume = resumeReader.getResume(resumeId);
-        Long employeeId = resume.getEmployeeId();
+        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForPortfolio(resumeId)
+                .orElseThrow(() -> {
+                    log.warn("[getResume][이력서 없음.][resumeId= {}]", resumeId);
+                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
-        BasicPortfolioResponseDTO basicPortfolio = getBasicPortfolio(null, employeeId, false);
-        EmployeePortfolioDTO employeePortfolioDTO = resume.getEmployeePortfolioDTO();
-        List<ResumePortfolioTextResponseDTO> texts = resume.getTexts();
-        List<ResumePortfolioFileResponseDTO> files = resume.getFiles();
+        Employee employee = resume.getEmployee();
 
-        // 1차 캐시 이용 쿼리 안 나감.
-        Resume resume1 = resumeRepository.findById(resumeId).get();
-        Integer viewCount = resume1.getViewCount()+1;
+        BasicPortfolioDTO basicPortfolio = portfolioReader.getBasicPortfolio(employee);
+        ResumePortfolioDTO resumePortfolio = resumeReader.getResumePortfolio(resume);
 
+        List<ResumePortfolioTextResponseDTO> texts = resumePortfolio.getTexts();
+        List<ResumePortfolioFileResponseDTO> files = resumePortfolio.getFiles();
+
+        Integer viewCount = resume.getViewCount()+1;
         resumeRepository.increaseViewCount(resumeId);
 
-        ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, employeePortfolioDTO, texts, files, viewCount);
+        EmployeeEvaluationCountDTO employeeEvaluation = evaluationReader.getEmployeeEvaluation(employee);
+
+        ApplicationPortfolioResponseDTO response = new ApplicationPortfolioResponseDTO(resumeId, basicPortfolio, texts, files, viewCount, employeeEvaluation);
 
         if(employerResumeRepository.existsByEmployerIdAndResumeId(employerId, resumeId)){
             response.like();
@@ -207,6 +206,4 @@ public class PortfolioService {
             return true;
         }
     }
-
-
 }

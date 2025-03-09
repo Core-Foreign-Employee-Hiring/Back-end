@@ -2,7 +2,6 @@ package com.core.foreign.api.member.entity;
 
 import com.core.foreign.api.recruit.entity.Resume;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
