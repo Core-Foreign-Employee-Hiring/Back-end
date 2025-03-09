@@ -18,11 +18,16 @@ public class Employer extends Member {
     private String companyImageUrl;
 
     private String businessRegistrationNumber; // 사업자등록번호
+    private String archivedBusinessRegistrationNumber;
     private String companyName;                // 회사점포명
+    private String archivedCompanyName;
     private LocalDate establishedDate;         // 설립일
+    private LocalDate archivedEstablishedDate;
 
     private String companyEmail;
+    private String archivedCompanyEmail;
     private String mainPhoneNumber;
+    private String archivedMainPhoneNumber;
 
     @Embedded
     private Address companyAddress;
@@ -55,6 +60,12 @@ public class Employer extends Member {
 
         this.premiumManage = new PremiumManage(this);
         this.companyAddress=address;
+
+        this.archivedBusinessRegistrationNumber=null;
+        this.archivedCompanyName=null;
+        this.archivedEstablishedDate=null;
+        this.archivedCompanyEmail=null;
+        this.archivedMainPhoneNumber=null;
     }
 
     public void updateCompanyEmail(String companyEmail){
@@ -74,6 +85,23 @@ public class Employer extends Member {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         establishedDate = LocalDate.parse(startDate, formatter);
         updateName(representativeName);
+    }
+
+
+    public void withdraw(){
+        this.archivedBusinessRegistrationNumber=this.businessRegistrationNumber;
+        this.archivedCompanyName=this.companyName;
+        this.archivedEstablishedDate=this.establishedDate;
+        this.archivedCompanyEmail=this.companyEmail;
+        this.archivedMainPhoneNumber=this.mainPhoneNumber;
+
+        this.businessRegistrationNumber=null;
+        this.companyName=null;
+        this.establishedDate=null;
+        this.companyEmail=null;
+        this.mainPhoneNumber=null;
+
+        super.withdraw();
     }
 
 }

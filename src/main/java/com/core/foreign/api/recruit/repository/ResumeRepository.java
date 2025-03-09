@@ -67,11 +67,15 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
 
     @Query("select r from Resume r" +
             " join fetch r.recruit" +
-            " where r.recruitmentStatus='APPROVED' and r.isEmployerEvaluatedByEmployee= :evaluationStatus")
+            " where r.recruitmentStatus='APPROVED' and r.isDeleted=false and r.isEmployerEvaluatedByEmployee= :evaluationStatus")
     Page<Resume> findResumeByEmployeeIdAndEvaluationStatus(@Param("employeeId")Long employeeId,  @Param("evaluationStatus") EvaluationStatus evaluationStatus, Pageable pageable);
 
     @Modifying
     @Query("update Resume resume set resume.viewCount=resume.viewCount+1 where resume.id=:resumeId")
     void increaseViewCount(@Param("resumeId") Long resumeId);
+
+    @Modifying
+    @Query("update Resume r set r.isDeleted=true where r.employee.id=:employeeId")
+    void softDeleteByEmployeeId(@Param("employeeId") Long employeeId);
 
 }

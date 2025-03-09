@@ -96,6 +96,8 @@ public abstract class Recruit extends BaseTimeEntity {
 
     protected LocalDateTime jumpDate;
 
+    private boolean isDeleted;
+
     public void jumpNow() {
         this.jumpDate = LocalDateTime.now();
     }
@@ -156,6 +158,7 @@ public abstract class Recruit extends BaseTimeEntity {
         this.posterImageUrl = posterImageUrl;
         this.recruitPublishStatus = recruitPublishStatus;
         this.jumpDate = jumpDate;
+        this.isDeleted=false;
     }
 
 

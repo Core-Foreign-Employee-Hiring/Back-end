@@ -94,4 +94,13 @@ public class Resume {
         this.contractStatus = ContractStatus.COMPLETED;
         this.contractCompletionDate = contractCompletionDate;
     }
+
+    public void flipPublic(){
+        if(this.isPublic){
+            this.isPublic=false;
+        }
+        else{
+            this.isPublic=true;
+        }
+    }
 }

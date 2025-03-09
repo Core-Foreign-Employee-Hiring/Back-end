@@ -30,9 +30,9 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
     }
 
     @Override
-    public Page<Resume> searchResumedByRecruitId(Long recruitId,
-                                          String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
-                                          Pageable pageable) {
+    public Page<Resume> searchResumeByRecruitId(Long recruitId,
+                                                String keyword, RecruitmentStatus recruitmentStatus, ContractStatus contractStatus,
+                                                Pageable pageable) {
 
         if(keyword==null){
             keyword="";
@@ -66,9 +66,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
 
                 );
 
-
-
-
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
     }
@@ -85,7 +82,8 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
                 .innerJoin(recruit.businessFields)
                 .where(
                         isPublic(),
-                        businessFieldEq(businessField) // 특정 비즈니스 필드에 대한 필터링
+                        businessFieldEq(businessField), // 특정 비즈니스 필드에 대한 필터링
+                        resume.isDeleted.eq(false)
                 )
                 .orderBy(resume.id.desc()) // 최신순 정렬
                 .offset(pageable.getOffset())

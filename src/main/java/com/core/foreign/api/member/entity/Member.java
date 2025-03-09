@@ -22,14 +22,19 @@ public abstract class Member extends BaseTimeEntity {
 
     @Column(unique = true)
     private String userId;       // 아이디
+    private String archivedUserId;
     private String password;     // 비밀번호
     private String name;         // 이름[대표자명]
+    private String archivedName;
     @Column(unique = true)
     private String email;        // 이메일
+    private String archivedEmail;
     @Column(unique = true)
     private String phoneNumber;  // 전화번호
+    private String archivedPhoneNumber;
     private String refreshToken; // 리프레시토큰
     private LocalDate birthday;  // 생년월일
+    private LocalDate archivedBirthday;
     private boolean isMale;      // 성별
 
     private boolean termsOfServiceAgreement;
@@ -47,6 +52,8 @@ public abstract class Member extends BaseTimeEntity {
 
     private int evaluationJoinCount;
     private LocalDateTime passwordVerifiedAt;
+    private LocalDateTime withdrawDate;
+    private boolean isWithdrawn;
 
     protected Member(String userId,
                      String password,
@@ -77,6 +84,13 @@ public abstract class Member extends BaseTimeEntity {
         this.adInfoAgreementSnsMms = adInfoAgreementSmsMms;
         this.adInfoAgreementEmail = adInfoAgreementEmail;
         this.evaluationJoinCount = 0;
+        this.archivedUserId=null;
+        this.archivedName=null;
+        this.archivedEmail=null;
+        this.archivedPhoneNumber=null;
+        this.archivedBirthday=null;
+        this.withdrawDate=null;
+        this.isWithdrawn = false;
 
     }
 
@@ -133,6 +147,23 @@ public abstract class Member extends BaseTimeEntity {
 
     public void resetPasswordVerificationTime() {
         this.passwordVerifiedAt = LocalDateTime.now().minusDays(1);
+    }
+
+    public void withdraw(){
+        this.archivedUserId=this.userId;
+        this.archivedName=this.name;
+        this.archivedEmail=this.email;
+        this.archivedPhoneNumber=this.phoneNumber;
+        this.archivedBirthday=this.birthday;
+
+        this.userId=null;
+        this.name=null;
+        this.email=null;
+        this.phoneNumber=null;
+        this.birthday=null;
+
+        this.withdrawDate=LocalDateTime.now();
+        this.isWithdrawn=true;
     }
 
 }

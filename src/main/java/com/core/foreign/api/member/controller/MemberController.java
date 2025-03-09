@@ -936,4 +936,36 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, response);
     }
 
+    @Operation(summary = "피고용인 이력서 공개/비공개 변경. API",
+            description = "피고용인 이력서 공개/비공개 변경. API <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @PatchMapping(value = "/employee/resumes/{resume-id}/visibility")
+    public ResponseEntity<ApiResponse<Void>> flipResumePublic(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                           @PathVariable("resume-id") Long resumeId) {
+
+        resumeService.flipResumePublic(securityMember.getId(), resumeId);
+
+        return ApiResponse.success_only(SuccessStatus.RESUME_VISIBILITY_UPDATE_SUCCESS);
+    }
+
+
+    @Operation(summary = "회원 탈퇴하기. API",
+            description = "회원 탈퇴하기. API <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @DeleteMapping(value = "/withdraw")
+    public ResponseEntity<ApiResponse<Void>> withdrawMember(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        memberService.withdrawMember(securityMember.getId());
+
+        return ApiResponse.success_only(SuccessStatus.MEMBER_WITHDRAW_SUCCESS);
+    }
+
 }
