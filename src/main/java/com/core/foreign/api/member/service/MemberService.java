@@ -211,6 +211,8 @@ public class MemberService {
 
         // DTO를 사용하여 응답 데이터 구성
         return new MemberLoginResponseDTO(
+                member.getName(),
+                member.getUserId(),
                 tokens.get("accessToken"),
                 tokens.get("refreshToken"),
                 member.getRole().name()
