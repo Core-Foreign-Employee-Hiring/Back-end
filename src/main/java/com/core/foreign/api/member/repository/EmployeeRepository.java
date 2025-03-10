@@ -13,11 +13,11 @@ import java.util.Optional;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Query("select e from Employee e" +
-            " where e.isPortfolioPublic=true")
+            " where e.isPortfolioPublic=true and e.isWithdrawn=false")
     Page<Employee> findAllBy(Pageable pageable);
 
     @Query("select e from Employee e" +
-            " where e.id=:employeeId and  e.isPortfolioPublic =true")
+            " where e.id=:employeeId and  e.isPortfolioPublic =true and e.isWithdrawn=false")
     Optional<Employee> findPublicEmployeeById(@Param("employeeId")Long employeeId);
 
     @Modifying

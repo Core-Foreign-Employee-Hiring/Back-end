@@ -960,6 +960,4 @@ public class RecruitService {
         return PageResponseDTO.of(dtoPage);
     }
 
-
-
 }

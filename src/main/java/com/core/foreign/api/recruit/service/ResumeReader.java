@@ -70,7 +70,7 @@ public class ResumeReader {
                                                                                         Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Resume> resumes = resumeRepository.searchResumedByRecruitId(recruitId, keyword, recruitmentStatus, contractStatus, pageable);
+        Page<Resume> resumes = resumeRepository.searchResumeByRecruitId(recruitId, keyword, recruitmentStatus, contractStatus, pageable);
         Page<ApplicationResumePreviewResponseDTO> dto = resumes.map(ApplicationResumePreviewResponseDTO::from);
 
         PageResponseDTO<ApplicationResumePreviewResponseDTO> response = PageResponseDTO.of(dto);

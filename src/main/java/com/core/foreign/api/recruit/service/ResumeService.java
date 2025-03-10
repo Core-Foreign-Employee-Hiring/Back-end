@@ -319,6 +319,9 @@ public class ResumeService {
             throw new BadRequestException(UNAUTHORIZED_RESUME_DELETE_EXCEPTION.getMessage());
         }
 
+        /**
+         * 모집 승인된 거 어떻게 처리해야 하지.
+         */
 
         resume.delete();
     }
@@ -332,6 +335,25 @@ public class ResumeService {
         PageResponseDTO<TagResponseDTO> response = resumeReader.getTags(employerId, evaluationStatus, page, size);
 
         return response;
+    }
+
+    @Transactional
+    public void flipResumePublic(Long employeeId, Long resumeId){
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> {
+                    log.warn("[flipResumePublic][resume not found][resumeId= {}]", resumeId);
+                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Employee employee = resume.getEmployee();
+
+        if(!Objects.equals(employeeId, employee.getId())){
+            log.warn("[flipResumePublic][다른 사람 이력서 공개/비공개 변경 시도][requestEmployerId= {}, employerIdOfResume= {}]", employeeId, employee.getId());
+            throw new BadRequestException(INVALID_RESUME_OWNER_EXCEPTION.getMessage());
+        }
+
+        resume.flipPublic();
+
     }
 
 }

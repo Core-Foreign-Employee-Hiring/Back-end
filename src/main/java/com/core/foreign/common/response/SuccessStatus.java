@@ -75,6 +75,9 @@ public enum SuccessStatus {
     SEND_TOP_JUMP_COUNT_SUCCESS(HttpStatus.OK,"상단 점프 잔여 횟수 조회 성공"),
     ALBA_REVIEW_SEARCH_SUCCESS(HttpStatus.OK, "알바 후기 검색 성공"),
     SEARCH_RECRUIT_SUCESS(HttpStatus.OK,"공고 검색 성공"),
+    RESUME_VISIBILITY_UPDATE_SUCCESS(HttpStatus.OK, "이력서 공개 상태 변경 성공"),
+    MEMBER_WITHDRAW_SUCCESS(HttpStatus.OK, "회원 탈퇴 성공"),
+
 
     /**
      * 201

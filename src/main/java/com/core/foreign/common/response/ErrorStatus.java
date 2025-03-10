@@ -72,6 +72,7 @@ public enum ErrorStatus {
     REQUIRED_TERMS_NOT_AGREED_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
     TEMPORARY_RECRUIT_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "임시 저장 공고는 지원이 불가합니다."),
     INVALID_CONTRACT_OWNER_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 소유자가 아닙니다."),
+    INVALID_RESUME_OWNER_EXCEPTION(HttpStatus.BAD_REQUEST, "이력서 소유자가 아닙니다."),
 
     /**
      * 401 UNAUTHORIZED

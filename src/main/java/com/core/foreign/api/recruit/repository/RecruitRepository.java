@@ -5,10 +5,7 @@ import com.core.foreign.api.recruit.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -39,7 +36,7 @@ public interface RecruitRepository
             "left join fetch r.workTime " +
             "left join fetch r.workDays " +
             "join fetch r.employer " +
-            "where r.id = :recruitId")
+            "where r.id = :recruitId and r.isDeleted=false")
     Optional<Recruit> findByIdFetchJoin(@Param("recruitId") Long recruitId);
 
     @Query("select r from Recruit r" +
@@ -54,7 +51,7 @@ public interface RecruitRepository
             " left join fetch r.workDuration" +
             " left join fetch r.workDays" +
             " left join fetch r.workTime" +
-            "  where r.id in :ids")
+            " where r.id in :ids")
     List<Recruit> findRecruitsByIds(@Param("ids")List<Long> ids);
 
     // 해당 공고 유형(recruitType)이고 jumpDate가 설정된 공고를 jumpDate 내림차순으로 조회
@@ -76,5 +73,9 @@ public interface RecruitRepository
     }
 
     boolean existsByEmployerAndRecruitPublishStatus(Member employer, RecruitPublishStatus status);
+
+    @Modifying
+    @Query("update Recruit r set r.isDeleted=true where r.employer.id=:employerId")
+    void softDeleteByEmployerId(@Param("employerId") Long employerId);
 
 }

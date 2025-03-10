@@ -12,6 +12,9 @@ import com.core.foreign.api.portfolio.dto.response.BasicPortfolioPreviewResponse
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
+import com.core.foreign.api.recruit.repository.RecruitRepository;
+import com.core.foreign.api.recruit.service.RecruitDeleter;
+import com.core.foreign.api.recruit.service.ResumeDeleter;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.exception.UnauthorizedException;
@@ -53,6 +56,9 @@ public class MemberService {
     private final EmployerEmployeeRepository employerEmployeeRepository;
     private final EmployerResumeRepository employerResumeRepository;
     private final EvaluationReader evaluationReader;
+    private final ResumeDeleter resumeDeleter;
+    private final RecruitRepository recruitRepository;
+    private final RecruitDeleter recruitDeleter;
 
     // 고용인 회원가입
     @Transactional
@@ -569,6 +575,26 @@ public class MemberService {
         PageResponseDTO<ApplicationPortfolioPreviewResponseDTO> response = PageResponseDTO.of(dto);
 
         return response;
+    }
+
+
+    @Transactional
+    public void withdrawMember(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[withdrawMember][member not found][memberId= {}]", memberId);
+                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        if(member instanceof Employer employer){
+            recruitDeleter.deleteRecruitOnEmployeeWithdrawal(employer.getId());
+
+            employer.withdraw();
+        }else if (member instanceof Employee employee){
+            resumeDeleter.deleteResumeOnEmployeeWithdrawal(employee.getId());
+
+            employee.withdraw();
+        }
     }
 
 
