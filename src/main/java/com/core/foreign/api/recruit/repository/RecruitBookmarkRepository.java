@@ -21,4 +21,6 @@ public interface RecruitBookmarkRepository extends JpaRepository<RecruitBookmark
             " join fetch r.employer" +
             " where b.member.id=:memberId")
     Page<RecruitBookmark> findByMemberId(@Param("memberId")Long memberId, Pageable pageable);
+
+    boolean existsByRecruitIdAndMemberId(Long recruitId, Long memberId);
 }

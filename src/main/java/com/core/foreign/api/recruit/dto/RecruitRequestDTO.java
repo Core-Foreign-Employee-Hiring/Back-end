@@ -22,6 +22,7 @@ public class RecruitRequestDTO {
         private Double longitude;
         private LocalDate recruitStartDate;
         private LocalDate recruitEndDate;
+        private Integer recruitCount;
         private String gender;
         private String education;
         private String otherConditions;
@@ -48,6 +49,7 @@ public class RecruitRequestDTO {
         private Double longitude;
         private LocalDate recruitStartDate;
         private LocalDate recruitEndDate;
+        private Integer recruitCount;
         private String gender;
         private String education;
         private String otherConditions;

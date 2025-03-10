@@ -67,6 +67,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -117,6 +118,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -173,6 +175,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -263,6 +266,7 @@ public class RecruitService {
                 .longitude(request.getLongitude())
                 .recruitStartDate(request.getRecruitStartDate())
                 .recruitEndDate(request.getRecruitEndDate())
+                .recruitCount(request.getRecruitCount())
                 .gender(request.getGender())
                 .education(request.getEducation())
                 .otherConditions(request.getOtherConditions())
@@ -681,7 +685,7 @@ public class RecruitService {
 
     // 공고 상세 조회
     @Transactional(readOnly = true)
-    public RecruitDetailResponseDTO getRecruitDetail(Long recruitId) {
+    public RecruitDetailResponseDTO getRecruitDetail(Long memberId, Long recruitId) {
 
         Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
                 .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
@@ -711,6 +715,7 @@ public class RecruitService {
 
         EmployerReliabilityDTO employerReliabilityDTO = employerRepository.getEmployerReliability(employer.getId());
         Integer reliability = employerReliabilityDTO.getReliability();
+        boolean isLiked = recruitBookmarkRepository.existsByRecruitIdAndMemberId(recruitId, memberId);
 
         return RecruitDetailResponseDTO.builder()
                 .recruitId(recruit.getId())
@@ -720,6 +725,7 @@ public class RecruitService {
                 .address(recruit.getAddress())
                 .recruitStartDate(recruit.getRecruitStartDate())
                 .recruitEndDate(recruit.getRecruitEndDate())
+                .recruitCount(recruit.getRecruitCount())
                 .gender(recruit.getGender())
                 .education(recruit.getEducation())
                 .otherConditions(recruit.getOtherConditions())
@@ -746,6 +752,7 @@ public class RecruitService {
                 .businessRegistrationNumber(businessRegistrationNumber)
                 .employerEvaluationCountDTO(employerEvaluationCountDTO)
                 .employerReliability(reliability)
+                .isLiked(isLiked)
                 .build();
     }
 

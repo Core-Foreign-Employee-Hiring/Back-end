@@ -747,9 +747,11 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 공고를 찾을 수 없습니다.")
     })
     @GetMapping(value = "/view", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<RecruitDetailResponseDTO>> getRecruitDetail(@RequestParam Long recruitId) {
+    public ResponseEntity<ApiResponse<RecruitDetailResponseDTO>> getRecruitDetail(@AuthenticationPrincipal SecurityMember securityMember,@RequestParam Long recruitId) {
 
-        RecruitDetailResponseDTO detailDTO = recruitService.getRecruitDetail(recruitId);
+        Long memberId=securityMember==null ?null:securityMember.getId();
+
+        RecruitDetailResponseDTO detailDTO = recruitService.getRecruitDetail(memberId, recruitId);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_DETAIL_SUCCESS, detailDTO);
     }
 

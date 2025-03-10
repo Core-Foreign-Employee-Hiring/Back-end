@@ -22,6 +22,7 @@ public class RecruitDetailResponseDTO {
     private Address address;                 // 공고 등록 시 사용된 주소
     private LocalDate recruitStartDate;      // 모집 시작일
     private LocalDate recruitEndDate;        // 모집 종료일
+    private Integer recruitCount;            // 모집 인원
     private String gender;                   // 성별 조건
     private String education;                // 학력 조건
     private String otherConditions;          // 기타 조건
@@ -48,4 +49,5 @@ public class RecruitDetailResponseDTO {
     private String businessRegistrationNumber; // 사업자 등록번호
     private EmployerEvaluationCountDTO employerEvaluationCountDTO;
     private Integer employerReliability;
+    private boolean isLiked;
 }
