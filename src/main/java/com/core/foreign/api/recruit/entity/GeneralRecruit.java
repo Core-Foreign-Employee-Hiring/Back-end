@@ -31,6 +31,7 @@ public class GeneralRecruit extends Recruit {
             Double longitude,
             LocalDate recruitStartDate,
             LocalDate recruitEndDate,
+            Integer recruitCount,
             String gender,
             String education,
             String otherConditions,
@@ -57,6 +58,7 @@ public class GeneralRecruit extends Recruit {
                 longitude,
                 recruitStartDate,
                 recruitEndDate,
+                recruitCount,
                 gender,
                 education,
                 otherConditions,
@@ -88,6 +90,7 @@ public class GeneralRecruit extends Recruit {
         this.longitude = request.getLongitude();
         this.recruitStartDate = request.getRecruitStartDate();
         this.recruitEndDate = request.getRecruitEndDate();
+        this.recruitCount=request.getRecruitCount();
         this.gender = request.getGender();
         this.education = request.getEducation();
         this.otherConditions = request.getOtherConditions();
