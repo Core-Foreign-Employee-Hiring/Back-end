@@ -669,7 +669,7 @@ public class RecruitController {
             @RequestParam(required = false) List<String> workDays,
             @RequestParam(required = false) List<String> workTimes,
             @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String salaryType
+            @RequestParam(required = false) List<String> salaryType
     ) {
         // 검색조건 생성
         RecruitSearchConditionDTO condition = RecruitSearchConditionDTO.builder()
@@ -706,7 +706,7 @@ public class RecruitController {
             @RequestParam(required = false) List<String> workDays,
             @RequestParam(required = false) List<String> workTimes,
             @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String salaryType
+            @RequestParam(required = false) List<String> salaryType
     ) {
         // 검색조건 생성
         RecruitSearchConditionDTO condition = RecruitSearchConditionDTO.builder()
