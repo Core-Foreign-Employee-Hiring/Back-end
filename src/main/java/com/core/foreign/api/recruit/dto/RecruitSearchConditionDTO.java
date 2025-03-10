@@ -21,5 +21,5 @@ public class RecruitSearchConditionDTO {
     private List<String> workDays;        // 근무요일 (최대 3개)
     private List<String> workTimes;       // 근무시간 (최대 3개)
     private String gender;                         // 성별 (남자, 여자, null=무관)
-    private String salaryType;                     // 급여형태 (시급, 월급, 연봉 등)
+    private List<String> salaryType;                     // 급여형태 (시급, 월급, 연봉 등)
 }

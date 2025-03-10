@@ -91,12 +91,17 @@ public class RecruitSpecifications {
     }
 
     // 급여형태 필터
-    public static Specification<Recruit> salaryTypeEq(String salaryType) {
+    public static Specification<Recruit> salaryTypeIn(List<String> salaryTypes) {
         return (root, query, cb) -> {
-            if (salaryType == null || salaryType.trim().isEmpty()) {
+            if (salaryTypes == null || salaryTypes.isEmpty()) {
                 return cb.conjunction();
             }
-            return cb.equal(root.get("salaryType"), salaryType);
+            Expression<String> salaryTypeExp = root.get("salaryType");
+            Predicate predicate = cb.disjunction();
+            for (String type : salaryTypes) {
+                predicate = cb.or(predicate, cb.equal(salaryTypeExp, type));
+            }
+            return predicate;
         };
     }
 

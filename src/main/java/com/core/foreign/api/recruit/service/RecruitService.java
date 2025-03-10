@@ -503,7 +503,7 @@ public class RecruitService {
                         (condition.getWorkDays() != null && !condition.getWorkDays().isEmpty()) ||
                         (condition.getWorkTimes() != null && !condition.getWorkTimes().isEmpty()) ||
                         (condition.getGender() != null && !condition.getGender().trim().isEmpty()) ||
-                        (condition.getSalaryType() != null && !condition.getSalaryType().trim().isEmpty());
+                        (condition.getSalaryType() != null && !condition.getSalaryType().isEmpty());
 
         // 페이징 객체 생성: 필터가 적용되면 createdAt 내림차순 정렬, 그렇지 않으면 정렬 없이 Specification에서 커스텀 정렬 적용
         Pageable pageable;
@@ -516,13 +516,14 @@ public class RecruitService {
         Specification<Recruit> spec = (root, query, cb) -> {
             // 기본 조건 : PUBLISHED 상태여야 함
             Predicate predicate = cb.conjunction();
+            predicate = cb.and(predicate, cb.equal(root.get("isDeleted"), false));
             predicate = cb.and(predicate, RecruitSpecifications.isPublished().toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()).toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.workDurationIn(condition.getWorkDurations()).toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.workDaysIn(condition.getWorkDays()).toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.workTimeIn(condition.getWorkTimes()).toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.genderEq(condition.getGender()).toPredicate(root, query, cb));
-            predicate = cb.and(predicate, RecruitSpecifications.salaryTypeEq(condition.getSalaryType()).toPredicate(root, query, cb));
+            predicate = cb.and(predicate, RecruitSpecifications.salaryTypeIn(condition.getSalaryType()).toPredicate(root, query, cb));
 
             // 필터 조건이 없는 경우에만 커스텀 정렬 적용
             if (!isFilterApplied && query.getOrderList().isEmpty()) {
@@ -601,7 +602,7 @@ public class RecruitService {
                         (condition.getWorkDays() != null && !condition.getWorkDays().isEmpty()) ||
                         (condition.getWorkTimes() != null && !condition.getWorkTimes().isEmpty()) ||
                         (condition.getGender() != null && !condition.getGender().trim().isEmpty()) ||
-                        (condition.getSalaryType() != null && !condition.getSalaryType().trim().isEmpty());
+                        (condition.getSalaryType() != null && !condition.getSalaryType().isEmpty());
 
         Pageable pageable;
         if (!isFilterApplied) {
@@ -612,13 +613,14 @@ public class RecruitService {
 
         Specification<Recruit> spec = (root, query, cb) -> {
             Predicate p = Specification.where(RecruitSpecifications.isPremium())
+                    .and((root1, query1, cb1) -> cb.equal(root1.get("isDeleted"), false))
                     .and(RecruitSpecifications.isPublished())
                     .and(RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()))
                     .and(RecruitSpecifications.workDurationIn(condition.getWorkDurations()))
                     .and(RecruitSpecifications.workDaysIn(condition.getWorkDays()))
                     .and(RecruitSpecifications.workTimeIn(condition.getWorkTimes()))
                     .and(RecruitSpecifications.genderEq(condition.getGender()))
-                    .and(RecruitSpecifications.salaryTypeEq(condition.getSalaryType()))
+                    .and(RecruitSpecifications.salaryTypeIn(condition.getSalaryType()))
                     .toPredicate(root, query, cb);
 
             // 필터 조건이 없으면 커스텀 정렬 로직 적용
