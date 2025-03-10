@@ -516,6 +516,7 @@ public class RecruitService {
         Specification<Recruit> spec = (root, query, cb) -> {
             // 기본 조건 : PUBLISHED 상태여야 함
             Predicate predicate = cb.conjunction();
+            predicate = cb.and(predicate, cb.equal(root.get("isDeleted"), false));
             predicate = cb.and(predicate, RecruitSpecifications.isPublished().toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()).toPredicate(root, query, cb));
             predicate = cb.and(predicate, RecruitSpecifications.workDurationIn(condition.getWorkDurations()).toPredicate(root, query, cb));
@@ -612,6 +613,7 @@ public class RecruitService {
 
         Specification<Recruit> spec = (root, query, cb) -> {
             Predicate p = Specification.where(RecruitSpecifications.isPremium())
+                    .and((root1, query1, cb1) -> cb.equal(root1.get("isDeleted"), false))
                     .and(RecruitSpecifications.isPublished())
                     .and(RecruitSpecifications.businessFieldsIn(condition.getBusinessFields()))
                     .and(RecruitSpecifications.workDurationIn(condition.getWorkDurations()))
