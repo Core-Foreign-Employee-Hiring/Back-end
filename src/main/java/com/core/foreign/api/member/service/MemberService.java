@@ -9,12 +9,14 @@ import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.repository.*;
 import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.response.BasicPortfolioPreviewResponseDTO;
+import com.core.foreign.api.recruit.dto.MyResumeResponseDTO;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
+import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
 import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
-import com.core.foreign.api.recruit.repository.RecruitRepository;
 import com.core.foreign.api.recruit.service.RecruitDeleter;
 import com.core.foreign.api.recruit.service.ResumeDeleter;
+import com.core.foreign.api.recruit.service.ResumeReader;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.exception.UnauthorizedException;
@@ -57,8 +59,10 @@ public class MemberService {
     private final EmployerResumeRepository employerResumeRepository;
     private final EvaluationReader evaluationReader;
     private final ResumeDeleter resumeDeleter;
-    private final RecruitRepository recruitRepository;
     private final RecruitDeleter recruitDeleter;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeePortfolioRepository employeePortfolioRepository;
+    private final ResumeReader resumeReader;
 
     // 고용인 회원가입
     @Transactional
@@ -597,5 +601,29 @@ public class MemberService {
         }
     }
 
+    public MyResumeResponseDTO getMyResume(Long employeeId, Long resumeId){
+        // 내 회원 정보
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> {
+                    log.warn("[getMyResume][employee not found][employeeId= {}]", employeeId);
+                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
+        // 내 스펙 및 경력
+        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId, EmployeePortfolioStatus.COMPLETED)
+                .orElseGet(() -> {
+                    log.warn("[getMyResume][완성된 포트폴리오 없음][employeeId= {}]", employeeId);
+                    return null;
+                });
+
+        EmployeePortfolioDTO dto = EmployeePortfolioDTO.from(employeePortfolio);
+
+
+        // 이력서
+        ResumeDTO myResume = resumeReader.getMyResume(employeeId, resumeId);
+
+        MyResumeResponseDTO response = MyResumeResponseDTO.of(employee, dto, myResume);
+
+        return response;
+    }
 }

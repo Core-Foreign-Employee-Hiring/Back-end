@@ -2,18 +2,21 @@ package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.service.ContractCreator;
+import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.TagResponseDTO;
-import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.entity.*;
+import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
+import com.core.foreign.api.member.repository.EmployeeRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.recruit.dto.*;
+import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PremiumRecruitRepository;
 import com.core.foreign.api.recruit.repository.RecruitRepository;
 import com.core.foreign.api.recruit.repository.ResumePortfolioRepository;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,8 @@ public class ResumeService {
     private final ResumePortfolioRepository resumePortfolioRepository;
     private final ResumeReader resumeReader;
     private final ContractCreator contractCreator;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeePortfolioRepository employeePortfolioRepository;
 
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
@@ -186,19 +191,32 @@ public class ResumeService {
      *   평가하기 또는 평가 보기
      *   계약서 작성하기 또는 보기
      */
-    public ApplicationResumeResponseDTO getResume(Long memberId, Long resumeId) {
+    public ApplicationResumeResponseDTO getResumeForEmployer(Long resumeId) {
+        // 이력서
+        ResumeDTO resume = resumeReader.getResumeForEmployer(resumeId);
 
-        Member member = memberRepository.findById(memberId)
+        Long employeeId = resume.getEmployeeId();
+
+        // 피고용인 회원 정보
+        Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> {
-                    log.warn("유저를 찾을 수 없음. memberId= {}", memberId);
-                    return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    log.warn("[getMyResume][employee not found][employeeId= {}]", employeeId);
+                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        ApplicationResumeResponseDTO response = resumeReader.getResume(resumeId);
+        // 피고용인 스펙 및 경력
+        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId, EmployeePortfolioStatus.COMPLETED)
+                .orElseGet(() -> {
+                    log.warn("[getMyResume][완성된 포트폴리오 없음][employeeId= {}]", employeeId);
+                    return null;
+                });
 
-        response.setRole(member.getRole());
+        EmployeePortfolioDTO employeePortfolioDTO = EmployeePortfolioDTO.from(employeePortfolio);
+
+        ApplicationResumeResponseDTO response = ApplicationResumeResponseDTO.of(resume, employee, employeePortfolioDTO);
 
         return response;
+
     }
 
 
@@ -255,8 +273,6 @@ public class ResumeService {
 
         return response;
     }
-
-
 
     @Transactional
     public void approveOrRejectResume(Long memberId, Long resumeId, RecruitmentStatus recruitmentStatus){

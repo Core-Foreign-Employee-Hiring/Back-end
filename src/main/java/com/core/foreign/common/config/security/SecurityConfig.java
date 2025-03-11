@@ -77,6 +77,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.GET, "/api/v1/albareview/**", "/api/v1/albareview","/api/v1/albareview/comment","/api/v1/albareview/search"
                         ).permitAll() // 알바 후기 조회, 검색 관련 API
+                        .requestMatchers("/api/v1/portfolio/basics", "/api/v1/portfolio/basics/{employee-id}", "/api/v1/portfolio/applications", "/api/v1/portfolio/applications/{resume-id}")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

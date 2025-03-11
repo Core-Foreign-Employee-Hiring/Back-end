@@ -54,7 +54,10 @@ public class PortfolioController {
     @GetMapping(value = "/basics/{employee-id}")
     public ResponseEntity<ApiResponse<BasicPortfolioResponseDTO>> getBasicPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                     @PathVariable("employee-id") Long employeeId) {
-        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(securityMember.getId(), employeeId);
+
+        Long memberId=securityMember!=null?securityMember.getId():null;
+
+        BasicPortfolioResponseDTO basicPortfolio = portfolioService.getBasicPortfolio(memberId, employeeId);
 
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolio);
     }
@@ -87,7 +90,10 @@ public class PortfolioController {
     @GetMapping(value = "/applications/{resume-id}")
     public ResponseEntity<ApiResponse<ApplicationPortfolioResponseDTO>> getApplicationPortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                                 @PathVariable("resume-id") Long resumeId) {
-        ApplicationPortfolioResponseDTO applicationPortfolio = portfolioService.getApplicationPortfolio(securityMember.getId(), resumeId);
+
+        Long memberId=securityMember!=null?securityMember.getId():null;
+
+        ApplicationPortfolioResponseDTO applicationPortfolio = portfolioService.getApplicationPortfolio(memberId, resumeId);
 
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolio);
     }

@@ -1,7 +1,6 @@
 package com.core.foreign.api.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
