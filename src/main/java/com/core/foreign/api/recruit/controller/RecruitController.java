@@ -780,7 +780,7 @@ public class RecruitController {
     @GetMapping(value = "/resumes/{resume-id}")
     public ResponseEntity<ApiResponse<ApplicationResumeResponseDTO>> getResume(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                @PathVariable("resume-id") Long resumeId) {
-        ApplicationResumeResponseDTO resume = resumeService.getResume(securityMember.getId(), resumeId);
+        ApplicationResumeResponseDTO resume = resumeService.getResumeForEmployer(resumeId);
         return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
     }
 

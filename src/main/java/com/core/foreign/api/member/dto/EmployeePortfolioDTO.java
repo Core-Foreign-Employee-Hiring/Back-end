@@ -22,7 +22,6 @@ public class EmployeePortfolioDTO {
     private String englishTestType;
     private int englishTestScore; // 점수
 
-
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -64,6 +63,41 @@ public class EmployeePortfolioDTO {
 
     }
 
+    public static EmployeePortfolioDTO from(EmployeePortfolio portfolio) {
+        if(portfolio == null) {return null;}
+
+        EmployeePortfolioDTO dto = new EmployeePortfolioDTO();
+        dto.introduction = portfolio.getIntroduction();
+        dto.enrollmentCertificateUrl = portfolio.getEnrollmentCertificateUrl();
+        dto.transcriptUrl = portfolio.getTranscriptUrl();
+        dto.partTimeWorkPermitUrl = portfolio.getPartTimeWorkPermitUrl();
+        dto.topic = portfolio.getTopic();
+        dto.englishTestType = portfolio.getEnglishTestType();
+        dto.englishTestScore = portfolio.getEnglishTestScore();
+
+
+        List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
+        List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
+        List<EmployeePortfolioAwardDTO> a = new ArrayList<>();
+
+        List<EmployeePortfolioBusinessFieldInfo> infos = portfolio.getEmployeePortfolioBusinessFieldInfos();
+        for (EmployeePortfolioBusinessFieldInfo info : infos) {
+            if (info.getEmployeePortfolioBusinessFieldType() == EmployeePortfolioBusinessFieldType.EXPERIENCE) {
+                e.add(EmployeePortfolioExperienceDTO.from(info));
+            } else if (info.getEmployeePortfolioBusinessFieldType() == EmployeePortfolioBusinessFieldType.CERTIFICATION) {
+                c.add(EmployeePortfolioCertificationDTO.from(info));
+            } else if (info.getEmployeePortfolioBusinessFieldType() == EmployeePortfolioBusinessFieldType.AWARD) {
+                a.add(EmployeePortfolioAwardDTO.from(info));
+            }
+        }
+
+        dto.experiences = e;
+        dto.certifications = c;
+        dto.awards = a;
+
+        return dto;
+    }
+
     public static EmployeePortfolioDTO from(BasicPortfolioDTO basicPortfolio){
         EmployeePortfolioDTO dto = new EmployeePortfolioDTO();
         dto.introduction = basicPortfolio.getIntroduction();
@@ -77,7 +111,6 @@ public class EmployeePortfolioDTO {
         dto.experiences=basicPortfolio.getExperiences();
         dto.certifications=basicPortfolio.getCertifications();
         dto.awards=basicPortfolio.getAwards();
-
 
         return dto;
     }

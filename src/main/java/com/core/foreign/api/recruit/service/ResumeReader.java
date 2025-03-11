@@ -1,13 +1,9 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.contract.entity.ContractStatus;
-import com.core.foreign.api.member.dto.EmployeeBasicResumeResponseDTO;
-import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.TagResponseDTO;
-import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.EmployeePortfolio;
-import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.recruit.dto.*;
+import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
 import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PortfolioRepository;
 import com.core.foreign.api.recruit.repository.ResumePortfolioRepository;
@@ -21,9 +17,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.COMPLETED;
 import static com.core.foreign.common.response.ErrorStatus.RESUME_NOT_FOUND_EXCEPTION;
 
 @Component
@@ -32,35 +30,18 @@ import static com.core.foreign.common.response.ErrorStatus.RESUME_NOT_FOUND_EXCE
 public class ResumeReader {
     private final ResumeRepository resumeRepository;
     private final ResumePortfolioRepository resumePortfolioRepository;
-    private final EmployeePortfolioRepository employeePortfolioRepository;
     private final PortfolioRepository portfolioRepository;
 
-
-    public ApplicationResumeResponseDTO getResume(Long resumeId){
-        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
+    public ResumeDTO getResumeForEmployer(Long resumeId){
+        Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForEmployer(resumeId)
                 .orElseThrow(() -> {
-                    log.warn("[getResume][이력서 없음.][resumeId= {}]", resumeId);
+                    log.warn("[getResumeForEmployer][이력서 없음.][resumeId= {}]", resumeId);
                     return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-
         ResumePortfolioDTO resumePortfolio = getResumePortfolio(resume);
 
-        List<ResumePortfolioFileResponseDTO> files = resumePortfolio.getFiles();
-        List<ResumePortfolioTextResponseDTO> texts = resumePortfolio.getTexts();
-
-        Employee employee = resume.getEmployee();
-
-        EmployeeBasicResumeResponseDTO employeeBasicResumeResponseDTO = EmployeeBasicResumeResponseDTO.from(employee);
-        Optional<EmployeePortfolio> find= employeePortfolioRepository.findByEmployeeId(employee.getId(), COMPLETED);
-        EmployeePortfolioDTO employeePortfolioDTO=null;
-        if(find.isPresent()){
-            employeePortfolioDTO = EmployeePortfolioDTO.from(find.get(), employee.isPortfolioPublic());
-        }else{
-            log.warn("[getResume][완성된 포트폴리오가 없음]");
-        }
-
-        ApplicationResumeResponseDTO response = new ApplicationResumeResponseDTO(resume, employeeBasicResumeResponseDTO,employeePortfolioDTO, resume.getMessageToEmployer(), texts, files);
+        ResumeDTO response = ResumeDTO.from(resume, resumePortfolio);
 
         return response;
     }
@@ -83,6 +64,21 @@ public class ResumeReader {
                 .map(EmployeeApplicationStatusResponseDTO::from);
 
         PageResponseDTO<EmployeeApplicationStatusResponseDTO> response = PageResponseDTO.of(dto);
+
+        return response;
+    }
+
+    public ResumeDTO getMyResume(Long employeeId, Long resumeId){
+        Resume resume = resumeRepository.findMyResumeWithEmployeeAndRecruit(employeeId, resumeId)
+                .orElseThrow(() -> {
+                    log.warn("[getResume][이력서 없음.][employeeId= {}, resumeId= {}]", employeeId, resumeId);
+                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        ResumePortfolioDTO resumePortfolio = getResumePortfolio(resume);
+
+        ResumeDTO response = ResumeDTO.from(resume, resumePortfolio);
 
         return response;
     }

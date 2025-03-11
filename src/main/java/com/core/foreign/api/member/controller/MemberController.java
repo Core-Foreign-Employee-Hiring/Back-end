@@ -12,6 +12,7 @@ import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
 import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioPreviewResponseDTO;
 import com.core.foreign.api.portfolio.dto.response.BasicPortfolioPreviewResponseDTO;
+import com.core.foreign.api.recruit.dto.MyResumeResponseDTO;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.api.recruit.dto.RecruitPreviewResponseDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
@@ -966,6 +967,22 @@ public class MemberController {
         memberService.withdrawMember(securityMember.getId());
 
         return ApiResponse.success_only(SuccessStatus.MEMBER_WITHDRAW_SUCCESS);
+    }
+
+    @Operation(summary = "마이페이지(피고용인) 이력서 조회. API",
+            description = "마이페이지(피고용인) 이력서 조회. <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping(value = "/employee/my-resumes/{resume-id}")
+    public ResponseEntity<ApiResponse<MyResumeResponseDTO>> getMyResume(@AuthenticationPrincipal SecurityMember securityMember,
+                                                         @PathVariable("resume-id")Long resumeId) {
+
+        MyResumeResponseDTO myResume = memberService.getMyResume(securityMember.getId(), resumeId);
+
+        return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, myResume);
     }
 
 }
