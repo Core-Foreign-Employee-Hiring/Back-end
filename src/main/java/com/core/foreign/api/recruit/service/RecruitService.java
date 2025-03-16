@@ -883,7 +883,12 @@ public class RecruitService {
                     return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        return RecruitPreviewResponseDTO.from(recruit);
+        Employer employer = (Employer) recruit.getEmployer();
+
+        EmployerReliabilityDTO employerReliabilityDTO = employerRepository.getEmployerReliability(employer.getId());
+        Integer reliability = employerReliabilityDTO.getReliability();
+
+        return RecruitPreviewResponseDTO.from(recruit, reliability);
     }
 
     // 프리미엄 공고 상단 점프
