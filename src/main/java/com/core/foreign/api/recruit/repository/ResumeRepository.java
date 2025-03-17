@@ -41,8 +41,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
 
     @Query("select r from Resume r" +
             " join fetch r.employee employee" +
-            " join fetch r.recruit" +
-            " where r.id=:resumeId and r.isDeleted=false and r.isPublic=true and employee.isPortfolioPublic=true")
+            " join fetch r.recruit recruit" +
+            " where r.id=:resumeId and recruit.recruitType='PREMIUM' and r.isDeleted=false and r.isPublic=true and employee.isPortfolioPublic=true")
     Optional<Resume>findResumeWithEmployeeAndRecruitForPortfolio(@Param("resumeId")Long resumeId);
 
     @Query("select r from Resume r" +
