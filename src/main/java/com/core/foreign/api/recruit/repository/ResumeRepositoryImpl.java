@@ -2,6 +2,7 @@ package com.core.foreign.api.recruit.repository;
 
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.contract.entity.ContractStatus;
+import com.core.foreign.api.recruit.entity.RecruitType;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
 import com.querydsl.core.BooleanBuilder;
@@ -81,6 +82,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryQueryDSL{
                 .innerJoin(resume.recruit, recruit)
                 .innerJoin(recruit.businessFields)
                 .where(
+                        recruit.recruitType.eq(RecruitType.PREMIUM),
                         isPublic(),
                         businessFieldEq(businessField), // 특정 비즈니스 필드에 대한 필터링
                         resume.isDeleted.eq(false)
