@@ -13,6 +13,7 @@ public enum FileDirAndName {
     EmployeePartTimeWorkPermitImage("employee-portfolio-image", "part_time_work_permit_"),
     FileContract("file-contract", "contract_"),
     PremiumRecruitPortfolio("premium-recruit", "portfolio_"),
+    File("file","file_"),
     ;
 
 
