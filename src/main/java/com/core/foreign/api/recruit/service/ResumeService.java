@@ -205,13 +205,10 @@ public class ResumeService {
                 });
 
         // 피고용인 스펙 및 경력
-        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId, EmployeePortfolioStatus.COMPLETED)
-                .orElseGet(() -> {
-                    log.warn("[getMyResume][완성된 포트폴리오 없음][employeeId= {}]", employeeId);
-                    return null;
-                });
 
-        EmployeePortfolioDTO employeePortfolioDTO = EmployeePortfolioDTO.from(employeePortfolio);
+        EmployeePortfolioDTO employeePortfolioDTO = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId)
+                .map(EmployeePortfolioDTO::from)
+                .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
 
         ApplicationResumeResponseDTO response = ApplicationResumeResponseDTO.of(resume, employee, employeePortfolioDTO);
 

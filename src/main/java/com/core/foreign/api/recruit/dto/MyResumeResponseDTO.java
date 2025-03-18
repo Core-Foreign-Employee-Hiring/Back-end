@@ -6,7 +6,7 @@ import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioExperienceDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.Topic;
+import com.core.foreign.api.member.entity.Topik;
 import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public class MyResumeResponseDTO {
     private String enrollmentCertificateUrl; // 재학증명서
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
-    private Topic topic;
+    private Topik topic;
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -63,7 +63,7 @@ public class MyResumeResponseDTO {
             dto.enrollmentCertificateUrl = employeePortfolio.getEnrollmentCertificateUrl();
             dto.transcriptUrl = employeePortfolio.getTranscriptUrl();
             dto.partTimeWorkPermitUrl=employeePortfolio.getPartTimeWorkPermitUrl();
-            dto.topic = employeePortfolio.getTopic();
+            dto.topic = employeePortfolio.getTopik();
             dto.experiences=employeePortfolio.getExperiences();
             dto.certifications=employeePortfolio.getCertifications();
             dto.awards=employeePortfolio.getAwards();

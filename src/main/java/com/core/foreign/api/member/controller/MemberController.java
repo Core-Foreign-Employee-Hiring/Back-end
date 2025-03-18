@@ -6,7 +6,6 @@ import com.core.foreign.api.contract.dto.EmployerCompletedContractResponseDTO;
 import com.core.foreign.api.contract.service.ContractService;
 import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
-import com.core.foreign.api.member.entity.EmployeePortfolioStatus;
 import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
@@ -502,9 +501,7 @@ public class MemberController {
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
-                    "topic: 주제<br>" +
-                    "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>" +
+                    "topik: 한국어능력시험<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -525,42 +522,8 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> createEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
                                                                      @RequestBody EmployeePortfolioDTO dto) {
 
-        employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.COMPLETED);
+        employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto);
         return ApiResponse.success_only(CREATE_EMPLOYEE_PORTFOLIO_SUCCESS);
-    }
-
-    @Operation(summary = "피고용인 포트폴리오 임시 등록 API",
-            description = "피고용인의 포트폴리오를 임시 등록합니다.<br>" +
-                    "<p>" +
-                    "introduction: 자기소개<br>" +
-                    "enrollmentCertificateUrl: 재학증명서 URL<br>" +
-                    "transcriptUrl: 성적증명서 URL<br>" +
-                    "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
-                    "topic: 주제<br>" +
-                    "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>" +
-                    "<p>" +
-                    "businessField: 업직종<br>" +
-                    "experienceDescription: 본인 경력기술<br>" +
-                    "startDate: 시작일자 <br>" +
-                    "endDate: 종료일자 <br>" +
-                    "<p>" +
-                    "certificateName: 자격명<br>" +
-                    "certificateDate: 취득일자 <br>" +
-                    "<p>" +
-                    "awardName: 상장명<br>" +
-                    "awardDate: 수상날짜 <br>"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 등록 성공."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-    })
-    @PostMapping("/employee/temp-portfolio")
-    public ResponseEntity<ApiResponse<Void>> createTempEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                         @RequestBody EmployeePortfolioDTO dto) {
-
-        employeePortfolioService.createEmployeePortfolio(securityMember.getId(), dto, EmployeePortfolioStatus.TEMPORARY);
-        return ApiResponse.success_only(CREATE_DRAFT_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
     @Operation(summary = "피고용인 포트폴리오 조회 API",
@@ -570,9 +533,7 @@ public class MemberController {
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
-                    "topic: 주제<br>" +
-                    "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>" +
+                    "topik: 한국어능력시험<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +
@@ -593,42 +554,8 @@ public class MemberController {
     @GetMapping("/employee/portfolio")
     public ResponseEntity<ApiResponse<EmployeePortfolioDTO>> getEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember) {
 
-        EmployeePortfolioDTO employeePortfolio = employeePortfolioService.getEmployeePortfolio(securityMember.getId(), EmployeePortfolioStatus.COMPLETED);
+        EmployeePortfolioDTO employeePortfolio = employeePortfolioService.getEmployeePortfolio(securityMember.getId());
         return ApiResponse.success(SEND_EMPLOYER_PORTFOLIO_SELECT_SUCCESS, employeePortfolio);
-    }
-
-    @Operation(summary = "피고용인 포트폴리오 임시 저장 조회 API",
-            description = "피고용인의 임시 저장된 포트폴리오를 조회합니다.<br>" +
-                    "<p>" +
-                    "introduction: 자기소개<br>" +
-                    "enrollmentCertificateUrl: 재학증명서 URL<br>" +
-                    "transcriptUrl: 성적증명서 URL<br>" +
-                    "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
-                    "topic: 주제<br>" +
-                    "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>" +
-                    "<p>" +
-                    "businessField: 업직종<br>" +
-                    "experienceDescription: 본인 경력기술<br>" +
-                    "startDate: 시작일자 <br>" +
-                    "endDate: 종료일자 <br>" +
-                    "<p>" +
-                    "certificateName: 자격명<br>" +
-                    "certificateDate: 취득일자 <br>" +
-                    "<p>" +
-                    "awardName: 상장명<br>" +
-                    "awardDate: 수상날짜 <br>" +
-                    "조회 성공 시 data 가 없을 경우, 피고용인이 포트폴리오를 아직 작성하지 않음."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 임시 저장 포트폴리오 조회 성공."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-    })
-    @GetMapping("/employee/temp-portfolio")
-    public ResponseEntity<ApiResponse<EmployeePortfolioDTO>> getTempEmployeePortfolio(@AuthenticationPrincipal SecurityMember securityMember) {
-
-        EmployeePortfolioDTO employeePortfolio = employeePortfolioService.getEmployeePortfolio(securityMember.getId(), EmployeePortfolioStatus.TEMPORARY);
-        return ApiResponse.success(SEND_EMPLOYER_DRAFT_PORTFOLIO_SELECT_SUCCESS, employeePortfolio);
     }
 
     @Operation(summary = "피고용인 포트폴리오 수정 API",
@@ -638,9 +565,7 @@ public class MemberController {
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
-                    "topic: 주제<br>" +
-                    "englishTestType: 영어능력시험 종류<br>" +
-                    "englishTestScore: 영어능력시험 점수<br>" +
+                    "topik: 한국어능력시험<br>" +
                     "<p>" +
                     "businessField: 업직종<br>" +
                     "experienceDescription: 본인 경력기술<br>" +

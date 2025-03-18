@@ -3,7 +3,7 @@ package com.core.foreign.api.member.dto;
 import com.core.foreign.api.member.entity.EmployeePortfolio;
 import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldInfo;
 import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldType;
-import com.core.foreign.api.member.entity.Topic;
+import com.core.foreign.api.member.entity.Topik;
 import com.core.foreign.api.portfolio.dto.internal.BasicPortfolioDTO;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class EmployeePortfolioDTO {
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
 
-    private Topic topic;
+    private Topik topik;
 
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
@@ -33,7 +33,7 @@ public class EmployeePortfolioDTO {
         dto.enrollmentCertificateUrl = portfolio.getEnrollmentCertificateUrl();
         dto.transcriptUrl = portfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = portfolio.getPartTimeWorkPermitUrl();
-        dto.topic = portfolio.getTopic();
+        dto.topik = portfolio.getTopik();
 
         List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
         List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
@@ -66,7 +66,7 @@ public class EmployeePortfolioDTO {
         dto.enrollmentCertificateUrl = portfolio.getEnrollmentCertificateUrl();
         dto.transcriptUrl = portfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = portfolio.getPartTimeWorkPermitUrl();
-        dto.topic = portfolio.getTopic();
+        dto.topik = portfolio.getTopik();
 
         List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
         List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
@@ -96,11 +96,26 @@ public class EmployeePortfolioDTO {
         dto.enrollmentCertificateUrl = basicPortfolio.getEnrollmentCertificateUrl();
         dto.transcriptUrl = basicPortfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = basicPortfolio.getPartTimeWorkPermitUrl();
-        dto.topic = basicPortfolio.getTopic();
+        dto.topik = basicPortfolio.getTopik();
         dto.experiences=basicPortfolio.getExperiences();
         dto.certifications=basicPortfolio.getCertifications();
         dto.awards=basicPortfolio.getAwards();
 
+        return dto;
+    }
+
+    // 빈 DTO 생성 메서드
+    public static EmployeePortfolioDTO emptyPortfolio() {
+        EmployeePortfolioDTO dto = new EmployeePortfolioDTO();
+        dto.introduction = "";
+        dto.enrollmentCertificateUrl = "";
+        dto.transcriptUrl = "";
+        dto.partTimeWorkPermitUrl = "";
+        dto.topik = Topik.NONE; // enum 값이 "없음"이라면 Topik.없음으로 설정
+        dto.experiences = new ArrayList<>();
+        dto.certifications = new ArrayList<>();
+        dto.awards = new ArrayList<>();
+        dto.portfolioPublic = true;
         return dto;
     }
 

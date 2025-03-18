@@ -24,6 +24,7 @@ import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,7 @@ public class MemberService {
     private final EmployeeRepository employeeRepository;
     private final EmployeePortfolioRepository employeePortfolioRepository;
     private final ResumeReader resumeReader;
+    private final OrderedFormContentFilter formContentFilter;
 
     // 고용인 회원가입
     @Transactional
@@ -610,14 +612,9 @@ public class MemberService {
                 });
 
         // 내 스펙 및 경력
-        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId, EmployeePortfolioStatus.COMPLETED)
-                .orElseGet(() -> {
-                    log.warn("[getMyResume][완성된 포트폴리오 없음][employeeId= {}]", employeeId);
-                    return null;
-                });
-
-        EmployeePortfolioDTO dto = EmployeePortfolioDTO.from(employeePortfolio);
-
+        EmployeePortfolioDTO dto = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId)
+                .map(EmployeePortfolioDTO::from)
+                .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
 
         // 이력서
         ResumeDTO myResume = resumeReader.getMyResume(employeeId, resumeId);

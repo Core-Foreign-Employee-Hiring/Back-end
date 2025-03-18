@@ -24,7 +24,7 @@ public class BasicPortfolioDTO {
     private String enrollmentCertificateUrl; // 재학증명서
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
-    private Topic topic;
+    private Topik topik;
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -46,7 +46,7 @@ public class BasicPortfolioDTO {
             dto.enrollmentCertificateUrl = employeePortfolio.getEnrollmentCertificateUrl();
             dto.transcriptUrl = employeePortfolio.getTranscriptUrl();
             dto.partTimeWorkPermitUrl = employeePortfolio.getPartTimeWorkPermitUrl();
-            dto.topic = employeePortfolio.getTopic();
+            dto.topik = employeePortfolio.getTopik();
 
             List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
             List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
@@ -66,6 +66,16 @@ public class BasicPortfolioDTO {
             dto.experiences = e;
             dto.certifications = c;
             dto.awards = a;
+        }
+        else{
+            dto.introduction=""; // 자기소개
+            dto.enrollmentCertificateUrl=""; // 재학증명서
+            dto.transcriptUrl=""; // 성적증명서
+            dto.partTimeWorkPermitUrl=""; // 시간제근로허가서
+            dto.topik=Topik.NONE;
+            dto.experiences=new ArrayList<>();
+            dto.certifications=new ArrayList<>();
+            dto.awards=new ArrayList<>();
         }
 
         return dto;
