@@ -26,7 +26,7 @@ public class BasicPortfolioResponseDTO {
 
     public static BasicPortfolioResponseDTO from(Employee employee, EmployeePortfolio employeePortfolio, EmployeeEvaluationCountDTO employeeEvaluationCountDTO){
         BasicPortfolioResponseDTO dto = new BasicPortfolioResponseDTO();
-        EmployeePortfolioDTO employeePortfolioDTO = employeePortfolio!=null?EmployeePortfolioDTO.from(employeePortfolio, employee.isPortfolioPublic()):null;
+        EmployeePortfolioDTO employeePortfolioDTO = employeePortfolio!=null?EmployeePortfolioDTO.from(employeePortfolio, employee.isPortfolioPublic()):EmployeePortfolioDTO.emptyPortfolio();
 
         dto.employeeId = employee.getId();
         dto.name = employee.getName();

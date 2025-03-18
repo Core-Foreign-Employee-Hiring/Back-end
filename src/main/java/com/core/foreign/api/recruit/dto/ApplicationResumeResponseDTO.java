@@ -7,7 +7,7 @@ import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioExperienceDTO;
 import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.member.entity.Employee;
-import com.core.foreign.api.member.entity.Topic;
+import com.core.foreign.api.member.entity.Topik;
 import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
@@ -36,7 +36,7 @@ public class ApplicationResumeResponseDTO {
     private String enrollmentCertificateUrl; // 재학증명서
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
-    private Topic topic;
+    private Topik topik;
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -71,7 +71,7 @@ public class ApplicationResumeResponseDTO {
         dto.enrollmentCertificateUrl = employeePortfolioDTO.getEnrollmentCertificateUrl();
         dto.transcriptUrl = employeePortfolioDTO.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = employeePortfolioDTO.getPartTimeWorkPermitUrl();
-        dto.topic = employeePortfolioDTO.getTopic();
+        dto.topik = employeePortfolioDTO.getTopik();
         dto.experiences = employeePortfolioDTO.getExperiences();
         dto.certifications = employeePortfolioDTO.getCertifications();
         dto.awards = employeePortfolioDTO.getAwards();

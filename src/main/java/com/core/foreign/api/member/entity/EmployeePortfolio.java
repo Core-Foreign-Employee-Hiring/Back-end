@@ -31,16 +31,11 @@ public class EmployeePortfolio {
     private String partTimeWorkPermitUrl; // 시간제근로허가서
 
     @Enumerated(STRING)
-    private Topic topic;
+    private Topik topik;
 
-
-    @Enumerated(STRING)
-    private EmployeePortfolioStatus employeePortfolioStatus;
-
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name="employee_id")
     private Employee employee;
-
 
     @Builder.Default
     @OneToMany(fetch=LAZY, mappedBy = "employeePortfolio", cascade = REMOVE)
@@ -49,12 +44,12 @@ public class EmployeePortfolio {
 
     public void updateExceptBusinessFieldInfo(String introduction,
                                               String enrollmentCertificateUrl, String transcriptUrl, String partTimeWorkPermitUrl,
-                                              Topic topic) {
+                                              Topik topik) {
         this.introduction = introduction;
         this.enrollmentCertificateUrl = enrollmentCertificateUrl;
         this.transcriptUrl = transcriptUrl;
         this.partTimeWorkPermitUrl = partTimeWorkPermitUrl;
-        this.topic = topic;
+        this.topik = topik;
 
     }
 }

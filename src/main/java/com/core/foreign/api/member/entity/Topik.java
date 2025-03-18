@@ -1,6 +1,6 @@
 package com.core.foreign.api.member.entity;
 
-public enum Topic {
+public enum Topik {
     NONE, // 없음
     LEVEL_1, // 1급
     LEVEL_2, // 2급

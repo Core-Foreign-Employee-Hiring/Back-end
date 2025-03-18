@@ -1,16 +1,15 @@
 package com.core.foreign.api.member.service;
 
-import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.member.dto.EmployeePortfolioAwardDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioCertificationDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.EmployeePortfolioExperienceDTO;
-import com.core.foreign.api.member.entity.*;
+import com.core.foreign.api.member.entity.Employee;
+import com.core.foreign.api.member.entity.EmployeePortfolio;
+import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldInfo;
 import com.core.foreign.api.member.repository.EmployeePortfolioBusinessFieldInfoRepository;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
-import com.core.foreign.common.exception.BadRequestException;
-import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,40 +20,25 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldType.*;
-import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.COMPLETED;
-import static com.core.foreign.api.member.entity.EmployeePortfolioStatus.TEMPORARY;
-import static com.core.foreign.common.response.ErrorStatus.PORTFOLIO_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EmployeePortfolioService {
-    private final S3Service s3Service;
     private final EmployeePortfolioRepository employeePortfolioRepository;
     private final EmployeePortfolioBusinessFieldInfoRepository employeePortfolioBusinessFieldInfoRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createEmployeePortfolio(Long employeeId, EmployeePortfolioDTO dto, EmployeePortfolioStatus employeePortfolioStatus){
+    public void createEmployeePortfolio(Long employeeId, EmployeePortfolioDTO dto){
         Employee employee = (Employee) memberRepository.findById(employeeId).get();
-
-        // 임시 등록 시 기존 임시 등록은 삭제합니다.
-        if(employeePortfolioStatus==TEMPORARY){
-            clearTemporarySave(employeeId);
-        }
-
-        if(employeePortfolioStatus.equals(COMPLETED) && employeePortfolioRepository.existsByEmployeeId(employee.getId(), COMPLETED)){
-          log.warn("[EmployeePortfolioService][createEmployeePortfolio][포트폴리오 이미 존재][employeeId= {}]", employee.getId());
-          throw new BadRequestException(ErrorStatus.PORTFOLIO_ALREADY_EXISTS_EXCEPTION.getMessage());
-        }
 
         EmployeePortfolio build = EmployeePortfolio.builder()
                 .introduction(dto.getIntroduction())
                 .enrollmentCertificateUrl(dto.getEnrollmentCertificateUrl())
                 .transcriptUrl(dto.getTranscriptUrl())
                 .partTimeWorkPermitUrl(dto.getPartTimeWorkPermitUrl())
-                .topic(dto.getTopic())
-                .employeePortfolioStatus(employeePortfolioStatus)
+                .topik(dto.getTopik())
                 .employee(employee)
                 .build();
 
@@ -68,24 +52,23 @@ public class EmployeePortfolioService {
     }
 
 
-    public EmployeePortfolioDTO getEmployeePortfolio(Long employeeId, EmployeePortfolioStatus status) {
-        EmployeePortfolio portfolio = employeePortfolioRepository.findByEmployeeId(employeeId, status)
-                .orElseThrow(() -> {
-                    log.error("포트폴리오 없음. employeeId={}, status={}", employeeId, status);
-                    return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
-                });
+    public EmployeePortfolioDTO getEmployeePortfolio(Long employeeId) {
+        EmployeePortfolioDTO response = employeePortfolioRepository.findByEmployeeId(employeeId)
+                .map(portfolio -> {
+                    Employee employee = portfolio.getEmployee();
+                    return EmployeePortfolioDTO.from(portfolio, employee.isPortfolioPublic());
+                })
+                .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
 
-        Employee employee = portfolio.getEmployee();
-        EmployeePortfolioDTO dto = EmployeePortfolioDTO.from(portfolio, employee.isPortfolioPublic());
-
-        return dto;
+        return response;
     }
+
 
     @Transactional
     public void updateEmployeePortfolio(Long employeeId, EmployeePortfolioDTO dto) {
-        Optional<EmployeePortfolio>  find= employeePortfolioRepository.findByEmployeeId(employeeId, COMPLETED);
+        Optional<EmployeePortfolio>  find= employeePortfolioRepository.findByEmployeeId(employeeId);
         if(find.isEmpty()) {
-            log.error("[EmployeePortfolioService][updateEmployeePortfolio][왜 없니...]");
+            log.warn("[EmployeePortfolioService][updateEmployeePortfolio][왜 없니...][employeeId= {}]", employeeId);
 
             return;
         }
@@ -94,7 +77,7 @@ public class EmployeePortfolioService {
 
         employeePortfolio.updateExceptBusinessFieldInfo(dto.getIntroduction(),
                 dto.getEnrollmentCertificateUrl(), dto.getTranscriptUrl(), dto.getTranscriptUrl(),
-                dto.getTopic());
+                dto.getTopik());
 
         Employee employee = employeePortfolio.getEmployee();
 
@@ -111,17 +94,6 @@ public class EmployeePortfolioService {
         saveEmployeePortfolioBusinessFieldInfo(employeePortfolio, dto);
 
     }
-
-    private void clearTemporarySave (Long employeeId) {
-        Optional<EmployeePortfolio> find = employeePortfolioRepository.findByEmployeeId(employeeId, TEMPORARY);
-        if(find.isEmpty()) {return;}
-
-        EmployeePortfolio employeePortfolio = find.get();
-
-        employeePortfolioRepository.delete(employeePortfolio);
-
-    }
-
 
     private void saveEmployeePortfolioBusinessFieldInfo(EmployeePortfolio employeePortfolio, EmployeePortfolioDTO dto){
         List<EmployeePortfolioExperienceDTO> experiences=dto.getExperiences();
@@ -168,8 +140,6 @@ public class EmployeePortfolioService {
             infos.add(build);
 
         }
-
-
 
         employeePortfolioBusinessFieldInfoRepository.saveAll(infos);
     }
