@@ -57,8 +57,8 @@ public class S3Service {
         return s3Domain + "/" + fileKey;
     }
 
-    // 이미지 업로드 메서드
-    public String uploadImage(MultipartFile file, FileDirAndName dirAndName) throws IOException {
+    // 파일 업로드 메서드
+    public String uploadFile(MultipartFile file, FileDirAndName dirAndName) throws IOException {
         String dir = dirAndName.getDir();
         // 현재 날짜/시간
         String currentDateTime = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date());

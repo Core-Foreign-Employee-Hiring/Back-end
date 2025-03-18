@@ -98,7 +98,7 @@ public class ContractService {
         String url;
         try {
             // S3에 업로드.
-            url = s3Service.uploadImage(contract, FileDirAndName.FileContract);
+            url = s3Service.uploadFile(contract, FileDirAndName.FileContract);
 
             contractUpdater.uploadFileContract(contractMetadataId, url);
         } catch (IOException e) {
