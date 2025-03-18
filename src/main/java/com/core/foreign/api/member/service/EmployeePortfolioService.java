@@ -54,8 +54,6 @@ public class EmployeePortfolioService {
                 .transcriptUrl(dto.getTranscriptUrl())
                 .partTimeWorkPermitUrl(dto.getPartTimeWorkPermitUrl())
                 .topic(dto.getTopic())
-                .englishTestType(dto.getEnglishTestType())
-                .englishTestScore(dto.getEnglishTestScore())
                 .employeePortfolioStatus(employeePortfolioStatus)
                 .employee(employee)
                 .build();
@@ -96,7 +94,7 @@ public class EmployeePortfolioService {
 
         employeePortfolio.updateExceptBusinessFieldInfo(dto.getIntroduction(),
                 dto.getEnrollmentCertificateUrl(), dto.getTranscriptUrl(), dto.getTranscriptUrl(),
-                dto.getTopic(), dto.getEnglishTestType(), dto.getEnglishTestScore());
+                dto.getTopic());
 
         Employee employee = employeePortfolio.getEmployee();
 

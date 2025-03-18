@@ -33,10 +33,6 @@ public class EmployeePortfolio {
     @Enumerated(STRING)
     private Topic topic;
 
-    private String englishTestType ;
-
-    private int englishTestScore; // 점수
-
 
     @Enumerated(STRING)
     private EmployeePortfolioStatus employeePortfolioStatus;
@@ -53,14 +49,12 @@ public class EmployeePortfolio {
 
     public void updateExceptBusinessFieldInfo(String introduction,
                                               String enrollmentCertificateUrl, String transcriptUrl, String partTimeWorkPermitUrl,
-                                              Topic topic, String englishTestType, int englishTestScore) {
+                                              Topic topic) {
         this.introduction = introduction;
         this.enrollmentCertificateUrl = enrollmentCertificateUrl;
         this.transcriptUrl = transcriptUrl;
         this.partTimeWorkPermitUrl = partTimeWorkPermitUrl;
         this.topic = topic;
-        this.englishTestType = englishTestType;
-        this.englishTestScore = englishTestScore;
 
     }
 }
