@@ -33,8 +33,6 @@ public class MyResumeResponseDTO {
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
     private Topic topic;
-    private String englishTestType;
-    private int englishTestScore; // 점수
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -66,14 +64,10 @@ public class MyResumeResponseDTO {
             dto.transcriptUrl = employeePortfolio.getTranscriptUrl();
             dto.partTimeWorkPermitUrl=employeePortfolio.getPartTimeWorkPermitUrl();
             dto.topic = employeePortfolio.getTopic();
-            dto.englishTestType = employeePortfolio.getEnglishTestType();
-            dto.englishTestScore = employeePortfolio.getEnglishTestScore();
             dto.experiences=employeePortfolio.getExperiences();
             dto.certifications=employeePortfolio.getCertifications();
             dto.awards=employeePortfolio.getAwards();
         }
-
-
 
         dto.texts = resumeDTO.getTexts();
         dto.files = resumeDTO.getFiles();

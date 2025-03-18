@@ -37,8 +37,6 @@ public class ApplicationResumeResponseDTO {
     private String transcriptUrl; // 성적증명서
     private String partTimeWorkPermitUrl; // 시간제근로허가서
     private Topic topic;
-    private String englishTestType;
-    private int englishTestScore; // 점수
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
     private List<EmployeePortfolioAwardDTO> awards;
@@ -52,43 +50,40 @@ public class ApplicationResumeResponseDTO {
     private ContractStatus contractStatus;
     private EvaluationStatus isEmployeeEvaluatedByEmployer; // 고용인이 피고용인을 평가했는지 여부
 
+    public static ApplicationResumeResponseDTO of(ResumeDTO resume, Employee employee, EmployeePortfolioDTO employeePortfolioDTO) {
+        ApplicationResumeResponseDTO dto = new ApplicationResumeResponseDTO();
 
-   public static ApplicationResumeResponseDTO of(ResumeDTO resume, Employee employee, EmployeePortfolioDTO employeePortfolioDTO){
-       ApplicationResumeResponseDTO dto = new ApplicationResumeResponseDTO();
+        Address address = employee.getAddress();
 
-       Address address = employee.getAddress();
+        dto.resumeId = resume.getResumeId();
+        dto.employeeId = employee.getId();
+        dto.name = employee.getName();
+        dto.nationality = employee.getNationality();
+        dto.education = employee.getEducation();
+        dto.visa = employee.getVisa();
+        dto.birthDate = employee.getBirthday();
+        dto.email = employee.getEmail();
+        dto.phoneNumber = employee.getPhoneNumber();
+        dto.zipcode = address.getZipcode();
+        dto.address1 = address.getAddress1();
+        dto.address2 = address.getAddress2();
+        dto.introduction = employeePortfolioDTO.getIntroduction();
+        dto.enrollmentCertificateUrl = employeePortfolioDTO.getEnrollmentCertificateUrl();
+        dto.transcriptUrl = employeePortfolioDTO.getTranscriptUrl();
+        dto.partTimeWorkPermitUrl = employeePortfolioDTO.getPartTimeWorkPermitUrl();
+        dto.topic = employeePortfolioDTO.getTopic();
+        dto.experiences = employeePortfolioDTO.getExperiences();
+        dto.certifications = employeePortfolioDTO.getCertifications();
+        dto.awards = employeePortfolioDTO.getAwards();
+        dto.messageToEmployer = resume.getMessageToEmployer();
+        dto.texts = resume.getTexts();
+        dto.files = resume.getFiles();
+        dto.recruitmentStatus = resume.getRecruitmentStatus();
+        dto.contractStatus = resume.getContractStatus();
+        dto.isEmployeeEvaluatedByEmployer = resume.getIsEmployeeEvaluatedByEmployer();
 
-       dto.resumeId = resume.getResumeId();
-       dto.employeeId = employee.getId();
-       dto.name = employee.getName();
-       dto.nationality = employee.getNationality();
-       dto.education = employee.getEducation();
-       dto.visa = employee.getVisa();
-       dto.birthDate = employee.getBirthday();
-       dto.email = employee.getEmail();
-       dto.phoneNumber = employee.getPhoneNumber();
-       dto.zipcode = address.getZipcode();
-       dto.address1 = address.getAddress1();
-       dto.address2 = address.getAddress2();
-       dto.introduction = employeePortfolioDTO.getIntroduction();
-       dto.enrollmentCertificateUrl = employeePortfolioDTO.getEnrollmentCertificateUrl();
-       dto.transcriptUrl = employeePortfolioDTO.getTranscriptUrl();
-       dto.partTimeWorkPermitUrl=employeePortfolioDTO.getPartTimeWorkPermitUrl();
-       dto.topic=employeePortfolioDTO.getTopic();
-       dto.englishTestType=employeePortfolioDTO.getEnglishTestType();
-       dto.englishTestScore=employeePortfolioDTO.getEnglishTestScore();
-       dto.experiences=employeePortfolioDTO.getExperiences();
-       dto.certifications=employeePortfolioDTO.getCertifications();
-       dto.awards=employeePortfolioDTO.getAwards();
-       dto.messageToEmployer=resume.getMessageToEmployer();
-       dto.texts=resume.getTexts();
-       dto.files=resume.getFiles();
-       dto.recruitmentStatus=resume.getRecruitmentStatus();
-       dto.contractStatus=resume.getContractStatus();
-       dto.isEmployeeEvaluatedByEmployer=resume.getIsEmployeeEvaluatedByEmployer();
+        return dto;
 
-       return dto;
-
-   }
+    }
 
 }

@@ -19,8 +19,6 @@ public class EmployeePortfolioDTO {
     private String partTimeWorkPermitUrl; // 시간제근로허가서
 
     private Topic topic;
-    private String englishTestType;
-    private int englishTestScore; // 점수
 
     private List<EmployeePortfolioExperienceDTO> experiences;
     private List<EmployeePortfolioCertificationDTO> certifications;
@@ -36,9 +34,6 @@ public class EmployeePortfolioDTO {
         dto.transcriptUrl = portfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = portfolio.getPartTimeWorkPermitUrl();
         dto.topic = portfolio.getTopic();
-        dto.englishTestType = portfolio.getEnglishTestType();
-        dto.englishTestScore = portfolio.getEnglishTestScore();
-
 
         List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
         List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
@@ -72,9 +67,6 @@ public class EmployeePortfolioDTO {
         dto.transcriptUrl = portfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = portfolio.getPartTimeWorkPermitUrl();
         dto.topic = portfolio.getTopic();
-        dto.englishTestType = portfolio.getEnglishTestType();
-        dto.englishTestScore = portfolio.getEnglishTestScore();
-
 
         List<EmployeePortfolioExperienceDTO> e = new ArrayList<>();
         List<EmployeePortfolioCertificationDTO> c = new ArrayList<>();
@@ -105,9 +97,6 @@ public class EmployeePortfolioDTO {
         dto.transcriptUrl = basicPortfolio.getTranscriptUrl();
         dto.partTimeWorkPermitUrl = basicPortfolio.getPartTimeWorkPermitUrl();
         dto.topic = basicPortfolio.getTopic();
-        dto.englishTestType = basicPortfolio.getEnglishTestType();
-        dto.englishTestScore = basicPortfolio.getEnglishTestScore();
-
         dto.experiences=basicPortfolio.getExperiences();
         dto.certifications=basicPortfolio.getCertifications();
         dto.awards=basicPortfolio.getAwards();
