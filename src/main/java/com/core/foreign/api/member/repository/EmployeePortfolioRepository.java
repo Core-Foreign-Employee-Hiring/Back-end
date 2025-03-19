@@ -18,6 +18,6 @@ public interface EmployeePortfolioRepository extends JpaRepository<EmployeePortf
     @Query("select p from EmployeePortfolio p" +
             " left join fetch p.employeePortfolioBusinessFieldInfos" +
             " where p.employee.id=:employeeId")
-    Optional<EmployeePortfolio> findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(@Param("employeeId")Long employeeId);
+    Optional<EmployeePortfolio> findEmployeePortfolioByEmployeeId(@Param("employeeId")Long employeeId);
 
 }

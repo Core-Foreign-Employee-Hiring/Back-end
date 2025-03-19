@@ -73,6 +73,8 @@ public enum ErrorStatus {
     TEMPORARY_RECRUIT_APPLICATION_NOT_ALLOWED_EXCEPTION(HttpStatus.BAD_REQUEST, "임시 저장 공고는 지원이 불가합니다."),
     INVALID_CONTRACT_OWNER_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서 소유자가 아닙니다."),
     INVALID_RESUME_OWNER_EXCEPTION(HttpStatus.BAD_REQUEST, "이력서 소유자가 아닙니다."),
+    MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION(HttpStatus.BAD_REQUEST, "필수 스펙 및 경력이 없습니다."),
+
 
     /**
      * 401 UNAUTHORIZED
@@ -99,7 +101,7 @@ public enum ErrorStatus {
     ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
     PARENT_COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
-    PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 포트폴리오를 찾을 수 없습니다."),
+    PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "포트폴리오(스펙 및 경력)를 찾을 수 없습니다."),
     CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
     CONTRACT_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "완료된 계약서는 수정할 수 없습니다."),
     CONTRACT_VERSION_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서가 변경되었습니다. 다시 확인하세요."),

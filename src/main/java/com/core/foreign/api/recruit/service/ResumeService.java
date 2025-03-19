@@ -206,7 +206,7 @@ public class ResumeService {
 
         // 피고용인 스펙 및 경력
 
-        EmployeePortfolioDTO employeePortfolioDTO = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId)
+        EmployeePortfolioDTO employeePortfolioDTO = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employeeId)
                 .map(EmployeePortfolioDTO::from)
                 .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
 
@@ -236,9 +236,24 @@ public class ResumeService {
         Optional<Resume> findResume = resumeRepository.findByEmployeeIdAndRecruitId(employeeId, recruit.getId());
 
         if(findResume.isPresent()){
-            log.warn("중복 지원은 불가합니다. resumeId= {}", findResume.get().getId());
+            log.warn("[doApplyResume][중복 지원은 불가합니다.][resumeId= {}]", findResume.get().getId());
             throw new BadRequestException(DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION.getMessage());
 
+        }
+
+        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
+                .orElseThrow(() -> {
+                    log.warn("[doApplyResume][포트폴리오 없음][employeeId= {}]", employeeId);
+                    return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        if(employeePortfolio.getIntroduction()==null||employeePortfolio.getIntroduction().isEmpty()||
+                employeePortfolio.getEnrollmentCertificateUrl()==null||employeePortfolio.getEnrollmentCertificateUrl().isEmpty()||
+                employeePortfolio.getTranscriptUrl()==null||employeePortfolio.getTranscriptUrl().isEmpty()||
+                employeePortfolio.getPartTimeWorkPermitUrl()==null||employeePortfolio.getPartTimeWorkPermitUrl().isEmpty()
+        ){
+            log.warn("[doApplyResume][필수 항수 없음][employeeId= {}]", employeeId);
+            throw new BadRequestException(MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION.getMessage());
         }
 
         Resume build = Resume.builder()
