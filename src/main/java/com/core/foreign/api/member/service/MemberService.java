@@ -612,7 +612,7 @@ public class MemberService {
                 });
 
         // 내 스펙 및 경력
-        EmployeePortfolioDTO dto = employeePortfolioRepository.findEmployeePortfolioByEmployeeIdAndEmployeePortfolioStatus(employeeId)
+        EmployeePortfolioDTO dto = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employeeId)
                 .map(EmployeePortfolioDTO::from)
                 .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
 

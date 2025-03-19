@@ -10,6 +10,8 @@ import com.core.foreign.api.member.entity.EmployeePortfolioBusinessFieldInfo;
 import com.core.foreign.api.member.repository.EmployeePortfolioBusinessFieldInfoRepository;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
+import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +60,11 @@ public class EmployeePortfolioService {
                     Employee employee = portfolio.getEmployee();
                     return EmployeePortfolioDTO.from(portfolio, employee.isPortfolioPublic());
                 })
-                .orElseGet(EmployeePortfolioDTO::emptyPortfolio);
+                .orElseThrow(()->{
+                        log.warn("[getEmployeePortfolio][포트폴리오 없음.][employerId= {}]", employeeId);
+                            return new BadRequestException(ErrorStatus.PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                        }
+                );
 
         return response;
     }
