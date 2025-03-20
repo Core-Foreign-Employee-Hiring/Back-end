@@ -8,7 +8,6 @@ import com.core.foreign.api.recruit.entity.ApplyMethod;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
 import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

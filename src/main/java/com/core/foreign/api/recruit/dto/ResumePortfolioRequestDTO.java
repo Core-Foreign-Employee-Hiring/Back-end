@@ -12,13 +12,12 @@ import java.util.Map;
 @AllArgsConstructor
 public class ResumePortfolioRequestDTO {
     private Long portfolioId;
-    private String title;
     private String content;
 
     public  ResumePortfolio toEntity(Resume resume, Map<Long, Portfolio> portfolios){
         ResumePortfolio build = ResumePortfolio.builder()
                 .recruitPortfolioId(portfolioId)
-                .title(title)
+                .title(portfolios.get(portfolioId).getTitle())
                 .content(content)
                 .resume(resume)
                 .portfolioType(portfolios.get(portfolioId).getType())
