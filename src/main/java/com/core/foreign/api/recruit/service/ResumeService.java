@@ -72,7 +72,7 @@ public class ResumeService {
         // 일단 이력서 저장.
 
         Resume resume = doApplyResume(employeeId, premiumRecruit, dto.getGeneralResumeRequestDTO());
-        if (dto.isPublic()) {resume.makePublic();}
+        if (dto.isPortfolioPublic()) {resume.makePublic();}
         else {resume.makePrivate();}
 
         // 개수 확인.

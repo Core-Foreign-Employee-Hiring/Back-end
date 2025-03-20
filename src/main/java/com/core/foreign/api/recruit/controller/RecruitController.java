@@ -639,7 +639,27 @@ public class RecruitController {
     }
 
     @Operation(summary = "프리미엄 채용 지원하기. API",
-            description = "피고용인이 프리미엄 채용을 지원합니다.")
+            description = "피고용인이 프리미엄 채용을 지원합니다.<br>" +
+                    "<p>" +
+                    "파일 업로드 형식<br>" +
+                    "portfolioId가 3인 문항에 3개 업로드 시<br>" +
+                    "resumePortfolios\": [\n" +
+                    "    {\n" +
+                    "      \"portfolioId\": 3,\n" +
+                    "      \"content\": \"url_1\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"portfolioId\": 3,\n" +
+                    "      \"content\": \"url_2\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"portfolioId\": 3,\n" +
+                    "      \"content\": \"url_3\"\n" +
+                    "    }\n" +
+                    "  ]" +
+                    "<p>" +
+                    "public -> portfolioPublic 변경(03.20)"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프리미엄 채용 지원 성공."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),

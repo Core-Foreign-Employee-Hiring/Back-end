@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class PortfolioResponseDTO {
-    private Long portfolio_id;
+    private Long portfolioId;
     private String title;
     private PortfolioType portfolioType;
     private boolean required;
@@ -14,7 +14,7 @@ public class PortfolioResponseDTO {
 
     public static PortfolioResponseDTO from(Portfolio portfolio) {
         PortfolioResponseDTO dto = new PortfolioResponseDTO();
-        dto.portfolio_id = portfolio.getId();
+        dto.portfolioId = portfolio.getId();
         dto.title = portfolio.getTitle();
         dto.portfolioType = portfolio.getType();
         dto.required = portfolio.isRequired();
