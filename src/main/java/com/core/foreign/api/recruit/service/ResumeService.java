@@ -4,7 +4,10 @@ import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.service.ContractCreator;
 import com.core.foreign.api.member.dto.EmployeePortfolioDTO;
 import com.core.foreign.api.member.dto.TagResponseDTO;
-import com.core.foreign.api.member.entity.*;
+import com.core.foreign.api.member.entity.Employee;
+import com.core.foreign.api.member.entity.EmployeePortfolio;
+import com.core.foreign.api.member.entity.Employer;
+import com.core.foreign.api.member.entity.Member;
 import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.EmployeeRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
@@ -241,19 +244,21 @@ public class ResumeService {
 
         }
 
-        EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
-                .orElseThrow(() -> {
-                    log.warn("[doApplyResume][포트폴리오 없음][employeeId= {}]", employeeId);
-                    return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
-                });
+        if(recruit.getRecruitType().equals(RecruitType.PREMIUM)){
+            EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
+                    .orElseThrow(() -> {
+                        log.warn("[doApplyResume][포트폴리오 없음][employeeId= {}]", employeeId);
+                        return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                    });
 
-        if(employeePortfolio.getIntroduction()==null||employeePortfolio.getIntroduction().isEmpty()||
-                employeePortfolio.getEnrollmentCertificateUrl()==null||employeePortfolio.getEnrollmentCertificateUrl().isEmpty()||
-                employeePortfolio.getTranscriptUrl()==null||employeePortfolio.getTranscriptUrl().isEmpty()||
-                employeePortfolio.getPartTimeWorkPermitUrl()==null||employeePortfolio.getPartTimeWorkPermitUrl().isEmpty()
-        ){
-            log.warn("[doApplyResume][필수 항수 없음][employeeId= {}]", employeeId);
-            throw new BadRequestException(MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION.getMessage());
+            if(employeePortfolio.getIntroduction()==null||employeePortfolio.getIntroduction().isEmpty()||
+                    employeePortfolio.getEnrollmentCertificateUrl()==null||employeePortfolio.getEnrollmentCertificateUrl().isEmpty()||
+                    employeePortfolio.getTranscriptUrl()==null||employeePortfolio.getTranscriptUrl().isEmpty()||
+                    employeePortfolio.getPartTimeWorkPermitUrl()==null||employeePortfolio.getPartTimeWorkPermitUrl().isEmpty()
+            ){
+                log.warn("[doApplyResume][필수 항수 없음][employeeId= {}]", employeeId);
+                throw new BadRequestException(MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION.getMessage());
+            }
         }
 
         Resume build = Resume.builder()

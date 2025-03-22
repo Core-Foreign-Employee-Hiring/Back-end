@@ -2,6 +2,8 @@ package com.core.foreign.api.file.service;
 
 import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.file.FileDirAndName;
+import com.core.foreign.api.file.entity.UploadFile;
+import com.core.foreign.api.file.repository.UploadFileRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.response.ErrorStatus;
@@ -18,13 +20,22 @@ import java.io.IOException;
 public class FileService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     public String uploadOnlyS3(MultipartFile file, FileDirAndName fileDirAndName) {
         String url = null;
+        String originalFilename=null;
         if (file != null && !file.isEmpty()) {
             try {
                 // S3에 업로드.
                 url = s3Service.uploadFile(file, fileDirAndName);
+
+                // DB 저장
+                 originalFilename = file.getOriginalFilename();
+
+                UploadFile uploadFile = new UploadFile(url, originalFilename);
+
+                uploadFileRepository.save(uploadFile);
 
 
             } catch (IOException e) {

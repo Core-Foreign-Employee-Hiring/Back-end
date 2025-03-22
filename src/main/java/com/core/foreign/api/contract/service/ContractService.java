@@ -1,6 +1,5 @@
 package com.core.foreign.api.contract.service;
 
-import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.contract.dto.AdminContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.ContractPreviewResponseDTO;
 import com.core.foreign.api.contract.dto.EmployeeCompletedContractResponseDTO;
@@ -10,19 +9,17 @@ import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.contract.entity.FileUploadContract;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
-import com.core.foreign.api.file.FileDirAndName;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
-import com.core.foreign.common.exception.InternalServerException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +27,6 @@ import java.io.IOException;
 public class ContractService {
     private final ContractMetadataRepository contractMetadataRepository;
     private final ContractCreator contractCreator;
-    private final S3Service s3Service;
     private final ContractUpdater contractUpdater;
     private final ContractUtils contractUtils;
     private final ContractReader contractReader;
@@ -79,7 +75,7 @@ public class ContractService {
     /**
      * 최소 등록, 수정 둘 다 이거 사용.
      */
-    public String uploadFileContract(Long memberId, Long contractMetadataId, MultipartFile contract) {
+    public void uploadFileContract(Long memberId, Long contractMetadataId, List<String> urls) {
         boolean contractFileUploadContract = contractMetadataRepository.isContractFileUploadContract(contractMetadataId);
 
         contractUtils.validateContractOwner(contractMetadataId, memberId);
@@ -90,23 +86,16 @@ public class ContractService {
 
         }
 
-        if (contract == null || contract.isEmpty()) {
+        if (urls == null || urls.isEmpty()) {
             log.warn("업로드할 파일이 없습니다.");
             throw new BadRequestException(ErrorStatus.FILE_NOT_PROVIDED_EXCEPTION.getMessage());
         }
 
-        String url;
-        try {
-            // S3에 업로드.
-            url = s3Service.uploadFile(contract, FileDirAndName.FileContract);
 
-            contractUpdater.uploadFileContract(contractMetadataId, url);
-        } catch (IOException e) {
-            throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
-        }
+        contractUpdater.uploadFileContract(contractMetadataId, urls);
 
-        return url;
     }
+
 
     public PageResponseDTO<EmployeeCompletedContractResponseDTO>getCompletedContractMetadataOfEmployee(Long employeeId, Integer page, Integer size){
         PageResponseDTO<EmployeeCompletedContractResponseDTO> response = contractReader.getCompletedContractMetadataOfEmployee(employeeId, page, size);
@@ -133,19 +122,19 @@ public class ContractService {
         return response;
     }
 
-    public String getNotFileUploadCompleteContractMetadata(Long contractMetadataId){
-        String fileContractUrl = contractReader.getNotFileUploadCompleteContractMetadata(contractMetadataId);
+    public List<FileUrlAndOriginalFileNameDTO> getNotFileUploadCompleteContractMetadata(Long contractMetadataId) {
+        List<FileUrlAndOriginalFileNameDTO> response = contractReader.getNotFileUploadCompleteContractMetadata(contractMetadataId);
 
-        return fileContractUrl;
+        return response;
     }
 
     @Transactional
-    public String getCompletedFileUploadContract(Long memberId, Long contractMetadataId){
+    public List<FileUrlAndOriginalFileNameDTO> getCompletedFileUploadContract(Long memberId, Long contractMetadataId) {
 
         contractUtils.validateContractOwner(contractMetadataId, memberId);
 
-        String fileContractUrl = contractReader.getCompletedFileUploadContract(contractMetadataId);
+        List<FileUrlAndOriginalFileNameDTO> response = contractReader.getCompletedFileUploadContract(contractMetadataId);
 
-        return fileContractUrl;
+        return response;
     }
 }
