@@ -3,7 +3,9 @@ package com.core.foreign.api.contract.service;
 import com.core.foreign.api.contract.entity.ContractMetadata;
 import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.FileUploadContract;
+import com.core.foreign.api.contract.entity.FileUploadContractUrl;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
+import com.core.foreign.api.contract.repository.FileUploadContractUrlRepository;
 import com.core.foreign.common.exception.BadRequestException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +13,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class ContractUpdater {
     private final ContractMetadataRepository contractMetadataRepository;
+    private final FileUploadContractUrlRepository fileUploadContractUrlRepository;
 
-    public void uploadFileContract(Long contractMetadataId, String fileContractUrl){
+    public void uploadFileContract(Long contractMetadataId, List<String> requestUrls){
         ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[uploadFileContract][contract metadata not found][contractMetadataId= {}]", contractMetadataId);
@@ -31,7 +37,52 @@ public class ContractUpdater {
             throw new BadRequestException(ErrorStatus.CONTRACT_ALREADY_COMPLETED_EXCEPTION.getMessage());
         }
 
-        contractMetadata.uploadContract(fileContractUrl);
+        FileUploadContract contract = (FileUploadContract)contractMetadata.getContract();
+
+        List<FileUploadContractUrl> oldUrls = fileUploadContractUrlRepository.findByFileUploadContractId(contract.getId());
+
+        // 새롭게 추가할 것. new-old
+        List<FileUploadContractUrl> toAdd = new ArrayList<>();
+        for (String requestUrl : requestUrls) {
+            boolean isPresent=false;
+
+            for (FileUploadContractUrl oldUrl : oldUrls) {
+                if(oldUrl.getUrl().equals(requestUrl)){
+                    isPresent=true;
+                    break;
+                }
+            }
+
+            if(!isPresent){
+                FileUploadContractUrl fileUploadContractUrl = new FileUploadContractUrl(requestUrl, contract);
+                toAdd.add(fileUploadContractUrl);
+            }
+        }
+
+        // 삭제할 것 old-new
+        List<Long> toDelete = new ArrayList<>();
+
+        for (FileUploadContractUrl oldUrl : oldUrls) {
+            boolean isPresent=false;
+
+            for (String requestUrl : requestUrls) {
+                if(oldUrl.getUrl().equals(requestUrl)){
+                    isPresent=true;
+                    break;
+                }
+            }
+
+            if(!isPresent){
+                toDelete.add(oldUrl.getId());
+            }
+        }
+
+        fileUploadContractUrlRepository.saveAll(toAdd);
+        if(!toDelete.isEmpty()){fileUploadContractUrlRepository.deleteByIds(toDelete);}
+
+
+        contractMetadata.setContractStatusPendingApproval();
+
     }
 
 

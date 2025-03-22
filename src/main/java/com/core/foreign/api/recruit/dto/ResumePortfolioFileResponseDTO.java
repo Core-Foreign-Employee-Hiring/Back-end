@@ -1,19 +1,18 @@
 package com.core.foreign.api.recruit.dto;
 
-import com.core.foreign.api.recruit.entity.PortfolioType;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
 import lombok.Getter;
 
 import java.util.List;
 
+
 @Getter
 public class ResumePortfolioFileResponseDTO {
-    private PortfolioType portfolioType;
     private String title;
-    private List<String> urls;
+    private List<FileUrlAndOriginalFileNameDTO> fileUrlAndOriginalFileNameDTOS;
 
-    public ResumePortfolioFileResponseDTO(PortfolioType portfolioType, String title, List<String> urls) {
-        this.portfolioType = portfolioType;
+    public ResumePortfolioFileResponseDTO(String title, List<FileUrlAndOriginalFileNameDTO> fileUrlAndOriginalFileNameDTOS) {
         this.title = title;
-        this.urls = urls;
+        this.fileUrlAndOriginalFileNameDTOS = fileUrlAndOriginalFileNameDTOS;
     }
 }

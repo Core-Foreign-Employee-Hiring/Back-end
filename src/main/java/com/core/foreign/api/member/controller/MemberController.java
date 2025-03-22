@@ -4,6 +4,7 @@ import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.contract.dto.EmployeeCompletedContractResponseDTO;
 import com.core.foreign.api.contract.dto.EmployerCompletedContractResponseDTO;
 import com.core.foreign.api.contract.service.ContractService;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
 import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
 import com.core.foreign.api.member.entity.EvaluationCategory;
@@ -805,9 +806,9 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/complete-file-upload-contract/{contract-id}")
-    public ResponseEntity<ApiResponse<String>> getCompletedFileUploadContract(@AuthenticationPrincipal SecurityMember securityMember,
+    public ResponseEntity<ApiResponse<List<FileUrlAndOriginalFileNameDTO>>> getCompletedFileUploadContract(@AuthenticationPrincipal SecurityMember securityMember,
                                                                               @PathVariable("contract-id") Long contractMetadataId) {
-        String response = contractService.getCompletedFileUploadContract(securityMember.getId(), contractMetadataId);
+        List<FileUrlAndOriginalFileNameDTO> response = contractService.getCompletedFileUploadContract(securityMember.getId(), contractMetadataId);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }

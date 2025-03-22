@@ -77,6 +77,7 @@ public enum SuccessStatus {
     SEARCH_RECRUIT_SUCESS(HttpStatus.OK,"공고 검색 성공"),
     RESUME_VISIBILITY_UPDATE_SUCCESS(HttpStatus.OK, "이력서 공개 상태 변경 성공"),
     MEMBER_WITHDRAW_SUCCESS(HttpStatus.OK, "회원 탈퇴 성공"),
+    EMPLOYEE_ELIGIBLE_FOR_APPLICATION(HttpStatus.OK, "공고 지원이 가능한 피고용인입니다."),
 
 
     /**

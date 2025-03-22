@@ -1077,5 +1077,17 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEARCH_RECRUIT_SUCESS, response);
     }
 
+    @Operation(summary = "피고용인 공고 지원 가능한지 판단. API",
+            description = "피고용인 공고 지원 가능한지 판단. API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "판단 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
+    })
+    @PostMapping("/{recruit-id}/validate-application")
+    public ResponseEntity<ApiResponse<Boolean>> isEmployeeEligibleForRecruitment(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                 @PathVariable("recruit-id") Long recruitId) {
 
+        boolean response = recruitService.isEmployeeEligibleForRecruitment(securityMember.getId(), recruitId);
+        return ApiResponse.success(SuccessStatus.EMPLOYEE_ELIGIBLE_FOR_APPLICATION, response);
+    }
 }

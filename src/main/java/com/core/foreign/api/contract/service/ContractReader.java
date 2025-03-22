@@ -7,7 +7,12 @@ import com.core.foreign.api.contract.dto.EmployerCompletedContractResponseDTO;
 import com.core.foreign.api.contract.entity.ContractMetadata;
 import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.FileUploadContract;
+import com.core.foreign.api.contract.entity.FileUploadContractUrl;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
+import com.core.foreign.api.contract.repository.FileUploadContractUrlRepository;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
+import com.core.foreign.api.file.entity.UploadFile;
+import com.core.foreign.api.file.repository.UploadFileRepository;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
@@ -21,12 +26,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class ContractReader {
     private final ContractMetadataRepository contractMetadataRepository;
+    private final FileUploadContractUrlRepository uploadContractUrlRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     public PageResponseDTO<ContractPreviewResponseDTO> getNotCompletedContractMetadata(Role role, Long memberId, Integer page, Integer size) {
 
@@ -71,7 +80,7 @@ public class ContractReader {
         return response;
     }
 
-    public String getCompletedFileUploadContract(Long contractMetadataId){
+    public List<FileUrlAndOriginalFileNameDTO>getCompletedFileUploadContract(Long contractMetadataId){
         ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[getCompletedFileUploadContract][contractMetadata 조회 실패][contractMetadataId:{}]", contractMetadataId);
@@ -81,9 +90,16 @@ public class ContractReader {
 
         FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();
 
-        String fileContractUrl = contract.getFileContractUrl();
+        List<String> urls = uploadContractUrlRepository.findByFileUploadContractId(contract.getId())
+                .stream().map(FileUploadContractUrl::getUrl).toList();
 
-        return fileContractUrl;
+
+        List<UploadFile> uploadFiles = uploadFileRepository.findByFileUrls(urls);
+
+        List<FileUrlAndOriginalFileNameDTO> response = uploadFiles.stream()
+                .map(FileUrlAndOriginalFileNameDTO::of).toList();
+
+        return response;
     }
 
 
@@ -98,7 +114,7 @@ public class ContractReader {
         return response;
     }
 
-    public String getNotFileUploadCompleteContractMetadata(Long contractMetadataId){
+    public List<FileUrlAndOriginalFileNameDTO> getNotFileUploadCompleteContractMetadata(Long contractMetadataId){
         ContractMetadata contractMetadata = contractMetadataRepository.findNotCompleteFileUploadContractMetadataBy(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[getNotFileUploadCompleteContractMetadata][contractMetadata 없음. ][contractMetadataId:{}]", contractMetadataId);
@@ -107,9 +123,16 @@ public class ContractReader {
 
         FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();
         contract.synchronizeAdminViewVersion();
-        String fileContractUrl = contract.getFileContractUrl();
+        List<String> urls = uploadContractUrlRepository.findByFileUploadContractId(contract.getId())
+                .stream().map(FileUploadContractUrl::getUrl).toList();
 
-        return fileContractUrl;
+
+        List<UploadFile> uploadFiles = uploadFileRepository.findByFileUrls(urls);
+
+        List<FileUrlAndOriginalFileNameDTO> response = uploadFiles.stream()
+                .map(FileUrlAndOriginalFileNameDTO::of).toList();
+
+        return response;
     }
 
 

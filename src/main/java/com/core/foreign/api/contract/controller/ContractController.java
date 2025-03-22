@@ -5,6 +5,8 @@ import com.core.foreign.api.contract.dto.ContractPreviewResponseDTO;
 import com.core.foreign.api.contract.entity.ContractStatus;
 import com.core.foreign.api.contract.entity.ContractType;
 import com.core.foreign.api.contract.service.ContractService;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
+import com.core.foreign.api.file.dto.request.Urls;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.SecurityMember;
@@ -16,11 +18,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "Contract", description = "Contract 관련 API 입니다.")
 @RestController
@@ -80,13 +82,13 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PostMapping(value = "/{contract-id}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> uploadFileContract(@AuthenticationPrincipal SecurityMember securityMember,
+    @PostMapping(value = "/{contract-id}/file")
+    public ResponseEntity<ApiResponse<Void>> uploadFileContract(@AuthenticationPrincipal SecurityMember securityMember,
                                                                 @PathVariable("contract-id") Long contractMetadataId,
-                                                                @RequestPart(value = "contract", required = false) MultipartFile contract) {
-        String url = contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
+                                                                @RequestBody Urls urls) {
+        contractService.uploadFileContract(securityMember.getId(), contractMetadataId, urls.getUrls());
 
-        return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, url);
+        return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
     }
 
     @Operation(summary = "실물 계약서 수정. API",
@@ -96,13 +98,13 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
-    @PatchMapping(value = "/{contract-id}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> modifyFileContract(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                  @PathVariable("contract-id") Long contractMetadataId,
-                                                                  @RequestPart(value = "contract", required = false) MultipartFile contract) {
-        String url = contractService.uploadFileContract(securityMember.getId(), contractMetadataId, contract);
+    @PatchMapping(value = "/{contract-id}/file")
+    public ResponseEntity<ApiResponse<Void>> modifyFileContract(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                @PathVariable("contract-id") Long contractMetadataId,
+                                                                @RequestBody Urls urls) {
+        contractService.uploadFileContract(securityMember.getId(), contractMetadataId, urls.getUrls());
 
-        return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, url);
+        return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
     }
 
 
@@ -146,9 +148,9 @@ public class ContractController {
     })
     @GetMapping(value = "/test/not-completed")
     public ResponseEntity<ApiResponse<PageResponseDTO<AdminContractPreviewResponseDTO>>> test_getNotCompleteFileUploadContractMetadata(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                          @RequestParam("size")Integer size) {
-        size =size==null?3:size;
+                                                                                                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                                       @RequestParam("size") Integer size) {
+        size = size == null ? 3 : size;
 
         PageResponseDTO<AdminContractPreviewResponseDTO> response = contractService.getNotCompleteFileUploadContractMetadata(page, size);
 
@@ -163,10 +165,10 @@ public class ContractController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @GetMapping(value = "/test/not-completed-one")
-    public ResponseEntity<ApiResponse<String>> test_getNotCompleteFileUploadContractMetadata(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                                       @RequestParam("contractId")Long contractMetadataId) {
+    public ResponseEntity<ApiResponse<List<FileUrlAndOriginalFileNameDTO>>> test_getNotCompleteFileUploadContractMetadata(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                                          @RequestParam("contractId")Long contractMetadataId) {
 
-        String response = contractService.getNotFileUploadCompleteContractMetadata(contractMetadataId);
+        List<FileUrlAndOriginalFileNameDTO> response = contractService.getNotFileUploadCompleteContractMetadata(contractMetadataId);
 
         return ApiResponse.success(SuccessStatus.CONTRACT_UPLOAD_SUCCESS, response);
     }

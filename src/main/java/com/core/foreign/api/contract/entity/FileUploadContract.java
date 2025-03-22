@@ -8,17 +8,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @DiscriminatorValue("FILE")
 @Getter
-@NoArgsConstructor()
+@NoArgsConstructor
 public class FileUploadContract extends Contract{
-    private String fileContractUrl;
     private String rejectionReason;
     private Long curVersion=0L;
     private Long adminViewVersion;
 
-    public void uploadContract(String fileContractUrl) {
-        this.fileContractUrl = fileContractUrl;
-        curVersion++;
-    }
 
     public void synchronizeAdminViewVersion() {
         this.adminViewVersion = curVersion;
