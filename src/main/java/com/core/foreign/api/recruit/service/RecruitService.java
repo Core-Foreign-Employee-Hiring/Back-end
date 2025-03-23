@@ -849,7 +849,7 @@ public class RecruitService {
             Recruit recruit = recruitRepository.findById(recruitId)
                     .orElseThrow(() -> {
                         log.error("공고 없음. recruitId= {}", recruitId);
-                        return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             RecruitBookmark recruitBookmark = new RecruitBookmark(recruit, member);
@@ -882,7 +882,7 @@ public class RecruitService {
         Recruit recruit = recruitRepository.findByIdFetchJoin(recruitId)
                 .orElseThrow(() -> {
                     log.error("공고 찾을 수 없음. recruitId= {}", recruitId);
-                    return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Employer employer = (Employer) recruit.getEmployer();
@@ -990,7 +990,7 @@ public class RecruitService {
         Recruit recruit = recruitRepository.findById(recruitId)
                 .orElseThrow(() -> {
                             log.warn("[isEmployeeEligibleForRecruitment][공고 없음.][recruitId= {}]", recruitId);
-                            return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                            return new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
                         }
                 );
 

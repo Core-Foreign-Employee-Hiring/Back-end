@@ -13,6 +13,7 @@ import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class ContractService {
         ContractMetadata contractMetadata = contractMetadataRepository.findById(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("contractMetadataId: {} not found", contractMetadataId);
-                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         contractUtils.validateContractOwner(contractMetadata.getId(), employerId);

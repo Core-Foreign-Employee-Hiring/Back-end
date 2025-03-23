@@ -5,7 +5,7 @@ import com.core.foreign.api.contract.entity.ContractMetadata;
 import com.core.foreign.api.contract.repository.ContractMetadataRepository;
 import com.core.foreign.api.member.entity.Employee;
 import com.core.foreign.api.member.entity.Member;
-import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class ContractUtils {
         ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[validateContractOwner][contract metadata not found][contractMetadataId= {}]", contractMetadataId);
-                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Employee employee = contractMetadata.getResume().getEmployee();
@@ -32,7 +32,7 @@ public class ContractUtils {
 
         if(!Objects.equals(memberId, employer.getId()) && !Objects.equals(memberId, employee.getId())){
             log.warn("[uploadFileContract][계약서 소유자가 아님.][memberId= {}, contractMetadataId= {}, employer= {}, employeeId= {}]", memberId,contractMetadata.getId() , employer, employee.getId());
-            throw new BadRequestException(ErrorStatus.INVALID_CONTRACT_OWNER_EXCEPTION.getMessage());
+            throw new NotFoundException(ErrorStatus.INVALID_CONTRACT_OWNER_EXCEPTION.getMessage());
         }
 
     }

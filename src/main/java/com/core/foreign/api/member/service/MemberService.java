@@ -509,14 +509,14 @@ public class MemberService {
     public void resetPassword(PasswordResetRequestDTO.PasswordResetConfirm passwordResetConfirm) {
 
         PasswordReset passwordReset = passwordResetRepository.findByCode(passwordResetConfirm.getCode())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.INVALID_PASSWORD_RESET_CODE_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.INVALID_PASSWORD_RESET_CODE_EXCEPTION.getMessage()));
 
         if (LocalDateTime.now().isAfter(passwordReset.getExpirationTime())) {
             throw new UnauthorizedException(ErrorStatus.EXPIRED_PASSWORD_RESET_CODE_EXCEPTION.getMessage());
         }
 
         Member member = memberRepository.findByEmail(passwordReset.getEmail())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
         member.updatePassword(passwordEncoder.encode(passwordResetConfirm.getNewPassword()));
         memberRepository.save(member);
@@ -589,7 +589,7 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.warn("[withdrawMember][member not found][memberId= {}]", memberId);
-                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         if(member instanceof Employer employer){
@@ -608,7 +608,7 @@ public class MemberService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> {
                     log.warn("[getMyResume][employee not found][employeeId= {}]", employeeId);
-                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         // 내 스펙 및 경력

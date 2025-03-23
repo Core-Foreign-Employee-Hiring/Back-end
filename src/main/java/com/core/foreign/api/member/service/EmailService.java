@@ -8,6 +8,7 @@ import com.core.foreign.api.member.repository.EmailVerificationRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.repository.PasswordResetRepository;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.exception.UnauthorizedException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class EmailService {
     public void sendPasswordResetEmail(PasswordResetRequestDTO.PasswordResetRequest passwordResetRequest) {
 
         Member member = memberRepository.findByUserIdAndEmailAndName(passwordResetRequest.getUserId(), passwordResetRequest.getEmail(), passwordResetRequest.getName())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
         String resetCode = generateRandomCode();
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
