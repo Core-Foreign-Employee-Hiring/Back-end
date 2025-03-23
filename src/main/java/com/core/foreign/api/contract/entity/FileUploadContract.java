@@ -23,5 +23,9 @@ public class FileUploadContract extends Contract{
         this.rejectionReason = rejectionReason;
     }
 
+    public void incrementVersion() {
+        this.curVersion++;
+    }
+
 
 }

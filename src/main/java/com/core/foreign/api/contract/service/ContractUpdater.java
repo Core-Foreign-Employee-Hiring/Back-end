@@ -83,6 +83,9 @@ public class ContractUpdater {
 
         contractMetadata.setContractStatusPendingApproval();
 
+        // 버전 증가.
+        contract.incrementVersion();
+
     }
 
 
