@@ -107,7 +107,7 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "내 이메일 인증코드 발송 API",
+            summary = "내 이메일 인증코드 발송 API (용범)",
             description = "내 이메일 인증코드를 발송합니다."
     )
     @ApiResponses({

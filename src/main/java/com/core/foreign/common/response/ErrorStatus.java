@@ -43,7 +43,7 @@ public enum ErrorStatus {
     NOT_DRAFT_RECRUIT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 공고는 임시 저장 상태가 아닙니다."),
     DONT_HAVE_PERMISSION_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 요청을 수행할 권한이 없습니다."),
     ALREADY_ADD_CHILD_COMMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"해당 댓글에는 이미 대댓글이 등록되어 있습니다."),
-    EVALUATION_NOT_ALLOWED_BEFORE_APPROVAL_DATE(HttpStatus.BAD_REQUEST, "모집 승인 30일 이후부터 평가하기가 가능합니다."),
+    EVALUATION_NOT_ALLOWED_BEFORE_APPROVAL_DATE(HttpStatus.BAD_REQUEST, "계약서 완료 30일 이후부터 평가하기가 가능합니다."),
     EVALUATION_NOT_ALLOWED_FOR_USER_EXCEPTION(HttpStatus.BAD_REQUEST, "평가할 수 없는 유저입니다."),
     EVALUATION_CATEGORY_IS_EMPTY_EXCEPTION(HttpStatus.BAD_REQUEST, "평가 항목이 비어 있습니다."),
     EVALUATION_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 평가를 완료했습니다."),

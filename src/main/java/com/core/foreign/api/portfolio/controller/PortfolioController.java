@@ -28,8 +28,20 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
 
-    @Operation(summary = "포트폴리오 기본 조회. API",
-            description = "포트폴리오 기본 조회. <br>"
+    @Operation(
+            summary = "포트폴리오 기본 조회. API (용범)",
+            description = "포트폴리오 기본 조회. <br>"+
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "employeeId: 피고용인 ID<br>" +
+                    "name: 피고용인 이름<br>" +
+                    "worksDiligently: 성실하게 일해요.<br>" +
+                    "noLatenessOrAbsence: 지각/결근하지 않았어요.<br>" +
+                    "politeAndFriendly: 예의 바르고 친절해요.<br>" +
+                    "goodCustomerService: 고객 응대를 잘해요.<br>" +
+                    "skilledAtWork: 업무 능력이 좋아요.<br>" +
+                    "joinCount: 평가 참여 수<br>"
+
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -44,8 +56,47 @@ public class PortfolioController {
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, basicPortfolios);
     }
 
-    @Operation(summary = "포트폴리오 기본 상세 조회. API",
-            description = "포트폴리오 기본 상세 조회. <br>"
+    @Operation(
+            summary = "포트폴리오 기본 상세 조회. API (용범)",
+            description = "포트폴리오 기본 상세 조회. <br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "employeeId: 피고용인<br>" +
+                    "name: 피고용인 이름<br>" +
+                    "nationality: 국적<br>" +
+                    "education: 학력<br>" +
+                    "visa: 비자<br>" +
+                    "birthday: 생년월일<br>" +
+                    "email: 이메일<br>" +
+                    
+                    "introduction: 자기소개<br>" +
+                    "enrollmentCertificateUrl: 재학증명서<br>" +
+                    "transcriptUrl: 성적증명서 <br>" +
+                    "partTimeWorkPermitUrl: 시간제근로허가서 <br>" +
+                    "topik: 한국어능력시험 <br>" +
+                    "businessField: 업직종 <br>" +
+                    "experienceDescription: 본인 경력기술 <br>" +
+                    "startDate: 시작일자 <br>" +
+                    "endDate: 종료일자 <br>" +
+                    "businessField: 업직종 <br>" +
+                    "certificateName: 자격명 <br>" +
+                    "certificateDate: 취득일자 <br>" +
+                    "businessField: 업직종 <br>" +
+                    "awardName: 상장명 <br>" +
+                    "awardDate: 수상날짜 <br>" +
+                    "portfolioPublic: 공개/비공개 <br>" +
+
+                    "worksDiligently: 성실하게 일해요.<br>" +
+                    "noLatenessOrAbsence: 지각/결근하지 않았어요.<br>" +
+                    "politeAndFriendly: 예의 바르고 친절해요.<br>" +
+                    "goodCustomerService: 고객 응대를 잘해요.<br>" +
+                    "skilledAtWork: 업무 능력이 좋아요.<br>" +
+                    "joinCount: 평가 참여 수<br>"+
+                    
+                    "viewCount: 조회수 <br>" +
+                    "isLiked: 찜하기 유무 <br>"+
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -63,8 +114,23 @@ public class PortfolioController {
     }
 
 
-    @Operation(summary = "포트폴리오 실제 지원 조회. API",
-            description = "포트폴리오 실제 지원 조회. <br>"
+    @Operation(
+            summary = "포트폴리오 실제 지원 조회. API (용범)",
+            description = "포트폴리오 실제 지원 조회. <br>"+
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "응답)<br>"+
+                    "resumeId: 이력서 ID <br>" +
+                    "name: 피고용인 이름 <br>" +
+                    "businessFields: 업직종들 <br>" +
+                    "worksDiligently: 성실하게 일해요.<br>" +
+                    "noLatenessOrAbsence: 지각/결근하지 않았어요.<br>" +
+                    "politeAndFriendly: 예의 바르고 친절해요.<br>" +
+                    "goodCustomerService: 고객 응대를 잘해요.<br>" +
+                    "skilledAtWork: 업무 능력이 좋아요.<br>" +
+                    "joinCount: 평가 참여 수<br>" +
+                    "<p>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -80,7 +146,8 @@ public class PortfolioController {
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolios);
     }
 
-    @Operation(summary = "포트폴리오 실제 지원 상세 조회. API",
+    @Operation(
+            summary = "포트폴리오 실제 지원 상세 조회. API (용범)",
             description = "포트폴리오 실제 지원 상세 조회. <br>"
     )
     @ApiResponses({
@@ -98,7 +165,8 @@ public class PortfolioController {
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, applicationPortfolio);
     }
 
-    @Operation(summary = "포트폴리오 기본 찜하기. API",
+    @Operation(
+            summary = "포트폴리오 기본 찜하기. API (용범)",
             description = "포트폴리오 기본 찜하기. <br>"
     )
     @ApiResponses({
@@ -113,7 +181,8 @@ public class PortfolioController {
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, flip);
     }
 
-    @Operation(summary = "포트폴리오 실제 지원 찜하기. API",
+    @Operation(
+            summary = "포트폴리오 실제 지원 찜하기. API (용범)",
             description = "포트폴리오 실제 지원 찜하기. <br>"
     )
     @ApiResponses({

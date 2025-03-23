@@ -32,8 +32,14 @@ public class ContractController {
     private final ContractService contractService;
 
 
-    @Operation(summary = "미완료된 계약서 조회. API",
-            description = "미완료된 계약서 조회. <br>"
+    @Operation(
+            summary = "미완료된 계약서 조회 API (용범)",
+            description = "미완료된 계약서 조회. <br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "page: 페이지 번호(예시: 1)<br>" +
+                    "size: 한 페이지에 최대 몇 개?(예시: 5)>" +
+                    "<p>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -49,8 +55,15 @@ public class ContractController {
     }
 
 
-    @Operation(summary = "계약서 형태 선택. API",
-            description = "계약서 형태 선택. API <br>"
+    @Operation(
+            summary = "계약서 형태 선택. API(용범)",
+            description = "고용인이 계약서 형태를 선택합니다. <br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "contract-id: 계약서 ID(예시: 1)<br>" +
+                    "contractType: 계약서 형태(예시: IMAGE_UPLOAD)" +
+                    "<p>" +
+                    "ENUM 정보: <a href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\">이동하기</a>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "선택 성공"),
@@ -75,8 +88,14 @@ public class ContractController {
     }
 
 
-    @Operation(summary = "실물 계약서 최소 업로드. API",
-            description = "실물 계약서 최소 업로드. API <br>"
+    @Operation(summary = "실물 계약서 최소 업로드. API (용범)",
+            description = "실물 계약서 최소 업로드합니다. <br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "contract-id: 계약서 ID(예시: 1)<br>" +
+                    "urls: 파일 링크들" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-contract-contract-id-file-19e98c9adc8a80eb85c4c44cfd49cad8?pvs=4\" target=\"_blank\">이동하기</a>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),
@@ -91,8 +110,14 @@ public class ContractController {
         return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
     }
 
-    @Operation(summary = "실물 계약서 수정. API",
-            description = "실물 계약서 수정. API <br>"
+    @Operation(summary = "실물 계약서 수정. API (용범)",
+            description = "실물 계약서 수정합니다. <br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "contract-id: 계약서 ID(예시: 1)<br>" +
+                    "urls: 파일 링크들" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-contract-contract-id-file-1a598c9adc8a8007912fc461f213baa8?pvs=4\" target=\"_blank\">이동하기</a>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "업로드 성공"),

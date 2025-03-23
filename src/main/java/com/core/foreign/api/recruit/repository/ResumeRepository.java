@@ -68,6 +68,14 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " where r.recruit.id=:recruitId and r.employee.id=:employeeId")
     Optional<Resume> findByEmployeeIdAndRecruitIdIncludingDeleted(@Param("employeeId") Long employeeId, @Param("recruitId") Long recruitId);
 
+    @Query("select count(*)>0 from Resume r" +
+            " where r.id=:resumeId and r.recruit.employer.id=:employerId")
+    boolean exitsByResumeIdAndEmployerId(@Param("resumeId")Long resumeId, @Param("employerId")Long employerId);
+
+    @Query("select count(*)>0 from Resume r" +
+            " where r.id=:resumeId and r.employee.id=:employeeId")
+    boolean exitsByResumeIdAndEmployeeId(@Param("resumeId")Long resumeId, @Param("employeeId")Long employeeId);
+
 
 
     @Query("select r from Resume r" +
@@ -81,6 +89,10 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " join fetch r.recruit" +
             " where r.recruitmentStatus='APPROVED' and r.isDeleted=false and r.isEmployerEvaluatedByEmployee= :evaluationStatus")
     Page<Resume> findResumeByEmployeeIdAndEvaluationStatus(@Param("employeeId")Long employeeId,  @Param("evaluationStatus") EvaluationStatus evaluationStatus, Pageable pageable);
+
+    @Query("select r.id from Resume r" +
+            " where r.employee.id=:employeeId and r.recruit=:recruitId")
+    Optional<Long> findResumeIdByEmployeeIdAndRecruitId(@Param("employeeId") Long employeeId, @Param("recruitId") Long recruitId);
 
     @Modifying
     @Query("update Resume resume set resume.viewCount=resume.viewCount+1 where resume.id=:resumeId")
