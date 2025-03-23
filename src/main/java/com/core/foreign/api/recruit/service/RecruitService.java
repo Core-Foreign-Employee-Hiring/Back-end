@@ -1009,7 +1009,7 @@ public class RecruitService {
             EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
                     .orElseThrow(() -> {
                         log.warn("[isEmployeeEligibleForRecruitment][포트폴리오 없음][employeeId= {}]", employeeId);
-                        return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             if (employeePortfolio.getIntroduction() == null || employeePortfolio.getIntroduction().isEmpty() ||

@@ -19,6 +19,7 @@ import com.core.foreign.api.recruit.repository.RecruitRepository;
 import com.core.foreign.api.recruit.repository.ResumePortfolioRepository;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -248,7 +249,7 @@ public class ResumeService {
             EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
                     .orElseThrow(() -> {
                         log.warn("[doApplyResume][포트폴리오 없음][employeeId= {}]", employeeId);
-                        return new BadRequestException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             if(employeePortfolio.getIntroduction()==null||employeePortfolio.getIntroduction().isEmpty()||
