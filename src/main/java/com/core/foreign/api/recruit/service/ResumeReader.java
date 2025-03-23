@@ -1,6 +1,9 @@
 package com.core.foreign.api.recruit.service;
 
 import com.core.foreign.api.contract.entity.ContractStatus;
+import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
+import com.core.foreign.api.file.entity.UploadFile;
+import com.core.foreign.api.file.repository.UploadFileRepository;
 import com.core.foreign.api.member.dto.TagResponseDTO;
 import com.core.foreign.api.recruit.dto.*;
 import com.core.foreign.api.recruit.dto.internal.ResumeDTO;
@@ -31,6 +34,7 @@ public class ResumeReader {
     private final ResumeRepository resumeRepository;
     private final ResumePortfolioRepository resumePortfolioRepository;
     private final PortfolioRepository portfolioRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     public ResumeDTO getResumeForEmployer(Long resumeId){
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForEmployer(resumeId)
@@ -139,7 +143,16 @@ public class ResumeReader {
                 List<String> urls = fileMap.get(recruitPortfolioId);
                 Portfolio portfolio = map.get(recruitPortfolioId);
 
-                files.add(new ResumePortfolioFileResponseDTO(PortfolioType.FILE_UPLOAD, portfolio.getTitle(), urls));
+                List<UploadFile> byFileUrls = uploadFileRepository.findByFileUrls(urls);
+
+                List<FileUrlAndOriginalFileNameDTO> fileUrlAndOriginalFileNameDTOS =new ArrayList<>();
+
+                for (UploadFile byFileUrl : byFileUrls) {
+                    FileUrlAndOriginalFileNameDTO fileUrlAndOriginalFileNameDTO = new FileUrlAndOriginalFileNameDTO(byFileUrl.getFileUrl(), byFileUrl.getOriginalFileName());
+                    fileUrlAndOriginalFileNameDTOS.add(fileUrlAndOriginalFileNameDTO);
+                }
+
+                files.add(new ResumePortfolioFileResponseDTO(portfolio.getTitle(), fileUrlAndOriginalFileNameDTOS));
             }
         }
 

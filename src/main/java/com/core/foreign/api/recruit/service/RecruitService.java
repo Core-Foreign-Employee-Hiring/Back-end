@@ -4,9 +4,8 @@ import com.core.foreign.api.aws.service.S3Service;
 import com.core.foreign.api.business_field.BusinessField;
 import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.dto.EmployerReliabilityDTO;
-import com.core.foreign.api.member.entity.Address;
-import com.core.foreign.api.member.entity.Employer;
-import com.core.foreign.api.member.entity.Member;
+import com.core.foreign.api.member.entity.*;
+import com.core.foreign.api.member.repository.EmployeePortfolioRepository;
 import com.core.foreign.api.member.repository.EmployerRepository;
 import com.core.foreign.api.member.repository.MemberRepository;
 import com.core.foreign.api.member.service.EvaluationReader;
@@ -21,7 +20,10 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
-import static com.core.foreign.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
+import static com.core.foreign.common.response.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RecruitService {
-
     private final RecruitRepository recruitRepository;
     private final MemberRepository memberRepository;
     private final PremiumManageRepository premiumManageRepository;
@@ -46,6 +47,7 @@ public class RecruitService {
     private final EvaluationReader evaluationReader;
     private final PortfolioRepository portfolioRepository;
     private final EmployerRepository employerRepository;
+    private final EmployeePortfolioRepository employeePortfolioRepository;
 
     // 일반 공고 등록
     @Transactional
@@ -974,4 +976,52 @@ public class RecruitService {
         return PageResponseDTO.of(dtoPage);
     }
 
+
+    public boolean isEmployeeEligibleForRecruitment(Long employeeId, Long recruitId) {
+
+        Member member = memberRepository.findById(employeeId).get();
+        if (member instanceof Employer) {
+            log.warn("고용인이 공고 지원 신청. memberId= {}", employeeId);
+            throw new BadRequestException(EMPLOYER_CANNOT_APPLY_EXCEPTION.getMessage());
+        }
+
+        Employee employee = (Employee) member;
+
+        Recruit recruit = recruitRepository.findById(recruitId)
+                .orElseThrow(() -> {
+                            log.warn("[isEmployeeEligibleForRecruitment][공고 없음.][recruitId= {}]", recruitId);
+                            return new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                        }
+                );
+
+        Optional<Resume> findResume = resumeRepository.findByEmployeeIdAndRecruitId(employeeId, recruit.getId());
+
+        // 중복 지원 체크
+
+        if (findResume.isPresent()) {
+            log.warn("[isEmployeeEligibleForRecruitment][중복 지원은 불가합니다.][resumeId= {}]", findResume.get().getId());
+            throw new BadRequestException(DUPLICATE_APPLICATION_NOT_ALLOWED_EXCEPTION.getMessage());
+
+        }
+
+        // 포트폴리오 체크
+        if (recruit.getRecruitType().equals(RecruitType.PREMIUM)) {
+            EmployeePortfolio employeePortfolio = employeePortfolioRepository.findEmployeePortfolioByEmployeeId(employee.getId())
+                    .orElseThrow(() -> {
+                        log.warn("[isEmployeeEligibleForRecruitment][포트폴리오 없음][employeeId= {}]", employeeId);
+                        return new NotFoundException(PORTFOLIO_NOT_FOUND_EXCEPTION.getMessage());
+                    });
+
+            if (employeePortfolio.getIntroduction() == null || employeePortfolio.getIntroduction().isEmpty() ||
+                    employeePortfolio.getEnrollmentCertificateUrl() == null || employeePortfolio.getEnrollmentCertificateUrl().isEmpty() ||
+                    employeePortfolio.getTranscriptUrl() == null || employeePortfolio.getTranscriptUrl().isEmpty() ||
+                    employeePortfolio.getPartTimeWorkPermitUrl() == null || employeePortfolio.getPartTimeWorkPermitUrl().isEmpty()
+            ) {
+                log.warn("[isEmployeeEligibleForRecruitment][필수 항수 없음][employeeId= {}]", employeeId);
+                throw new BadRequestException(MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION.getMessage());
+            }
+        }
+
+        return true;
+    }
 }

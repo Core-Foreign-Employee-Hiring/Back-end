@@ -56,10 +56,7 @@ public class ContractMetadata {
 
 
     //  파일 업로드
-    public void uploadContract(String fileContractUrl) {
-        FileUploadContract fileUploadContract = (FileUploadContract) contract;
-
-        fileUploadContract.uploadContract(fileContractUrl);
+    public void setContractStatusPendingApproval() {
         this.employerContractStatus=ContractStatus.PENDING_APPROVAL;
         this.employeeContractStatus=ContractStatus.PENDING_APPROVAL;
     }
