@@ -1,5 +1,6 @@
 package com.core.foreign.api.member.service;
 
+import com.core.foreign.api.member.dto.EvaluationCategoryResponseDTO;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.*;
 import com.core.foreign.api.recruit.entity.EvaluationStatus;
@@ -29,6 +30,8 @@ public class EvaluationService {
     private final EmployerEvaluationRepository employerEvaluationRepository;
     private final ResumeEvaluationRepository resumeEvaluationRepository;
     private final MemberRepository memberRepository;
+    private final EvaluationReader evaluationReader;
+    private final EvaluationDeleter evaluationDeleter;
 
 
     /**
@@ -144,8 +147,8 @@ public class EvaluationService {
             log.warn("[validateApprovalStatus][모집 승인 상태가 아닌 경우 또는 승인일로부터 30일이 지나지 않았습니다.]"
                             + "[현재 상태: {}, 계약서 완료 날짜: {}, 30일 후 날짜: {}, 현재 날짜: {}]",
                     resume.getRecruitmentStatus(),
-                    resume.getApprovedAt(),
-                    resume.getApprovedAt().plusMonths(1),
+                    resume.getContractCompletionDate(),
+                    resume.getContractCompletionDate().plusMonths(1),
                     LocalDate.now());
 
             throw new BadRequestException(EVALUATION_NOT_ALLOWED_BEFORE_APPROVAL_DATE.getMessage());
@@ -161,24 +164,62 @@ public class EvaluationService {
         }
     }
 
+    /**
+     * 고용인 -> 피고용인 평가 항목 갖고 오기
+     */
+    public EvaluationCategoryResponseDTO getEmployerToEmployeeEvaluation(Long resumeId) {
+        List<EvaluationCategory> evaluationCategories = evaluationReader.getEvaluation(resumeId, EvaluationType.EMPLOYER_TO_EMPLOYEE);
 
-    public List<EvaluationCategory> getEvaluation(Long memberId, Long resumeId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    log.warn("[getEvaluation][유저 못 찾음.][memberId= {}]", memberId);
-                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
-                });
-
-
-        EvaluationType type = (member instanceof Employer) ? EvaluationType.EMPLOYER_TO_EMPLOYEE : EvaluationType.EMPLOYEE_TO_EMPLOYER;
-
-        List<ResumeEvaluation> byResumeIdAndType = resumeEvaluationRepository.findByResumeIdAndType(resumeId, type);
-
-        List<EvaluationCategory> response = byResumeIdAndType.stream()
-                .map((resumeEvaluation) -> EvaluationCategory.getByDescription(resumeEvaluation.getEvaluation().getCategory()))
-                .toList();
+        EvaluationCategoryResponseDTO response = new EvaluationCategoryResponseDTO(resumeId, evaluationCategories);
 
         return response;
 
     }
+
+    /**
+     * 피고용인 -> 고용인 평가 항목 갖고 오기
+     */
+    public EvaluationCategoryResponseDTO getEmployeeToEmployerEvaluation(Long employeeId, Long recruitId) {
+        Long resumeId = resumeRepository.findResumeIdByEmployeeIdAndRecruitId(employeeId, recruitId)
+                .orElseThrow(() -> {
+                    log.warn("[getEmployeeToEmployerEvaluation][이력서 찾을 수 없음.][employeeId= {}, recruitId= {}]", employeeId, recruitId);
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        List<EvaluationCategory> evaluationCategories = evaluationReader.getEvaluation(resumeId, EvaluationType.EMPLOYEE_TO_EMPLOYER);
+
+        EvaluationCategoryResponseDTO response = new EvaluationCategoryResponseDTO(resumeId, evaluationCategories);
+
+        return response;
+    }
+
+    /**
+     * 고용인 -> 피고용인 평가 삭제
+     */
+    public void deleteEmployerToEmployeeEvaluation(Long employerId, Long resumeId) {
+        boolean b = resumeRepository.exitsByResumeIdAndEmployerId(resumeId, employerId);
+
+        if(!b){
+            log.warn("[deleteEmployerToEmployeeEvaluation][이력서 없음][resumeId= {}, employerId= {}]", resumeId, employerId);
+            throw  new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+        }
+
+        evaluationDeleter.deleteEvaluations(resumeId, EvaluationType.EMPLOYER_TO_EMPLOYEE);
+
+    }
+
+    /**
+     * 피고용인 -> 고용인 평가 평가 삭제
+     */
+    public void deleteEmployeeToEmployerEvaluation(Long employeeId, Long resumeId) {
+        boolean b = resumeRepository.exitsByResumeIdAndEmployeeId(resumeId, employeeId);
+
+        if(!b){
+            log.warn("[deleteEmployerToEmployeeEvaluation][이력서 없음][resumeId= {}, employeeId= {}]", resumeId, employeeId);
+            throw  new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+        }
+
+        evaluationDeleter.deleteEvaluations(resumeId, EvaluationType.EMPLOYEE_TO_EMPLOYER);
+    }
+
 }

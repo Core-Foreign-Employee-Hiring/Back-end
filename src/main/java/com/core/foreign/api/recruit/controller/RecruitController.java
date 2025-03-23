@@ -623,8 +623,18 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_AVAILABLE_RECRUIT_SUCCESS, availableRecruits);
     }
 
-    @Operation(summary = "일반 채용 지원하기. API",
-            description = "피고용인이 일반 채용을 지원합니다..")
+    @Operation(
+            summary = "일반 채용 지원하기. API (용범)",
+            description = "피고용인이 일반 채용을 지원합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "messageToEmployer: 사장님께 한마디<br>" +
+                    "thirdPartyConsent: 개인정보 제3자 제공 동의<br>" +
+                    "applyMethod: 지원방법<br>" +
+                    "<p>"+
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-recruit-general-recruit-id-apply-7dcabb97b3c846cf9639dd22dd024446?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "일반 채용 지원 성공."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -638,27 +648,20 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "프리미엄 채용 지원하기. API",
+    @Operation(
+            summary = "프리미엄 채용 지원하기. API (용범)",
             description = "피고용인이 프리미엄 채용을 지원합니다.<br>" +
                     "<p>" +
-                    "파일 업로드 형식<br>" +
-                    "portfolioId가 3인 문항에 3개 업로드 시<br>" +
-                    "resumePortfolios\": [\n" +
-                    "    {\n" +
-                    "      \"portfolioId\": 3,\n" +
-                    "      \"content\": \"url_1\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"portfolioId\": 3,\n" +
-                    "      \"content\": \"url_2\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"portfolioId\": 3,\n" +
-                    "      \"content\": \"url_3\"\n" +
-                    "    }\n" +
-                    "  ]" +
-                    "<p>" +
-                    "public -> portfolioPublic 변경(03.20)"
+                    "호출 필드 정보) <br>" +
+                    "messageToEmployer: 사장님께 한마디<br>" +
+                    "thirdPartyConsent: 개인정보 제3자 제공 동의<br>" +
+                    "applyMethod: 지원방법(상관 x DB에 insert 할 때 온라인 지원으로 강제함.)<br>" +
+                    "portfolioId: 사장님이 등록한 포트폴리오 ID<br>" +
+                    "content: 내용/파일 URL<br>" +
+                    "portfolioPublic: 공개/비공개<br>"+
+                    "<p>"+
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-recruit-premium-recruit-id-apply-e9e429281e8747d98e2727cb36ce3654?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프리미엄 채용 지원 성공."),
@@ -775,7 +778,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_DETAIL_SUCCESS, detailDTO);
     }
 
-    @Operation(summary = "고용인 지원현황 조회 API",
+    @Operation(summary = "고용인 지원현황 조회 API (용범)",
             description = "고용인이 등록한 공고의 지원현황을 조회합니다.<br>"
     )
     @ApiResponses({
@@ -790,7 +793,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
     }
 
-    @Operation(summary = "지원자 이력서 보기 API",
+    @Operation(summary = "지원자 이력서 보기 API (용범)",
             description = "지원자의 이력서를 조회합니다.<br>"
     )
     @ApiResponses({
@@ -804,17 +807,17 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_APPLICANT_RESUME_SUCCESS, resume);
     }
 
-    @Operation(summary = "공고에 지원한 피고용인들 조회 API",
+    @Operation(
+            summary = "공고에 지원한 피고용인들 조회 API (용범)",
             description = "공고에 지원한 피고용인들 조회.<br>" +
                     "<p>" +
-                    "name: 이름<br>" +
-                    "isMail: 성별<br>" +
-                    "birthday: 생년월일<br>" +
-                    "지원 방법은 전부 온라인? <br>" +
-                    "phoneNumber: 연락처<br>" +
-                    "recruitmentStatus: 모집상태<br>" +
-                    "evaluationStatus: 평가상태<br>" +
-                    "contractStatus: 계약서상태<br>"
+                    "호출 필드 정보) <br>" +
+                    "keyword: 검색<br>"+
+                    "recruitmentStatus: 모집 상태<br>"+
+                    "contractStatus: 계약서 상태(NOT_COMPLETED 와 COMPLETED 만 이용)<br>"+
+                    "<p>"+
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-recruit-recruit-id-resumes-3aad11f7c19a45c7aec63ffc50da152d?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고에 지원한 피고용인들 조회 성공"),
@@ -833,7 +836,8 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_APPLICANTS_FOR_RECRUIT_SUCCESS, responseDTOS);
     }
 
-    @Operation(summary = "지원서 거절 API",
+    @Operation(
+            summary = "지원서 거절 API (용범)",
             description = "지원서 거절.<br>"
     )
     @ApiResponses({
@@ -848,7 +852,8 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
     }
 
-    @Operation(summary = "지원서 승인 API",
+    @Operation(
+            summary = "지원서 승인 API (용범)",
             description = "지원서 승인.<br>"
     )
     @ApiResponses({
@@ -863,7 +868,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.UPDATE_RECRUITMENT_STATUS_SUCCESS);
     }
 
-    @Operation(summary = "피고용인 작성한 이력서 리스트 조회 API",
+    @Operation(summary = "피고용인 작성한 이력서 리스트 조회 API (용범)",
             description = "피고용인 작성한 이력서 리스트 조회.<br>"
     )
     @ApiResponses({
@@ -879,7 +884,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, response);
     }
 
-    @Operation(summary = "피고용인 자신이 작성한 이력서 삭제. API",
+    @Operation(summary = "피고용인 자신이 작성한 이력서 삭제. API (용범)",
             description = "피고용인 자신이 작성한 이력서 삭제.<br>"
     )
     @ApiResponses({
@@ -894,7 +899,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.DELETE_MY_RESUME_SUCCESS);
     }
 
-    @Operation(summary = "공고 찜하기 상태 변경. API",
+    @Operation(summary = "공고 찜하기 상태 변경. API (용범)",
             description = "공고 찜하기 상태 변경.<br>"
     )
     @ApiResponses({
@@ -909,7 +914,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, b);
     }
 
-    @Operation(summary = "찜한 공고 조회. API",
+    @Operation(summary = "찜한 공고 조회. API (용범)",
             description = "찜한 공고 조회하기.<br>"
     )
     @ApiResponses({
@@ -925,17 +930,27 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_BOOKMARKED_RECRUITS_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인의 내 공고 조회 API",
+    @Operation(summary = "고용인의 내 공고 조회 API (용범)",
             description = "고용인의 내가 등록했던 공고 글을 확인할 수 있는 화면입니다.<br>" +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "요청)" +
+                    "recruitType: 프리미엄/일반<br>"+
+                    "excludeExpired: 만료 제외합니까?<br>"+
+                    "응답)" +
+                    "recruitId : 공고 ID<br>" +
                     "title : 공고 제목<br>" +
                     "recruitStartDate : 모집 시작일<br>" +
                     "recruitEndDate : 모집 종료일 / 상시 모집일 경우 2099-12-31<br>" +
                     "workDuration : 근무 기간<br>" +
                     "workTime : 근무 시간(직접 선택시 '시작시간~종료시간'<br>" +
                     "workDays : 근무 요일<br>" +
-                    "recruitType: 공고 유형<br> " +
-                    "isUp: 상단 노출<br>"
+                    "recruitType: 공고 유형<br> "+
+                    "zipcode : 우편 번호<br>" +
+                    "address1 : 주소1<br>" +
+                    "address2 : 주소2<br>" +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 조회 성공"),
@@ -952,7 +967,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
     }
 
-    @Operation(summary = "고용인 내 임시 공고 공고 조회 API",
+    @Operation(summary = "고용인 내 임시 공고 공고 조회 API (용범)",
             description = "고용인 내가 등록했던 임시 공고 글을 확인할 수 있는 화면입니다.<br>"
     )
     @ApiResponses({
@@ -968,7 +983,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_EMPLOYER_RECRUIT_LIST_SUCCESS, recruits);
     }
 
-    @Operation(summary = "프리미엄 공고의 포트폴리오 조회. API",
+    @Operation(summary = "프리미엄 공고의 포트폴리오 조회. API (용범)",
             description = "프리미엄 공고의 포트폴리오 조회.<br>"
     )
     @ApiResponses({
@@ -1077,7 +1092,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEARCH_RECRUIT_SUCESS, response);
     }
 
-    @Operation(summary = "피고용인 공고 지원 가능한지 판단. API",
+    @Operation(summary = "피고용인 공고 지원 가능한지 판단. API (용범)",
             description = "피고용인 공고 지원 가능한지 판단. API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "판단 성공"),

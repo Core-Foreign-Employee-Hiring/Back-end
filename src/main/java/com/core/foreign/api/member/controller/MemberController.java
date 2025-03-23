@@ -7,7 +7,6 @@ import com.core.foreign.api.contract.service.ContractService;
 import com.core.foreign.api.file.dto.FileUrlAndOriginalFileNameDTO;
 import com.core.foreign.api.file.service.FileService;
 import com.core.foreign.api.member.dto.*;
-import com.core.foreign.api.member.entity.EvaluationCategory;
 import com.core.foreign.api.member.jwt.service.JwtService;
 import com.core.foreign.api.member.service.*;
 import com.core.foreign.api.portfolio.dto.response.ApplicationPortfolioPreviewResponseDTO;
@@ -33,7 +32,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.core.foreign.common.response.SuccessStatus.*;
@@ -177,14 +175,10 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 프로필 조회 API",
+            summary = "고용주 프로필 조회 API (용범)",
             description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다.<br>" +
                     "<p>" +
-                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
-                    "isOver15 : 만 15세 이상 확인<br>" +
-                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
-                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
-                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
+                    "호출 필드 정보)<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
@@ -198,57 +192,76 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 이름, 생년월일, 성별 수정 API",
+            summary = "고용주 이름, 생년월일, 성별 수정 API (용범)",
             description = "고용주의 이름, 생년월일, 성별을 수정합니다." +
-                    " 생년월일: yyyy-mm-dd 형식"
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "name: 고용주 이름<br>" +
+                    "birthday: 생년월일: yyyy-mm-dd 형식<br>" +
+                    "male: 성별(true(남자) / false(여자))" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-member-employer-profile-basic-info-55dbced041d64d42906d4db86ec3293e?pvs=4\" target=\"_blank\" >이동하기</a>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 이름, 생년월일, 성별 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/basic-info")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerBasicInfo(@RequestParam String name,
-                                                                     @RequestParam LocalDate birthday,
-                                                                     @RequestParam boolean isMaie,
-                                                                     @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateEmployerBasicInfo(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                     @RequestBody EmployerBasicInfoUpdateRequestDTO dto) {
 
-        memberService.updateEmployerBasicInfo(securityMember.getId(), name, birthday, isMaie);
+        memberService.updateEmployerBasicInfo(securityMember.getId(), dto.getName(), dto.getBirthday(), dto.isMale());
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "회원 이메일 수정 API",
-            description = "회원 이메일을 수정합니다."
+            summary = "회원 이메일 수정 API (용범)",
+            description = "회원 이메일을 수정합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "email: 이메일"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 이메일 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/profile/email")
-    public ResponseEntity<ApiResponse<Void>> updateMemberEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateMemberEmail(@AuthenticationPrincipal SecurityMember securityMember,
+                                                               @RequestBody EmailRequestDTO.EmailVerificationRequest request) {
+
+        String email = request.getEmail();
 
         memberService.updateMemberEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 회사 이메일 수정 API",
-            description = "고용주의 회사 이메일을 수정합니다."
+            summary = "고용주 회사 이메일 수정 API (용범)",
+            description = "고용주 회사 이메일 수정합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보)<br>" +
+                    "email: 이메일"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 이메일 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/company-email")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@RequestParam String email, @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyEmail(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                        @RequestBody EmailRequestDTO.EmailVerificationRequest request) {
+
+        String email = request.getEmail();
 
         memberService.updateEmployerCompanyEmail(securityMember.getId(), email);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 회사 주소 수정 API",
-            description = "고용주의 회사 주소를 수정합니다."
+            summary = "고용주 회사 주소 수정 API (용범)",
+            description = "고용주의 회사 주소를 수정합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "zipcode, address1, address2"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 주소 수정 성공"),
@@ -256,68 +269,79 @@ public class MemberController {
     })
     @PatchMapping("/employer/profile/company-address")
     public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyAddress(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                          @RequestParam String zipcode,
-                                                                          @RequestParam String address1,
-                                                                          @RequestParam String address2) {
+                                                                          @RequestBody AddressDTO dto) {
 
-        memberService.updateCompanyAddress(securityMember.getId(), zipcode, address1, address2);
+        memberService.updateCompanyAddress(securityMember.getId(), dto.getZipcode(), dto.getAddress1(), dto.getAddress2());
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "회원 휴대폰 번호 수정 API",
-            description = "회원 휴대폰 번호를 수정합니다."
+            summary = "회원 휴대폰 번호 수정 API (용범)",
+            description = "회원 휴대폰 번호를 수정합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "phoneNumber: 전화번호('-' 없음)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 휴대폰 번호 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/profile/phone-number")
-    public ResponseEntity<ApiResponse<Void>> updateMemberPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateMemberPhoneNumber(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                     @RequestBody SmsRequestDTO.SmsVerificationRequest request) {
+        String phoneNumber = request.getPhoneNumber();
 
         memberService.updateMemberPhoneNumber(securityMember.getId(), phoneNumber);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 회사 대표 연락처 수정 API",
-            description = "고용주 회사 대표 연락처를 수정합니다."
+            summary = "고용주 회사 대표 연락처 수정 API (용범)",
+            description = "고용주 회사 대표 연락처를 수정합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "phoneNumber: 전화번호('-' 없음)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 회사 대표 연락처 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/main-phone-number")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateEmployerCompanyMainPhoneNumber(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                  @RequestBody SmsRequestDTO.SmsVerificationRequest request) {
+
+        String phoneNumber = request.getPhoneNumber();
 
         memberService.updateEmployerCompanyPhoneNumber(securityMember.getId(), phoneNumber);
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 주소 수정 API",
-            description = "고용주의 주소를 수정합니다."
+            summary = "고용주 주소 수정 API (용범)",
+            description = "고용주의 주소를 수정합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "zipcode, address1, address2"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 주소 수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/address")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerAddress(@RequestParam String zipcode,
-                                                                   @RequestParam String address1,
-                                                                   @RequestParam String address2,
-                                                                   @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateEmployerAddress(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                   @RequestBody AddressDTO dto) {
 
-        memberService.updateEmployerAddress(securityMember.getId(), zipcode, address1, address2);
+        memberService.updateEmployerAddress(securityMember.getId(), dto.getZipcode(), dto.getAddress1(), dto.getAddress2());
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 약관 동의 수정 API",
-            description = "고용주의 약관 동의를 수정합니다.<br>" +
+            summary = "고용주 약관 동의 수정 API (용범)",
+            description = "고용주의 약관 동의를 수정합니다." +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
                     "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
-                    "isOver15 : 만 15세 이상 확인<br>" +
+                    "over15 : 만 15세 이상 확인<br>" +
                     "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
                     "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
                     "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
@@ -327,34 +351,24 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PatchMapping("/employer/profile/agreements")
-    public ResponseEntity<ApiResponse<Void>> updateEmployerAgreements(@RequestParam boolean termsOfServiceAgreement,
-                                                                      @RequestParam boolean isOver15,
-                                                                      @RequestParam boolean personalInfoAgreement,
-                                                                      @RequestParam boolean adInfoAgreementSnsMms,
-                                                                      @RequestParam boolean adInfoAgreementEmail,
-                                                                      @AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Void>> updateEmployerAgreements(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                      @RequestBody AgreementRequestDTO agreementRequestDTO) {
 
-        memberService.updateEmployerAgreement(securityMember.getId(), termsOfServiceAgreement, isOver15, personalInfoAgreement, adInfoAgreementSnsMms, adInfoAgreementEmail);
+        memberService.updateEmployerAgreement(securityMember.getId(),
+                agreementRequestDTO.isTermsOfServiceAgreement(), agreementRequestDTO.isOver15(), agreementRequestDTO.isPersonalInfoAgreement(),
+                agreementRequestDTO.isAdInfoAgreementSnsMms(), agreementRequestDTO.isAdInfoAgreementEmail());
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
     @Operation(
-            summary = "고용주 업직종 수정 API",
-            description = "고용주의 업직종을 수정합니다. 최대 5개 <br>" +
+            summary = "고용주 업직종 수정 API (용범)",
+            description = "고용주의 업직종을 수정합니다. 최대 5개 " +
                     "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스"
+                    "호출 필드 정보) <br>" +
+                    "businessFields: 업직종 리스트" +
+                    "<p>" +
+                    "요청 예시 : <A href =\"https://www.notion.so/api-v1-member-employer-my-company-business-fields-28475ab2915c435f97f92b1c8770ad78?pvs=4\"  target=\"_blank\"> 이동 하기 </A><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 업직종 수정 성공."),
@@ -373,8 +387,23 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "마이페이지(고용주)-내 기업 정보 API",
-            description = "고용주의 기업 정보를 조회합니다. "
+            summary = "마이페이지(고용주)-내 기업 정보 API (용범)",
+            description = "고용주의 기업 정보를 조회합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "companyImage: 회사 로고 사진<br>" +
+                    "companyName: 회사명 <br>" +
+                    "name: 대표자명<br>" +
+                    "businessRegistrationNumber: 사업자 번호('-' 없음)<br>" +
+                    "establishedDate: 설립일(YYYY-MM-DD)<br>" +
+                    "businessFields: 업직종<br>" +
+                    "zipcode: 우편번호<br>" +
+                    "address1: 주소<br>" +
+                    "address2: 상세주소<br>" +
+                    "companyEmail: 회사 이메일<br>" +
+                    "mainPhoneNumber: 대표 연락처<br>" +
+                    "<p>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주의 기업 정보 조회 성공."),
@@ -389,8 +418,21 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "마이페이지(피고용인)-기본 이력서 조회 API",
-            description = "피고용인의 기본 이력서를 조회합니다.. "
+            summary = "마이페이지(피고용인)-기본 이력서 조회 API (용범)",
+            description = "피고용인의 기본 이력서를 조회합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "employeeId: 피고용인 id<br>" +
+                    "name: 이름<br>" +
+                    "nationality: 국적<br>" +
+                    "education: 학력<br>" +
+                    "visa: 비자<br>" +
+                    "birthDate: 생년월일(YYYY-MM-DD)<br>" +
+                    "email: 이메일<br>" +
+                    "phoneNumber: 연락처<br>" +
+                    "zipcode: 우편번호<br>" +
+                    "address1: 주소<br>" +
+                    "address2: 상세주소<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고요인의 기본 이력서 조회 성공."),
@@ -405,10 +447,15 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "마이페이지(피고용인)-기본 이력서 수정 API",
-            description = "피고용인의 기본 이력서를 수정합니다. " +
-                    "변경 대상: 학력, 비자, 주소" +
-                    " 연략처와 이메일 변경은 각각 다른 api 로 제공 예정."
+            summary = "마이페이지(피고용인)-기본 이력서 수정 API (용범)",
+            description = "피고용인의 기본 이력서를 수정합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "education: 학력<br>" +
+                    "visa: 비자<br>" +
+                    "zipcode: 우편번호<br>" +
+                    "address1: 주소<br>" +
+                    "address2: 상세주소<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고요인의 기본 이력서 수정 성공."),
@@ -437,8 +484,13 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.SEND_FIND_USERID_SUCCESS, userId);
     }
 
-    @Operation(summary = "고용주 회사 이미지 변경. API",
-            description = "고용주의 회사 이미지를 변경합니다.")
+    @Operation(
+            summary = "고용주 회사 이미지 변경. API (용범)",
+            description = "고용주의 회사 이미지를 변경합니다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "companyImage: 회사 이미지<br>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회사 이미지 변경 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -451,35 +503,34 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
-    @Operation(summary = "사업자등록 정보 진위 확인. API",
-            description = "사업자등록 정보의 진위 여부를 확인합니다.<br>" +
+    @Operation(
+            summary = "사업자등록 정보 진위 확인. API (용범)",
+            description = "사업자등록 정보의 진위 여부를 확인합니다." +
                     "<p>" +
-                    "businessNo: 사업자등록번호<br>" +
+                    "호출 필드 정보) <br>" +
+                    "businessNo: 사업자등록번호('-' 없음)<br>" +
                     "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
-                    "representativeName: 대표자성명<br>" +
-                    "<p>" +
-                    "true: 성공<br>" +
-                    "false: 사업자등록 정보가 잘못됨.<br>"
+                    "representativeName: 대표자 성명<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 진위 조회 완료."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
     })
     @PostMapping(value = "/employer/company-validate")
-    public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@RequestParam String businessNo,
-                                                                  @RequestParam String startDate,
-                                                                  @RequestParam String representativeName) {
+    public ResponseEntity<ApiResponse<Boolean>> isCompanyValidate(@RequestBody BusinessVerificationRequestDTO businessVerificationRequestDTO) {
 
-        boolean companyValidate = companyValidationService.isCompanyValidate(businessNo, startDate, representativeName);
+        boolean companyValidate = companyValidationService.isCompanyValidate(businessVerificationRequestDTO.getBusinessNo(), businessVerificationRequestDTO.getStartDate(), businessVerificationRequestDTO.getRepresentativeName());
         return ApiResponse.success(SuccessStatus.SEND_COMPANY_VALIDATION_COMPLETED, companyValidate);
     }
 
-    @Operation(summary = "사업자번호 정보 변경. API",
+    @Operation(
+            summary = "사업자번호 정보 변경. API (용범)",
             description = "사업자번호 정보를 변경합니다.<br>" +
                     "<p>" +
-                    "businessNo: 사업자등록번호<br>" +
+                    "호출 필드 정보) <br>" +
+                    "businessNo: 사업자등록번호('-' 없음)<br>" +
                     "startDate: 개업일자 (YYYYMMDD 포맷)<br>" +
-                    "representativeName: 대표자성명<br>"
+                    "representativeName: 대표자 성명<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사업자등록 정보 변경 성공."),
@@ -487,33 +538,39 @@ public class MemberController {
     })
     @PatchMapping(value = "/employer/business-info")
     public ResponseEntity<ApiResponse<Void>> updateEmployerBusinessInfo(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                        @RequestParam String businessNo,
-                                                                        @RequestParam String startDate,
-                                                                        @RequestParam String representativeName) {
+                                                                        @RequestBody BusinessVerificationRequestDTO businessVerificationRequestDTO) {
+
+        String businessNo = businessVerificationRequestDTO.getBusinessNo();
+        String startDate = businessVerificationRequestDTO.getStartDate();
+        String representativeName = businessVerificationRequestDTO.getRepresentativeName();
 
         memberService.updateEmployerBusinessInfo(securityMember.getId(), businessNo, startDate, representativeName);
         return ApiResponse.success_only(SEND_PROFILE_UPDATE_SUCCESS);
     }
 
-    @Operation(summary = "피고용인 포트폴리오 등록 API",
+    @Operation(
+            summary = "피고용인 포트폴리오 등록 API (용범)",
             description = "피고용인의 포트폴리오를 등록합니다.<br>" +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topik: 한국어능력시험<br>" +
-                    "<p>" +
-                    "businessField: 업직종<br>" +
+                    "businessField: 업직종 <br>" +
                     "experienceDescription: 본인 경력기술<br>" +
-                    "startDate: 시작일자 <br>" +
-                    "endDate: 종료일자 <br>" +
-                    "<p>" +
+                    "startDate: 시작일자(YYYY-MM-DD) <br>" +
+                    "endDate: 종료일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "certificateName: 자격명<br>" +
-                    "certificateDate: 취득일자 <br>" +
-                    "<p>" +
+                    "certificateDate: 취득일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "awardName: 상장명<br>" +
-                    "awardDate: 수상날짜 <br>"
+                    "awardDate: 수상날짜(YYYY-MM-DD) <br>" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-member-employee-portfolio-8d150eeb2b3944a5bbd15c7d6f58e139?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 등록 성공."),
@@ -527,26 +584,27 @@ public class MemberController {
         return ApiResponse.success_only(CREATE_EMPLOYEE_PORTFOLIO_SUCCESS);
     }
 
-    @Operation(summary = "피고용인 포트폴리오 조회 API",
+    @Operation(summary = "피고용인 포트폴리오 조회 API (용범)",
             description = "피고용인의 포트폴리오를 조회합니다.<br>" +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topik: 한국어능력시험<br>" +
-                    "<p>" +
-                    "businessField: 업직종<br>" +
+                    "businessField: 업직종 <br>" +
                     "experienceDescription: 본인 경력기술<br>" +
-                    "startDate: 시작일자 <br>" +
-                    "endDate: 종료일자 <br>" +
-                    "<p>" +
+                    "startDate: 시작일자(YYYY-MM-DD) <br>" +
+                    "endDate: 종료일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "certificateName: 자격명<br>" +
-                    "certificateDate: 취득일자 <br>" +
-                    "<p>" +
+                    "certificateDate: 취득일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "awardName: 상장명<br>" +
-                    "awardDate: 수상날짜 <br>" +
-                    "조회 성공 시 data 가 없을 경우, 피고용인이 포트폴리오를 아직 작성하지 않음."
+                    "awardDate: 수상날짜(YYYY-MM-DD) <br>" +
+                    "portfolioPublic: 포트폴리오 목록 공개 여부 선택" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 조회 성공."),
@@ -559,25 +617,29 @@ public class MemberController {
         return ApiResponse.success(SEND_EMPLOYER_PORTFOLIO_SELECT_SUCCESS, employeePortfolio);
     }
 
-    @Operation(summary = "피고용인 포트폴리오 수정 API",
+    @Operation(
+            summary = "피고용인 포트폴리오 수정 API  (용범)",
             description = "피고용인의 포트폴리오를 수정합니다.<br>" +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
                     "introduction: 자기소개<br>" +
                     "enrollmentCertificateUrl: 재학증명서 URL<br>" +
                     "transcriptUrl: 성적증명서 URL<br>" +
                     "partTimeWorkPermitUrl: 시간제근로허가서 URL<br>" +
                     "topik: 한국어능력시험<br>" +
-                    "<p>" +
-                    "businessField: 업직종<br>" +
+                    "businessField: 업직종 <br>" +
                     "experienceDescription: 본인 경력기술<br>" +
-                    "startDate: 시작일자 <br>" +
-                    "endDate: 종료일자 <br>" +
-                    "<p>" +
+                    "startDate: 시작일자(YYYY-MM-DD) <br>" +
+                    "endDate: 종료일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "certificateName: 자격명<br>" +
-                    "certificateDate: 취득일자 <br>" +
-                    "<p>" +
+                    "certificateDate: 취득일자(YYYY-MM-DD) <br>" +
+                    "businessField: 업직종 <br>" +
                     "awardName: 상장명<br>" +
-                    "awardDate: 수상날짜 <br>"
+                    "awardDate: 수상날짜(YYYY-MM-DD) <br>" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-member-employee-portfolio-4561ce52be5042f7890b5a66770f2564?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "피고용인 포트폴리오 수정 성공."),
@@ -606,8 +668,11 @@ public class MemberController {
         return ApiResponse.success(SEND_PASSWORD_VERIFICATION_COMPLETED, b);
     }
 
-    @Operation(summary = "아이디 변경. API",
-            description = "아이디 변경합니다.<br>"
+    @Operation(summary = "아이디 변경. API (용범)",
+            description = "아이디 변경합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "userId: 새로운 아이디<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아이디 변경 완료."),
@@ -621,8 +686,12 @@ public class MemberController {
         return ApiResponse.success_only(SEND_UPDATE_USERID_SUCCESS);
     }
 
-    @Operation(summary = "비밀번호 변경. API",
-            description = "비밀번호 변경합니다.<br>"
+    @Operation(
+            summary = "비밀번호 변경. API (용범)",
+            description = "비밀번호 변경합니다.<br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "password: 새로운 비밀번호<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 변경 완료."),
@@ -667,14 +736,21 @@ public class MemberController {
 
 
     @Operation(
-            summary = "고용인이 피고용인 평가 API",
+            summary = "고용인이 피고용인 평가 API (용범)",
             description = "고용인이 피고용인을 평가합니다." +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "resumeId: 이력서 ID<br>" +
+                    "evaluationCategory: 평가 항목들<br>" +
+                    "가능한 평가 항목) <br>" +
                     "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
                     "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
                     "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
                     "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
-                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>"
+                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-member-evaluations-employer-to-employee-19a98c9adc8a80b4961be9b21fbaa938?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 성공"),
@@ -693,14 +769,22 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "피고용인이 고용인 평가. API",
+            summary = "피고용인이 고용인 평가. API (용범)",
             description = "피고용인이 고용인을 평가합니다." +
                     "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "recruitId: 공고 ID<br>" +
+                    "evaluationCategory: 평가 항목들<br>" +
+                    "가능한 평가 항목) <br>" +
                     "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
                     "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
                     "RESPECTS_EMPLOYEES: 알바생을 존중해줘요.<br>" +
                     "FRIENDLY_BOSS: 사장님이 친절해요.<br>" +
-                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>"
+                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>" +
+                    "<p>" +
+                    "요청 예시: <a href=\"https://www.notion.so/api-v1-member-evaluations-employee-to-employer-19a98c9adc8a80bdbdede39e6bb78545?pvs=4\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 성공"),
@@ -718,7 +802,10 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.EVALUATE_EMPLOYEE_SUCCESS);
     }
 
-    @Operation(
+    /**
+     * @deprecated
+     */
+/*    @Operation(
             summary = "평가보기. API",
             description = "평가보기입니다." +
                     "<p>" +
@@ -745,12 +832,76 @@ public class MemberController {
 
         List<EvaluationCategory> evaluation = evaluationService.getEvaluation(securityMember.getId(), resumeId);
         return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
+    }*/
+
+    @Operation(
+            summary = "고용인이 피고용인을 평가한 항목 보기 API (용범)",
+            description = "고용인이 피고용인을 평가한 항목 보기. 마이페이지(고용인)-지원자 이력서 보기에서 넘어온다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "resumeId: 이력서 ID<br>" +
+                    "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
+                    "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
+                    "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
+                    "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
+                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 보기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/employer-to-employee-evaluations")
+    public ResponseEntity<ApiResponse<EvaluationCategoryResponseDTO>> getEmployerToEmployeeEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                 @RequestParam("resumeId") Long resumeId) {
+
+        EvaluationCategoryResponseDTO evaluation = evaluationService.getEmployerToEmployeeEvaluation(resumeId);
+        return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
+    }
+
+    @Operation(
+            summary = "피고용인이 고용인을 평가한 항목 보기 API (용범)",
+            description = "피고용인이 고용인을 평가한 항목 보기. 공고 상세 보기에서 넘어온다." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "resumeId: 이력서 ID<br>" +
+                    "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
+                    "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
+                    "RESPECTS_EMPLOYEES: 알바생을 존중해줘요.<br>" +
+                    "FRIENDLY_BOSS: 사장님이 친절해요.<br>" +
+                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>"+
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 보기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @GetMapping("/employee-To-employer-evaluations")
+    public ResponseEntity<ApiResponse<EvaluationCategoryResponseDTO>> getEmployeeToEmployerEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                                 @RequestParam("recruitId") Long recruitId) {
+
+        EvaluationCategoryResponseDTO evaluation = evaluationService.getEmployeeToEmployerEvaluation(securityMember.getId(), recruitId);
+        return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
     }
 
 
     @Operation(
-            summary = "태그 조회. API",
-            description = "태크 조회입니다."
+            summary = "마이페이지(피고용인)- 리뷰 태그. API (용범)",
+            description = "태그 관련 사항들을 모아서 볼 수 있는 페이지.<br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "요청)<br>" +
+                    "evaluationStatus: 평가 상태.<br>" +
+                    "page: 페이지 번호.<br>" +
+                    "size: 한 페이지 당 몇 개?.<br>"+
+                    "응답)<br>" +
+                    "recruitId: 공고 ID.<br>" +
+                    "title: 공고 제목.<br>" +
+                    "evaluationStatus: 평가 상태.<br>"+
+                    "tagRegistrationDate: 작성일.<br>" +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "태그 조회 성공"),
@@ -766,8 +917,17 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.TAG_VIEW_SUCCESS, tags);
     }
 
-    @Operation(summary = "피고용인 완료된 계약서 조회. API",
-            description = "피고용인 완료된 계약서 조회. <br>"
+    @Operation(
+            summary = "피고용인 완료된 계약서 조회. API (용범)",
+            description = "피고용인 완료된 계약서 조회." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "contractId: 계약서 ID.<br>" +
+                    "contractType: 계약서 타입.<br>" +
+                    "companyName: 점포명.<br>" +
+                    "completedDate: 체결일.<br>" +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -782,8 +942,30 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 완료된 계약서 조회. API",
-            description = "고용인 완료된 계약서 조회. <br>"
+    @Operation(
+            summary = "고용인 완료된 계약서 조회. API (용범)",
+            description = "고용인 완료된 계약서 조회. <br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "recruitId: 공고 ID<br>" +
+                    "contractId: 계약서 ID<br>" +
+                    "contractType: 계약서 타입<br>" +
+                    "title: 공고 제목<br>" +
+                    "workDuration: 근무 기간<br>" +
+                    "workDays: 근무 요일<br>" +
+                    "zipcode: 우편번호<br>" +
+                    "address1: 주소<br>" +
+                    "address2: 상세주소<br>"+
+                    "workTime:  근무 시간<br>" +
+                    "recruitStartDate: 모집 시작일<br>" +
+                    "recruitEndDate: 모집 종료일<br>" +
+                    "businessFields: 업직종<br>" +
+                    "salary: 급여<br>" +
+                    "salaryType: 급여 타입<br>" +
+                    "applyMethods: 접수 방법<br>" +
+                    "employeeName: 피고용인 이름<br>" +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -798,8 +980,16 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "완료된 계약서 상세 조회. API",
-            description = "완료된 계약서 상세 조회. <br>"
+    @Operation(
+            summary = "완료된 계약서(파일 업로드) 상세 조회. API (용범)",
+            description = "완료된 계약서(파일 업로드) 상세 조회." +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "요청)<br>" +
+                    "contract-id: 계약서 ID<br>" +
+                    "응답)<br>" +
+                    "fileUrl: fileUrl<br>" +
+                    "originalFileName: 원본 파일 이름<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -807,14 +997,30 @@ public class MemberController {
     })
     @GetMapping(value = "/complete-file-upload-contract/{contract-id}")
     public ResponseEntity<ApiResponse<List<FileUrlAndOriginalFileNameDTO>>> getCompletedFileUploadContract(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                              @PathVariable("contract-id") Long contractMetadataId) {
+                                                                                                           @PathVariable("contract-id") Long contractMetadataId) {
         List<FileUrlAndOriginalFileNameDTO> response = contractService.getCompletedFileUploadContract(securityMember.getId(), contractMetadataId);
 
         return ApiResponse.success(SuccessStatus.COMPLETE_CONTRACT_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 공고 미리보기 조회. API",
-            description = "고용인 공고 미리보기 조회 <br>"
+    @Operation(
+            summary = "공고 미리보기 조회 API (용범)",
+            description = "공고 미리보기 조회 <br>"+
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "요청)<br>" +
+                    "recruitId: 공고 ID<br>" +
+                    "응답)<br>" +
+                    "recruitId: 공고 ID<br>" +
+                    "title: 공고 제목<br>" +
+                    "recruitStartDate: 모집 시작일<br>" +
+                    "recruitEndDate: 모집 종료일<br>" +
+                    "workDuration: 근무 기간<br>" +
+                    "workDays: 근무 요일<br>" +
+                    "workTime: 근무 시간<br>" +
+                    "employerReliability: 신뢰도<br>" +
+                    "companyName: 회사(점포) 명<br>" +
+                    "companyIconImage: 회사 아이콘 이미지 URL<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -829,8 +1035,19 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.PREVIEW_RECRUIT_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 관심 피고용인 (기본) 조회. API",
-            description = "고용인 관심 피고용인 (기본) 조회 <br>"
+    @Operation(
+            summary = "고용인 관심 피고용인 (기본) 조회. API (용범)",
+            description = "고용인 관심 피고용인 (기본) 조회 <br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "employeeId: 피고용인 ID<br>" +
+                    "name: 피고용인 이름<br>" +
+                    "worksDiligently: 성실하게 일해요.<br>" +
+                    "noLatenessOrAbsence: 지각/결근하지 않았어요.<br>" +
+                    "politeAndFriendly: 예의 바르고 친절해요.<br>" +
+                    "goodCustomerService: 고객 응대를 잘해요.<br>" +
+                    "skilledAtWork: 업무 능력이 좋아요.<br>" +
+                    "joinCount: 평가 참여 수<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -846,8 +1063,23 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 관심 피고용인 (실제 지원) 조회. API",
-            description = "고용인 관심 피고용인 (실제 지원) 조회 <br>"
+    @Operation(
+            summary = "고용인 관심 피고용인 (실제 지원) 조회. API (용범)",
+            description = "고용인 관심 피고용인 (실제 지원) 조회 <br>" +
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "응답)<br>" +
+                    "resumeId: 피고용인 ID<br>" +
+                    "name: 피고용인 이름<br>" +
+                    "businessFields: 업직종<br>" +
+                    "worksDiligently: 성실하게 일해요.<br>" +
+                    "noLatenessOrAbsence: 지각/결근하지 않았어요.<br>" +
+                    "politeAndFriendly: 예의 바르고 친절해요.<br>" +
+                    "goodCustomerService: 고객 응대를 잘해요.<br>" +
+                    "skilledAtWork: 업무 능력이 좋아요.<br>" +
+                    "joinCount: 평가 참여 수<br>" +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -863,8 +1095,12 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.APPLICATION_PORTFOLIO_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "피고용인 이력서 공개/비공개 변경. API",
-            description = "피고용인 이력서 공개/비공개 변경. API <br>"
+    @Operation(
+            summary = "피고용인 이력서 공개/비공개 변경 API (용범)",
+            description = "피고용인 이력서 공개/비공개 변경. API"+
+                    "<p>" +
+                    "호출 필드 정보) <br>" +
+                    "resume-id: 피고용인 ID<br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "변경 성공"),
@@ -872,7 +1108,7 @@ public class MemberController {
     })
     @PatchMapping(value = "/employee/resumes/{resume-id}/visibility")
     public ResponseEntity<ApiResponse<Void>> flipResumePublic(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                                                           @PathVariable("resume-id") Long resumeId) {
+                                                              @PathVariable("resume-id") Long resumeId) {
 
         resumeService.flipResumePublic(securityMember.getId(), resumeId);
 
@@ -880,7 +1116,8 @@ public class MemberController {
     }
 
 
-    @Operation(summary = "회원 탈퇴하기. API",
+    @Operation(
+            summary = "회원 탈퇴하기 API (용범)",
             description = "회원 탈퇴하기. API <br>"
     )
     @ApiResponses({
@@ -895,8 +1132,11 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.MEMBER_WITHDRAW_SUCCESS);
     }
 
-    @Operation(summary = "마이페이지(피고용인) 이력서 조회. API",
-            description = "마이페이지(피고용인) 이력서 조회. <br>"
+    @Operation(
+            summary = "마이페이지(피고용인) 이력서 조회. API (용범)",
+            description = "마이페이지(피고용인) 이력서 조회." +
+                    "<p>"+
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -904,11 +1144,44 @@ public class MemberController {
     })
     @GetMapping(value = "/employee/my-resumes/{resume-id}")
     public ResponseEntity<ApiResponse<MyResumeResponseDTO>> getMyResume(@AuthenticationPrincipal SecurityMember securityMember,
-                                                         @PathVariable("resume-id")Long resumeId) {
+                                                                        @PathVariable("resume-id") Long resumeId) {
 
         MyResumeResponseDTO myResume = memberService.getMyResume(securityMember.getId(), resumeId);
 
         return ApiResponse.success(SuccessStatus.SEND_MY_RESUME_SUCCESS, myResume);
+    }
+
+
+    @Operation(
+            summary = "고용인이 피고용인 평가 삭제 (용범)",
+            description = "고용인이 피고용인 평가 삭제 <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @DeleteMapping(value = "/evaluations/employer-to-employee")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployerToEmployeeEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                @RequestParam("resumeId") Long resumeId) {
+        evaluationService.deleteEmployerToEmployeeEvaluation(securityMember.getId(), resumeId);
+
+        return ApiResponse.success_only(SuccessStatus.EVALUATION_DELETE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "피고용인이 고용인 평가 삭제 (용범)",
+            description = "피고용인이 고용인 평가 삭제 <br>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+    })
+    @DeleteMapping(value = "/evaluations/employee-to-employer")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployeeToEmployerEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                @RequestParam("resumeId") Long resumeId) {
+        evaluationService.deleteEmployeeToEmployerEvaluation(securityMember.getId(), resumeId);
+
+        return ApiResponse.success_only(SuccessStatus.EVALUATION_DELETE_SUCCESS);
     }
 
 }

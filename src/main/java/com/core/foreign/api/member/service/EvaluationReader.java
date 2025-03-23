@@ -5,6 +5,7 @@ import com.core.foreign.api.member.dto.EmployerEvaluationCountDTO;
 import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.EmployeeEvaluationRepository;
 import com.core.foreign.api.member.repository.EmployerEvaluationRepository;
+import com.core.foreign.api.member.repository.ResumeEvaluationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class EvaluationReader {
     private final EmployerEvaluationRepository employerEvaluationRepository;
     private final EmployeeEvaluationRepository employeeEvaluationRepository;
+    private final ResumeEvaluationRepository resumeEvaluationRepository;
 
 
     public EmployerEvaluationCountDTO getEmployerEvaluation(Long employerId) {
@@ -128,6 +130,18 @@ public class EvaluationReader {
         dto.setJoinCount(employee.getEvaluationJoinCount());
 
         return dto;
+    }
+
+    public List<EvaluationCategory> getEvaluation(Long resumeId, EvaluationType type) {
+
+        List<ResumeEvaluation> byResumeIdAndType = resumeEvaluationRepository.findByResumeIdAndType(resumeId, type);
+
+        List<EvaluationCategory> response = byResumeIdAndType.stream()
+                .map((resumeEvaluation) -> EvaluationCategory.getByDescription(resumeEvaluation.getEvaluation().getCategory()))
+                .toList();
+
+        return response;
+
     }
 
 }
