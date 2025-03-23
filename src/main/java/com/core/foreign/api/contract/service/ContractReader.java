@@ -15,7 +15,7 @@ import com.core.foreign.api.file.entity.UploadFile;
 import com.core.foreign.api.file.repository.UploadFileRepository;
 import com.core.foreign.api.member.entity.Role;
 import com.core.foreign.api.recruit.dto.PageResponseDTO;
-import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import com.core.foreign.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +84,7 @@ public class ContractReader {
         ContractMetadata contractMetadata = contractMetadataRepository.findByContractMetadataIdWithContract(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[getCompletedFileUploadContract][contractMetadata 조회 실패][contractMetadataId:{}]", contractMetadataId);
-                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
 
@@ -118,7 +118,7 @@ public class ContractReader {
         ContractMetadata contractMetadata = contractMetadataRepository.findNotCompleteFileUploadContractMetadataBy(contractMetadataId)
                 .orElseThrow(() -> {
                     log.warn("[getNotFileUploadCompleteContractMetadata][contractMetadata 없음. ][contractMetadataId:{}]", contractMetadataId);
-                    return new BadRequestException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.CONTRACT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         FileUploadContract contract = (FileUploadContract) contractMetadata.getContract();

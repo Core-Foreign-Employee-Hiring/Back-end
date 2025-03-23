@@ -8,6 +8,7 @@ import com.core.foreign.api.recruit.entity.RecruitmentStatus;
 import com.core.foreign.api.recruit.entity.Resume;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -165,7 +166,7 @@ public class EvaluationService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.warn("[getEvaluation][유저 못 찾음.][memberId= {}]", memberId);
-                    return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
 

@@ -1,5 +1,6 @@
 package com.core.foreign.api.recruit.dto;
 
+import com.core.foreign.api.member.entity.Address;
 import com.core.foreign.api.recruit.entity.Recruit;
 import lombok.Getter;
 
@@ -16,10 +17,14 @@ public class RecruitmentApplyStatusDTO {
     private List<String> workDays;      // 근무 요일 목록
     private List<String> workTime; // 근무 시간
     private Long resumeCount;
+    private String zipcode;  // 우편번호
+    private String address1; // 주소
+    private String address2; // 상세 주소
 
 
     public static RecruitmentApplyStatusDTO from(Recruit recruit, Long resumeCount){
         RecruitmentApplyStatusDTO dto = new RecruitmentApplyStatusDTO();
+        Address address = recruit.getAddress();
 
         dto.recruitId = recruit.getId();
         dto.title = recruit.getTitle();
@@ -28,7 +33,9 @@ public class RecruitmentApplyStatusDTO {
         dto.workDuration = recruit.getWorkDuration();
         dto.workDays = recruit.getWorkDays();
         dto.workTime = recruit.getWorkTime();
-
+        dto.zipcode=address.getZipcode();
+        dto.address1=address.getAddress1();
+        dto.address2=address.getAddress2();
         dto.resumeCount = (resumeCount==null)?0L: resumeCount;
 
         return dto;

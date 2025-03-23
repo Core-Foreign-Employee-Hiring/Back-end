@@ -47,7 +47,7 @@ public class ResumeService {
 
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
-        Recruit recruit = recruitRepository.findById(recruitId).orElseThrow(() -> new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        Recruit recruit = recruitRepository.findById(recruitId).orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
 
         if(recruit.getRecruitType()!=RecruitType.GENERAL) {
             throw  new BadRequestException(INVALID_RECRUIT_TYPE_EXCEPTION.getMessage());
@@ -63,7 +63,7 @@ public class ResumeService {
 
 
         PremiumRecruit premiumRecruit = premiumRecruitRepository.findPremiumRecruitWithPortfolioById(recruitId)
-                .orElseThrow(() -> new BadRequestException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
 
         if(premiumRecruit.getRecruitType()!=RecruitType.PREMIUM) {
             throw  new BadRequestException(INVALID_RECRUIT_TYPE_EXCEPTION.getMessage());
@@ -205,7 +205,7 @@ public class ResumeService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> {
                     log.warn("[getMyResume][employee not found][employeeId= {}]", employeeId);
-                    return new BadRequestException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         // 피고용인 스펙 및 경력
@@ -262,11 +262,13 @@ public class ResumeService {
             }
         }
 
+        ApplyMethod applyMethod=recruit.getRecruitType().equals(RecruitType.PREMIUM)?ApplyMethod.ONLINE:dto.getApplyMethod();
+
         Resume build = Resume.builder()
                 .messageToEmployer(dto.getMessageToEmployer())
                 .recruit(recruit)
                 .employee(employee)
-                .applyMethod(dto.getApplyMethod())
+                .applyMethod(applyMethod)
                 .recruitmentStatus(RecruitmentStatus.PENDING)
                 .contractStatus(ContractStatus.NOT_COMPLETED)
                 .isDeleted(false)
@@ -297,7 +299,7 @@ public class ResumeService {
         Resume resume = resumeRepository.findByResumeIdWithRecruitAndEmployer(resumeId)
                 .orElseThrow(() -> {
                     log.warn("이력서 없음 resumeId= {}", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Recruit recruit = resume.getRecruit();
@@ -342,7 +344,7 @@ public class ResumeService {
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruit(resumeId)
                 .orElseThrow(() -> {
                     log.warn("이력서 없음. resumeId= {}", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
 
@@ -376,14 +378,14 @@ public class ResumeService {
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> {
                     log.warn("[flipResumePublic][resume not found][resumeId= {}]", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Employee employee = resume.getEmployee();
 
         if(!Objects.equals(employeeId, employee.getId())){
             log.warn("[flipResumePublic][다른 사람 이력서 공개/비공개 변경 시도][requestEmployerId= {}, employerIdOfResume= {}]", employeeId, employee.getId());
-            throw new BadRequestException(INVALID_RESUME_OWNER_EXCEPTION.getMessage());
+            throw new NotFoundException(INVALID_RESUME_OWNER_EXCEPTION.getMessage());
         }
 
         resume.flipPublic();

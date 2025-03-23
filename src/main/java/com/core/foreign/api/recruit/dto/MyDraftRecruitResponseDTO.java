@@ -11,7 +11,6 @@ public class MyDraftRecruitResponseDTO {
     private Long recruitId; // 공고 ID
     private String title; // 공고 제목
     private LocalDateTime createdAt;  // 생성 날짜
-    private LocalDateTime updatedAt;  // 수정 날짜
     private RecruitType recruitType;
 
     public static MyDraftRecruitResponseDTO from(Recruit recruit){
@@ -20,7 +19,6 @@ public class MyDraftRecruitResponseDTO {
         dto.recruitId=recruit.getId();
         dto.title=recruit.getTitle();
         dto.createdAt=recruit.getCreatedAt();
-        dto.updatedAt=recruit.getUpdatedAt();
         dto.recruitType=recruit.getRecruitType();
         return dto;
     }

@@ -14,10 +14,12 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static com.core.foreign.api.recruit.entity.QRecruit.recruit;
@@ -31,9 +33,10 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL{
 
     @Override
     public Page<Recruit> getMyRecruits(Long employerId, RecruitType recruitType, RecruitPublishStatus recruitPublishStatus, boolean excludeExpired, Pageable pageable) {
-        List<Recruit> content = queryFactory
-                .selectFrom(recruit)
-                .innerJoin(recruit.employer).fetchJoin()
+        List<Long> ids = queryFactory
+                .selectDistinct(recruit.id)
+                .from(recruit)
+                .innerJoin(recruit.employer)
                 .where(
                         recruit.employer.id.eq(employerId),
                         recruit.recruitPublishStatus.eq(recruitPublishStatus),
@@ -43,6 +46,20 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL{
                 .orderBy(recruit.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .fetch();
+
+        if(ids.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        List<Recruit> content=queryFactory
+                .selectFrom(recruit)
+                .innerJoin(recruit.employer).fetchJoin()
+                .innerJoin(recruit.workDuration).fetchJoin()
+                .innerJoin(recruit.workDays).fetchJoin()
+                .innerJoin(recruit.workTime).fetchJoin()
+                .where(recruit.id.in(ids))
+                .orderBy(recruit.id.desc())
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory

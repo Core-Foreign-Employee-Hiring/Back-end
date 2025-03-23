@@ -11,7 +11,7 @@ import com.core.foreign.api.recruit.entity.*;
 import com.core.foreign.api.recruit.repository.PortfolioRepository;
 import com.core.foreign.api.recruit.repository.ResumePortfolioRepository;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
-import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,7 +40,7 @@ public class ResumeReader {
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForEmployer(resumeId)
                 .orElseThrow(() -> {
                     log.warn("[getResumeForEmployer][이력서 없음.][resumeId= {}]", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         ResumePortfolioDTO resumePortfolio = getResumePortfolio(resume);
@@ -76,7 +76,7 @@ public class ResumeReader {
         Resume resume = resumeRepository.findMyResumeWithEmployeeAndRecruit(employeeId, resumeId)
                 .orElseThrow(() -> {
                     log.warn("[getResume][이력서 없음.][employeeId= {}, resumeId= {}]", employeeId, resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
 

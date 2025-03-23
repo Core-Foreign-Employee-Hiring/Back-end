@@ -829,8 +829,8 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.PREVIEW_RECRUIT_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 관심 고용인 (기본) 조회. API",
-            description = "고용인 관심 고용인 (기본) 조회 <br>"
+    @Operation(summary = "고용인 관심 피고용인 (기본) 조회. API",
+            description = "고용인 관심 피고용인 (기본) 조회 <br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -846,8 +846,8 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.BASIC_PORTFOLIO_VIEW_SUCCESS, response);
     }
 
-    @Operation(summary = "고용인 관심 고용인 (실제 지원) 조회. API",
-            description = "고용인 관심 고용인 (실제 지원) 조회 <br>"
+    @Operation(summary = "고용인 관심 피고용인 (실제 지원) 조회. API",
+            description = "고용인 관심 피고용인 (실제 지원) 조회 <br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),

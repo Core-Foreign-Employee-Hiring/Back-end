@@ -21,7 +21,7 @@ import com.core.foreign.api.recruit.entity.Recruit;
 import com.core.foreign.api.recruit.entity.Resume;
 import com.core.foreign.api.recruit.repository.ResumeRepository;
 import com.core.foreign.api.recruit.service.ResumeReader;
-import com.core.foreign.common.exception.BadRequestException;
+import com.core.foreign.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -102,7 +102,7 @@ public class PortfolioService {
         Employee employee = employeeRepository.findPublicEmployeeById(employeeId)
                 .orElseThrow(() -> {
                     log.error("피고용인 찾을 수 없음. employeeId= {}", employeeId);
-                    return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         BasicPortfolioDTO basicPortfolio = portfolioReader.getBasicPortfolio(employee);
@@ -111,7 +111,7 @@ public class PortfolioService {
 
         BasicPortfolioResponseDTO response = BasicPortfolioResponseDTO.from(basicPortfolio, employeeEvaluation);
 
-        Integer viewCount = employee.getViewCount();
+        Integer viewCount = employee.getViewCount()+1;
         response.setViewCount(viewCount);
 
         if(employerId!=null && employerEmployeeRepository.existsByEmployerIdAndEmployeeId(employerId, employeeId)){
@@ -128,7 +128,7 @@ public class PortfolioService {
         Resume resume = resumeRepository.findResumeWithEmployeeAndRecruitForPortfolio(resumeId)
                 .orElseThrow(() -> {
                     log.warn("[getResume][이력서 없음.][resumeId= {}]", resumeId);
-                    return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
         Employee employee = resume.getEmployee();
@@ -165,13 +165,13 @@ public class PortfolioService {
             Employer employer = (Employer) memberRepository.findByMemberIdAndRole(employerId, Role.EMPLOYER)
                     .orElseThrow(() -> {
                         log.warn("[flipEmployerEmployee][고용인 찾을 수 없음.][employerId= {}]", employerId);
-                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             Employee employee = (Employee) memberRepository.findByMemberIdAndRole(employeeId, Role.EMPLOYEE)
                     .orElseThrow(() -> {
                         log.warn("[flipEmployerEmployee][피고용인 찾을 수 없음.][employeeId= {}]", employeeId);
-                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             EmployerEmployee employerEmployee = new EmployerEmployee(employer, employee);
@@ -192,13 +192,13 @@ public class PortfolioService {
             Employer employer = (Employer) memberRepository.findByMemberIdAndRole(employerId, Role.EMPLOYER)
                     .orElseThrow(() -> {
                         log.warn("[flipEmployerResume][고용인 찾을 수 없음.][employerId= {}]", employerId);
-                        return new BadRequestException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             Resume resume = resumeRepository.findById(resumeId)
                     .orElseThrow(() -> {
                         log.warn("[flipEmployerResume][이력서 찾을 수 없음.][resumeId= {}]", resumeId);
-                        return new BadRequestException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                        return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
                     });
 
             EmployerResume employerResume = new EmployerResume(employer, resume);
