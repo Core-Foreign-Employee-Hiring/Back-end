@@ -793,8 +793,15 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUITMENT_APPLICATION_STATUS_SUCCESS, recruitmentApplyStatus);
     }
 
-    @Operation(summary = "지원자 이력서 보기 API (용범)",
-            description = "지원자의 이력서를 조회합니다.<br>"
+    @Operation(
+            summary = "지원자 이력서 보기 API (용범)",
+            description = "지원자의 이력서를 조회합니다.<br>" +
+                    "<p>" +
+                    "응답)" +
+                    "recruitmentStatus : 모집 상태<br>" +
+                    "contractStatus : 계약서 상태(NOT_COMPLETED or COMPLETED)<br>" +
+                    "isEmployeeEvaluatedByEmployer : 고용인이 피고용인을 평가했는지<br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "지원자 이력서 조회 성공"),

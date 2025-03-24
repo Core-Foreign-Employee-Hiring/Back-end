@@ -68,13 +68,17 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
             " where r.recruit.id=:recruitId and r.employee.id=:employeeId")
     Optional<Resume> findByEmployeeIdAndRecruitIdIncludingDeleted(@Param("employeeId") Long employeeId, @Param("recruitId") Long recruitId);
 
-    @Query("select count(*)>0 from Resume r" +
-            " where r.id=:resumeId and r.recruit.employer.id=:employerId")
-    boolean exitsByResumeIdAndEmployerId(@Param("resumeId")Long resumeId, @Param("employerId")Long employerId);
+    @Query("select r from Resume r" +
+            " where r.recruit.id=:recruitId and r.employee.id=:employeeId")
+    Optional<Resume> findResumeByEmployeeAndRecruit(@Param("employeeId") Long employeeId, @Param("recruitId") Long recruitId);
 
-    @Query("select count(*)>0 from Resume r" +
+    @Query("select r from Resume r" +
+            " where r.id=:resumeId and r.recruit.employer.id=:employerId")
+    Optional<Resume> findByResumeIdAndEmployerId(@Param("resumeId")Long resumeId, @Param("employerId")Long employerId);
+
+    @Query("select r from Resume r" +
             " where r.id=:resumeId and r.employee.id=:employeeId")
-    boolean exitsByResumeIdAndEmployeeId(@Param("resumeId")Long resumeId, @Param("employeeId")Long employeeId);
+    Optional<Resume> findByResumeIdAndEmployeeId(@Param("resumeId")Long resumeId, @Param("employeeId")Long employeeId);
 
 
 
@@ -91,7 +95,7 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
     Page<Resume> findResumeByEmployeeIdAndEvaluationStatus(@Param("employeeId")Long employeeId,  @Param("evaluationStatus") EvaluationStatus evaluationStatus, Pageable pageable);
 
     @Query("select r.id from Resume r" +
-            " where r.employee.id=:employeeId and r.recruit=:recruitId")
+            " where r.employee.id=:employeeId and r.recruit.id=:recruitId")
     Optional<Long> findResumeIdByEmployeeIdAndRecruitId(@Param("employeeId") Long employeeId, @Param("recruitId") Long recruitId);
 
     @Modifying

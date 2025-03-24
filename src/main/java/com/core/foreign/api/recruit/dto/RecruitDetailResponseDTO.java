@@ -50,4 +50,5 @@ public class RecruitDetailResponseDTO {
     private EmployerEvaluationCountDTO employerEvaluationCountDTO;
     private Integer employerReliability;
     private boolean isLiked;
+    private boolean isEvaluated;
 }

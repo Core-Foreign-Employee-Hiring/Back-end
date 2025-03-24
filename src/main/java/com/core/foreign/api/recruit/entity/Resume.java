@@ -82,6 +82,16 @@ public class Resume {
         this.employeeEvaluationDate=LocalDate.now();
     }
 
+    public void cancelEmployerToEmployeeEvaluation(){
+        this.isEmployeeEvaluatedByEmployer=EvaluationStatus.NOT_EVALUATED;
+        this.employeeEvaluationDate=null;
+    }
+
+    public void cancelEmployeeToEmployerEvaluation(){
+        this.isEmployerEvaluatedByEmployee=EvaluationStatus.NOT_EVALUATED;
+        this.employerEvaluationDate=null;
+    }
+
     public void makePublic() {
         this.isPublic = true;
     }

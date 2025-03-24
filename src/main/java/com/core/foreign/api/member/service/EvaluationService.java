@@ -196,30 +196,35 @@ public class EvaluationService {
     /**
      * 고용인 -> 피고용인 평가 삭제
      */
+    @Transactional
     public void deleteEmployerToEmployeeEvaluation(Long employerId, Long resumeId) {
-        boolean b = resumeRepository.exitsByResumeIdAndEmployerId(resumeId, employerId);
-
-        if(!b){
-            log.warn("[deleteEmployerToEmployeeEvaluation][이력서 없음][resumeId= {}, employerId= {}]", resumeId, employerId);
-            throw  new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
-        }
+        Resume resume = resumeRepository.findByResumeIdAndEmployerId(resumeId, employerId)
+                .orElseThrow(() -> {
+                    log.warn("[deleteEmployerToEmployeeEvaluation][이력서 찾을 수 없음.][employerId= {}, resumeId= {}]", employerId, resumeId);
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
         evaluationDeleter.deleteEvaluations(resumeId, EvaluationType.EMPLOYER_TO_EMPLOYEE);
+
+        resume.cancelEmployerToEmployeeEvaluation();
 
     }
 
     /**
      * 피고용인 -> 고용인 평가 평가 삭제
      */
+    @Transactional
     public void deleteEmployeeToEmployerEvaluation(Long employeeId, Long resumeId) {
-        boolean b = resumeRepository.exitsByResumeIdAndEmployeeId(resumeId, employeeId);
+        Resume resume = resumeRepository.findByResumeIdAndEmployeeId(resumeId, employeeId)
+                .orElseThrow(() -> {
+                    log.warn("[deleteEmployeeToEmployerEvaluation][이력서 찾을 수 없음.][employeeId= {}, resumeId= {}]", employeeId, resumeId);
+                    return new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
-        if(!b){
-            log.warn("[deleteEmployerToEmployeeEvaluation][이력서 없음][resumeId= {}, employeeId= {}]", resumeId, employeeId);
-            throw  new NotFoundException(RESUME_NOT_FOUND_EXCEPTION.getMessage());
-        }
 
         evaluationDeleter.deleteEvaluations(resumeId, EvaluationType.EMPLOYEE_TO_EMPLOYER);
+
+        resume.cancelEmployeeToEmployerEvaluation();
     }
 
 }
