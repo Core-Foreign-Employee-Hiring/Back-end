@@ -6,6 +6,9 @@ import com.core.foreign.api.member.entity.*;
 import com.core.foreign.api.member.repository.EmployeeEvaluationRepository;
 import com.core.foreign.api.member.repository.EmployerEvaluationRepository;
 import com.core.foreign.api.member.repository.ResumeEvaluationRepository;
+import com.core.foreign.api.recruit.entity.EvaluationStatus;
+import com.core.foreign.api.recruit.entity.Resume;
+import com.core.foreign.api.recruit.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,7 @@ public class EvaluationReader {
     private final EmployerEvaluationRepository employerEvaluationRepository;
     private final EmployeeEvaluationRepository employeeEvaluationRepository;
     private final ResumeEvaluationRepository resumeEvaluationRepository;
+    private final ResumeRepository resumeRepository;
 
 
     public EmployerEvaluationCountDTO getEmployerEvaluation(Long employerId) {
@@ -142,6 +146,18 @@ public class EvaluationReader {
 
         return response;
 
+    }
+
+    public boolean hasEmployeeEvaluatedRecruit(Long employeeId, Long recruitId){
+        Resume resume = resumeRepository.findResumeByEmployeeAndRecruit(employeeId, recruitId)
+                .orElseGet(() -> {
+                    log.warn("[hasEmployeeEvaluatedRecruit][이력서 없음.][employeeId= {}, recruitId= {}]", employeeId, recruitId);
+                    return null;
+                });
+
+        if(resume == null){return false;}
+
+        return !resume.getIsEmployerEvaluatedByEmployee().equals(EvaluationStatus.NOT_EVALUATED);
     }
 
 }

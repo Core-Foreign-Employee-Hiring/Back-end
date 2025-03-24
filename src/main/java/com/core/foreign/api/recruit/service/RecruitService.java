@@ -718,6 +718,7 @@ public class RecruitService {
         EmployerReliabilityDTO employerReliabilityDTO = employerRepository.getEmployerReliability(employer.getId());
         Integer reliability = employerReliabilityDTO.getReliability();
         boolean isLiked = recruitBookmarkRepository.existsByRecruitIdAndMemberId(recruitId, memberId);
+        boolean isEvaluated = evaluationReader.hasEmployeeEvaluatedRecruit(memberId, recruitId);
 
         return RecruitDetailResponseDTO.builder()
                 .recruitId(recruit.getId())
@@ -755,6 +756,7 @@ public class RecruitService {
                 .employerEvaluationCountDTO(employerEvaluationCountDTO)
                 .employerReliability(reliability)
                 .isLiked(isLiked)
+                .isEvaluated(isEvaluated)
                 .build();
     }
 

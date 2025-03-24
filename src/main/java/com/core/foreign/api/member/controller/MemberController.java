@@ -178,7 +178,8 @@ public class MemberController {
             summary = "고용주 프로필 조회 API (용범)",
             description = "고용주의 이름, 생년월일, 성별, 이메일, 휴대폰 번호, 주소, 약관 동의를 조회합니다.<br>" +
                     "<p>" +
-                    "호출 필드 정보)<br>"
+                    "호출 필드 정보)<br>" +
+                    "번호: ('-' 없음)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "고용주 프로필 조회 성공"),
@@ -401,7 +402,7 @@ public class MemberController {
                     "address1: 주소<br>" +
                     "address2: 상세주소<br>" +
                     "companyEmail: 회사 이메일<br>" +
-                    "mainPhoneNumber: 대표 연락처<br>" +
+                    "mainPhoneNumber: 대표 연락처 ('-' 없음)<br>" +
                     "<p>" +
                     "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
@@ -429,7 +430,7 @@ public class MemberController {
                     "visa: 비자<br>" +
                     "birthDate: 생년월일(YYYY-MM-DD)<br>" +
                     "email: 이메일<br>" +
-                    "phoneNumber: 연락처<br>" +
+                    "phoneNumber: 연락처 ('-' 없음)<br>" +
                     "zipcode: 우편번호<br>" +
                     "address1: 주소<br>" +
                     "address2: 상세주소<br>"
@@ -801,38 +802,6 @@ public class MemberController {
         evaluationService.evaluateEmployer(securityMember.getId(), dto.getRecruitId(), dto.getEvaluationCategory());
         return ApiResponse.success_only(SuccessStatus.EVALUATE_EMPLOYEE_SUCCESS);
     }
-
-    /**
-     * @deprecated
-     */
-/*    @Operation(
-            summary = "평가보기. API",
-            description = "평가보기입니다." +
-                    "<p>" +
-                    "WORKS_DILIGENTLY: 성실하게 일해요.<br>" +
-                    "NO_LATENESS_OR_ABSENCE: 지각/결근하지 않았어요.<br>" +
-                    "POLITE_AND_FRIENDLY: 예의 바르고 친절해요.<br>" +
-                    "GOOD_CUSTOMER_SERVICE: 고객 응대를 잘해요.<br>" +
-                    "SKILLED_AT_WORK: 업무 능력이 좋아요.<br>" +
-                    "<p>" +
-                    "PAYS_ON_TIME: 약속된 급여를 제때 줘요.<br>" +
-                    "KEEPS_CONTRACT_DATES: 계약된 날짜를 잘 지켰어요.<br>" +
-                    "RESPECTS_EMPLOYEES: 알바생을 존중해줘요.<br>" +
-                    "FRIENDLY_BOSS: 사장님이 친절해요.<br>" +
-                    "FAIR_WORKLOAD: 업무 강도가 적당해요.<br>"
-
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "평가 보기 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-    })
-    @GetMapping("/evaluations")
-    public ResponseEntity<ApiResponse<List<EvaluationCategory>>> getEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                               @RequestParam("resumeId") Long resumeId) {
-
-        List<EvaluationCategory> evaluation = evaluationService.getEvaluation(securityMember.getId(), resumeId);
-        return ApiResponse.success(SuccessStatus.EVALUATE_VIEW_SUCCESS, evaluation);
-    }*/
 
     @Operation(
             summary = "고용인이 피고용인을 평가한 항목 보기 API (용범)",
