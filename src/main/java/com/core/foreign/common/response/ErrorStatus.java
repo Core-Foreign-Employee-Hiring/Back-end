@@ -77,6 +77,8 @@ public enum ErrorStatus {
     CONTRACT_ALREADY_COMPLETED_EXCEPTION(HttpStatus.BAD_REQUEST, "완료된 계약서는 수정할 수 없습니다."),
     CONTRACT_VERSION_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서가 변경되었습니다. 다시 확인하세요."),
     CONTRACT_REVIEW_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "먼저 계약서를 확인하세요."),
+    INVALID_APPLY_METHOD_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 지원 방법입니다. 올바른 방법으로 다시 시도하세요."),
+
 
 
     /**
