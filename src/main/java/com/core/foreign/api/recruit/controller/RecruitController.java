@@ -34,56 +34,38 @@ public class RecruitController {
     private final RecruitService recruitService;
     private final ResumeService resumeService;
 
-    @Operation(summary = "일반 공고 등록 API",
-            description = "일반 공고를 등록합니다.<br>" +
-                    "<p>" +
-                    "title : 공고 제목 - String <br>" +
-                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
-                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
-                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
-                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
-                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "otherConditions : 기타 조건 - String <br>" +
-                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
-                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
-                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
-                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
-                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
-                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
-                    "salary : 급여 정보 - String (ex 14000)<br>" +
-                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
-                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
-                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
-                    "latitude : 위도 - Double (ex 36.215556)<br>" +
-                    "longitude : 경도- Double (ex 127.251855)<br>" +
-                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
-                    "address1 : 주소 - String (ex '충대로1')<br>" +
-                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
-                    "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>")
+    @Operation(
+            summary = "일반 공고 등록 API (태근)",
+            description = "일반 공고를 등록합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "title : 공고 제목 (String) <br>"
+                    + "recruitStartDate : 모집 시작일 (ex: '2025-01-01') <br>"
+                    + "recruitEndDate : 모집 종료일 (상시 모집 시 '2099-12-31')<br>"
+                    + "recruitCount : 모집 인원 (ex 5) <br>"
+                    + "gender : 성별 (남자: 'male', 여자: 'female', 무관: null) <br>"
+                    + "education : 학력 조건 (ex '학력무관') <br>"
+                    + "otherConditions : 기타 조건 <br>"
+                    + "preferredConditions : 우대 조건 (여러 항목 가능) <br>"
+                    + "workDuration : 근무 기간 (ex '1주일이하' 혹은 '기간 협의') <br>"
+                    + "workDurationOther : 근무 기간 기타 사항 <br>"
+                    + "workTime : 근무 시간 (ex '오전~오후' 혹은 '시간 협의') <br>"
+                    + "workTimeOther : 근무 시간 기타 사항 <br>"
+                    + "workDays : 근무 요일 (ex '주말 (토, 일)' 혹은 '요일 협의') <br>"
+                    + "workDaysOther : 근무 요일 기타 사항 <br>"
+                    + "salary : 급여 정보 (ex 14000) <br>"
+                    + "salaryType : 급여 형태 (ex '월급') <br>"
+                    + "salaryOther : 급여 기타 사항 <br>"
+                    + "businessFields : 업직종 리스트 (ex 'FOOD_BEVERAGE','STORE_SALES') <br>"
+                    + "applicationMethods : 지원 방법 (ex 'ONLINE','INQUIRY') <br>"
+                    + "latitude : 위도 (ex 36.215556) <br>"
+                    + "longitude : 경도 (ex 127.251855) <br>"
+                    + "zipcode : 우편 번호 (ex '28464') <br>"
+                    + "address1 : 주소 (ex '충대로1') <br>"
+                    + "address2 : 상세주소 (ex '충북대학교') <br>"
+                    + "<p>"
+                    + "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -98,7 +80,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "프리미엄 공고 등록 API",
+    @Operation(summary = "프리미엄 공고 등록 API (태근)",
             description = "프리미엄 공고를 등록합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
@@ -126,35 +108,16 @@ public class RecruitController {
                     "address1 : 주소 - String (ex '충대로1')<br>" +
                     "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
                     "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>" +
-                    "<p>" +
                     "Portfolios<br>" +
                     "title : 질문 제목 - String<br>" +
                     "type : 질문 유형 - String (LONG_TEXT : 장문형 / SHORT_TEXT : 단답형 / FILE_UPLOAD : 파일 업로드)<br>" +
                     "required : 필수 질문 - String<br>" +
                     "maxFileCount : 최대 업로드 가능 갯수 - Int (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>" +
-                    "maxFileSize : 최대 업로드 가능 파일 사이즈 - Long (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>")
+                    "<p>" +
+                    "요청 예시 : <A href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af2810b99c7f90aeec98def&pm=s\" target=\"_blank\"> 이동 하기 </A>" +
+                    "<p>" +
+                    "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -169,56 +132,37 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "일반 공고 임시저장 API",
-            description = "일반 공고를 임시저장 합니다.<br>" +
-                    "<p>" +
-                    "title : 공고 제목 - String <br>" +
-                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
-                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
-                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
-                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
-                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "otherConditions : 기타 조건 - String <br>" +
-                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
-                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
-                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
-                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
-                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
-                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
-                    "salary : 급여 정보 - String (ex 14000)<br>" +
-                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
-                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
-                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
-                    "latitude : 위도 - Double (ex 36.215556)<br>" +
-                    "longitude : 경도- Double (ex 127.251855)<br>" +
-                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
-                    "address1 : 주소 - String (ex '충대로1')<br>" +
-                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
-                    "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>")
+    @Operation(summary = "일반 공고 임시저장 API (태근)",
+            description = "일반 공고를 임시저장 합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "title : 공고 제목 (String) <br>"
+                    + "recruitStartDate : 모집 시작일 (ex: '2025-01-01') <br>"
+                    + "recruitEndDate : 모집 종료일 (상시 모집 시 '2099-12-31')<br>"
+                    + "recruitCount : 모집 인원 (ex 5) <br>"
+                    + "gender : 성별 (남자: 'male', 여자: 'female', 무관: null) <br>"
+                    + "education : 학력 조건 (ex '학력무관') <br>"
+                    + "otherConditions : 기타 조건 <br>"
+                    + "preferredConditions : 우대 조건 (여러 항목 가능) <br>"
+                    + "workDuration : 근무 기간 (ex '1주일이하' 혹은 '기간 협의') <br>"
+                    + "workDurationOther : 근무 기간 기타 사항 <br>"
+                    + "workTime : 근무 시간 (ex '오전~오후' 혹은 '시간 협의') <br>"
+                    + "workTimeOther : 근무 시간 기타 사항 <br>"
+                    + "workDays : 근무 요일 (ex '주말 (토, 일)' 혹은 '요일 협의') <br>"
+                    + "workDaysOther : 근무 요일 기타 사항 <br>"
+                    + "salary : 급여 정보 (ex 14000) <br>"
+                    + "salaryType : 급여 형태 (ex '월급') <br>"
+                    + "salaryOther : 급여 기타 사항 <br>"
+                    + "businessFields : 업직종 리스트 (ex 'FOOD_BEVERAGE','STORE_SALES') <br>"
+                    + "applicationMethods : 지원 방법 (ex 'ONLINE','INQUIRY') <br>"
+                    + "latitude : 위도 (ex 36.215556) <br>"
+                    + "longitude : 경도 (ex 127.251855) <br>"
+                    + "zipcode : 우편 번호 (ex '28464') <br>"
+                    + "address1 : 주소 (ex '충대로1') <br>"
+                    + "address2 : 상세주소 (ex '충북대학교') <br>"
+                    + "<p>"
+                    + "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 임시 저장 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -233,56 +177,37 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "임시 저장된 일반 공고 수정 API",
-            description = "임시 저장된 일반 공고 데이터를 수정 합니다.<br>" +
-                    "<p>" +
-                    "title : 공고 제목 - String <br>" +
-                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
-                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
-                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
-                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
-                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "otherConditions : 기타 조건 - String <br>" +
-                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
-                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
-                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
-                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
-                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
-                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
-                    "salary : 급여 정보 - String (ex 14000)<br>" +
-                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
-                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
-                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
-                    "latitude : 위도 - Double (ex 36.215556)<br>" +
-                    "longitude : 경도- Double (ex 127.251855)<br>" +
-                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
-                    "address1 : 주소 - String (ex '충대로1')<br>" +
-                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
-                    "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>")
+    @Operation(summary = "임시 저장된 일반 공고 수정 API (태근)",
+            description = "임시 저장된 일반 공고 데이터를 수정 합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "title : 공고 제목 (String) <br>"
+                    + "recruitStartDate : 모집 시작일 (ex: '2025-01-01') <br>"
+                    + "recruitEndDate : 모집 종료일 (상시 모집 시 '2099-12-31')<br>"
+                    + "recruitCount : 모집 인원 (ex 5) <br>"
+                    + "gender : 성별 (남자: 'male', 여자: 'female', 무관: null) <br>"
+                    + "education : 학력 조건 (ex '학력무관') <br>"
+                    + "otherConditions : 기타 조건 <br>"
+                    + "preferredConditions : 우대 조건 (여러 항목 가능) <br>"
+                    + "workDuration : 근무 기간 (ex '1주일이하' 혹은 '기간 협의') <br>"
+                    + "workDurationOther : 근무 기간 기타 사항 <br>"
+                    + "workTime : 근무 시간 (ex '오전~오후' 혹은 '시간 협의') <br>"
+                    + "workTimeOther : 근무 시간 기타 사항 <br>"
+                    + "workDays : 근무 요일 (ex '주말 (토, 일)' 혹은 '요일 협의') <br>"
+                    + "workDaysOther : 근무 요일 기타 사항 <br>"
+                    + "salary : 급여 정보 (ex 14000) <br>"
+                    + "salaryType : 급여 형태 (ex '월급') <br>"
+                    + "salaryOther : 급여 기타 사항 <br>"
+                    + "businessFields : 업직종 리스트 (ex 'FOOD_BEVERAGE','STORE_SALES') <br>"
+                    + "applicationMethods : 지원 방법 (ex 'ONLINE','INQUIRY') <br>"
+                    + "latitude : 위도 (ex 36.215556) <br>"
+                    + "longitude : 경도 (ex 127.251855) <br>"
+                    + "zipcode : 우편 번호 (ex '28464') <br>"
+                    + "address1 : 주소 (ex '충대로1') <br>"
+                    + "address2 : 상세주소 (ex '충북대학교') <br>"
+                    + "<p>"
+                    + "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 임시 저장 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -298,56 +223,37 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-        @Operation(summary = "일반 공고 퍼블리싱 API",
-            description = "임시 저장한 일반 공고를 최종 퍼블리싱 합니다.<br>" +
-                    "<p>" +
-                    "title : 공고 제목 - String <br>" +
-                    "recruitStartDate : 모집 시작일 - String (ex '2025-01-01')<br>" +
-                    "recruitEndDate : 모집 종료일 - String (ex '2025-01-20') / 상시 모집일 경우 2099-12-31 로 등록<br>" +
-                    "recruitCount : 모집 인원 - int (ex 5)<br>" +
-                    "gender : 성별 - String (ex 남자 : 'male', 여자 : 'female', 무관일시 : null)<br>" +
-                    "education : 학력 조건 - String (ex '학력무관' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "otherConditions : 기타 조건 - String <br>" +
-                    "preferredConditions : 우대 조건  - String (ex '유사업무 경험' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "workDuration : 근무 기간 - String (ex '1주일이하' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 기간 협의를 누를경우 '기간 협의'로 등록하면 됩니다!)<br>" +
-                    "workDurationOther : 근무 기간 기타 사항 - String (없다면 null)<br>" +
-                    "workTime : 근무 시간 - String (ex '오전~오후' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 시간 협의를 누를경우 '시간 협의'로 등록하면 됩니다! / 만약 직접 선택시 '시작시간~종료시간' <- 이런 형식으로 등록하면 됩니다!<br>" +
-                    "workTimeOther : 근무 시간 기타 사항 - String (없다면 null)<br>" +
-                    "workDays : 근무 요일 - String (ex '주말 (토, 일)' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다! 또한 요일 협의를 누른 경우 '요일 협의'로 등록하면 됩니다! / 만약 직접 선택시 (월요일 선택할 경우) '월요일' <- 이런 형식으로 등록하면 됩니다! '<br>" +
-                    "workDaysOther : 근무 요일 기타 사항 - String (없다면 null)<br>" +
-                    "salary : 급여 정보 - String (ex 14000)<br>" +
-                    "salaryType : 급여 형태 - String (ex '월급' <- 피그마, 화면정의서에 있는거랑 네이밍 같게 하면 됩니다!)<br>" +
-                    "salaryOther : 급여 기타 사항 - String (없다면 null)<br>" +
-                    "businessFields : 업직종 리스트 - String (ex 'FOOD_BEVERAGE','STORE_SALES' <- 여러개 일경우 이렇게 하시면 됩니다!) <br>" +
-                    "applicationMethods : 지원 방법  - String (ex 'ONLINE','INQUIRY' <- 여러개 일경우 이렇게 하시면 됩니다!<br>" +
-                    "latitude : 위도 - Double (ex 36.215556)<br>" +
-                    "longitude : 경도- Double (ex 127.251855)<br>" +
-                    "zipcode : 우편 번호 - String (ex '28464')<br>" +
-                    "address1 : 주소 - String (ex '충대로1')<br>" +
-                    "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
-                    "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>")
+        @Operation(summary = "일반 공고 퍼블리싱 API (태근)",
+            description = "임시 저장한 일반 공고를 최종 퍼블리싱 합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "title : 공고 제목 (String) <br>"
+                    + "recruitStartDate : 모집 시작일 (ex: '2025-01-01') <br>"
+                    + "recruitEndDate : 모집 종료일 (상시 모집 시 '2099-12-31')<br>"
+                    + "recruitCount : 모집 인원 (ex 5) <br>"
+                    + "gender : 성별 (남자: 'male', 여자: 'female', 무관: null) <br>"
+                    + "education : 학력 조건 (ex '학력무관') <br>"
+                    + "otherConditions : 기타 조건 <br>"
+                    + "preferredConditions : 우대 조건 (여러 항목 가능) <br>"
+                    + "workDuration : 근무 기간 (ex '1주일이하' 혹은 '기간 협의') <br>"
+                    + "workDurationOther : 근무 기간 기타 사항 <br>"
+                    + "workTime : 근무 시간 (ex '오전~오후' 혹은 '시간 협의') <br>"
+                    + "workTimeOther : 근무 시간 기타 사항 <br>"
+                    + "workDays : 근무 요일 (ex '주말 (토, 일)' 혹은 '요일 협의') <br>"
+                    + "workDaysOther : 근무 요일 기타 사항 <br>"
+                    + "salary : 급여 정보 (ex 14000) <br>"
+                    + "salaryType : 급여 형태 (ex '월급') <br>"
+                    + "salaryOther : 급여 기타 사항 <br>"
+                    + "businessFields : 업직종 리스트 (ex 'FOOD_BEVERAGE','STORE_SALES') <br>"
+                    + "applicationMethods : 지원 방법 (ex 'ONLINE','INQUIRY') <br>"
+                    + "latitude : 위도 (ex 36.215556) <br>"
+                    + "longitude : 경도 (ex 127.251855) <br>"
+                    + "zipcode : 우편 번호 (ex '28464') <br>"
+                    + "address1 : 주소 (ex '충대로1') <br>"
+                    + "address2 : 상세주소 (ex '충북대학교') <br>"
+                    + "<p>"
+                    + "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+        )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -363,7 +269,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "프리미엄 공고 임시저장 API",
+    @Operation(summary = "프리미엄 공고 임시저장 API (태근)",
             description = "프리미엄 공고를 임시저장 합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
@@ -391,35 +297,16 @@ public class RecruitController {
                     "address1 : 주소 - String (ex '충대로1')<br>" +
                     "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
                     "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>" +
-                    "<p>" +
                     "Portfolios<br>" +
                     "title : 질문 제목 - String<br>" +
                     "type : 질문 유형 - String (LONG_TEXT : 장문형 / SHORT_TEXT : 단답형 / FILE_UPLOAD : 파일 업로드)<br>" +
                     "required : 필수 질문 - String<br>" +
                     "maxFileCount : 최대 업로드 가능 갯수 - Int (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>" +
-                    "maxFileSize : 최대 업로드 가능 파일 사이즈 - Long (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>")
+                    "<p>" +
+                    "요청 예시 : <A href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af2810b99c7f90aeec98def&pm=s\" target=\"_blank\"> 이동 하기 </A>" +
+                    "<p>" +
+                    "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 임시 저장 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -434,7 +321,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "임시 저장된 프리미엄 공고 수정 API",
+    @Operation(summary = "임시 저장된 프리미엄 공고 수정 API (태근)",
             description = "임시 저장된 프리미엄 공고 데이터를 수정 합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
@@ -462,35 +349,16 @@ public class RecruitController {
                     "address1 : 주소 - String (ex '충대로1')<br>" +
                     "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
                     "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>" +
-                    "<p>" +
                     "Portfolios<br>" +
                     "title : 질문 제목 - String<br>" +
                     "type : 질문 유형 - String (LONG_TEXT : 장문형 / SHORT_TEXT : 단답형 / FILE_UPLOAD : 파일 업로드)<br>" +
                     "required : 필수 질문 - String<br>" +
                     "maxFileCount : 최대 업로드 가능 갯수 - Int (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>" +
-                    "maxFileSize : 최대 업로드 가능 파일 사이즈 - Long (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>")
+                    "<p>" +
+                    "요청 예시 : <A href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af2810b99c7f90aeec98def&pm=s\" target=\"_blank\"> 이동 하기 </A>" +
+                    "<p>" +
+                    "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -506,7 +374,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS);
     }
 
-        @Operation(summary = "프리미엄 공고 퍼블리싱 API",
+        @Operation(summary = "프리미엄 공고 퍼블리싱 API (태근)",
             description = "임시 저장한 프리미엄 공고를 최종 퍼블리싱 합니다.<br>" +
                     "<p>" +
                     "title : 공고 제목 - String <br>" +
@@ -534,35 +402,16 @@ public class RecruitController {
                     "address1 : 주소 - String (ex '충대로1')<br>" +
                     "address2 : 상세 주소 - String (ex '충북대학교')<br>" +
                     "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스" +
-                    "<p>" +
-                    "applicationMethods 종류<br>" +
-                    "<p>" +
-                    "ONLINE : 온라인지원,<br>" +
-                    "INQUIRY : 문의 지원,<br>" +
-                    "VISIT : 방문 접수,<br>" +
-                    "CALL_VISIT : 전화 후 방문,<br>" +
-                    "<p>" +
                     "Portfolios<br>" +
                     "title : 질문 제목 - String<br>" +
                     "type : 질문 유형 - String (LONG_TEXT : 장문형 / SHORT_TEXT : 단답형 / FILE_UPLOAD : 파일 업로드)<br>" +
                     "required : 필수 질문 - String<br>" +
                     "maxFileCount : 최대 업로드 가능 갯수 - Int (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>" +
-                    "maxFileSize : 최대 업로드 가능 파일 사이즈 - Long (FILE_UPLOAD 일때만, 다른 유형일 경우 null)<br>")
+                    "<p>" +
+                    "요청 예시 : <A href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af2810b99c7f90aeec98def&pm=s\" target=\"_blank\"> 이동 하기 </A>" +
+                    "<p>" +
+                    "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+        )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -578,7 +427,7 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "임시 저장된 공고 존재 여부 조회 API",
+    @Operation(summary = "임시 저장된 공고 존재 여부 조회 API (태근)",
             description = "현재 사용자가 임시 저장한 공고가 존재하는지 여부를 확인합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "임시 저장된 공고 여부 조회 성공"),
@@ -592,8 +441,12 @@ public class RecruitController {
         return ApiResponse.success(exists ? SuccessStatus.SEND_DRAFT_SAVE_SUCCESS : SuccessStatus.SEND_NO_DRAFT_SAVE_SUCCESS, exists);
     }
 
-    @Operation(summary = "임시 저장된 공고 내용 조회 API",
-            description = "해당 임시 공고의 ID를 받아 임시 저장된 공고의 상세 데이터를 반환합니다.")
+    @Operation(summary = "임시 저장된 공고 내용 조회 API (태근)",
+            description = "해당 임시 공고의 ID를 받아 임시 저장된 공고의 상세 데이터를 반환합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "recruitId : 임시 저장된 공고 ID"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "임시 저장된 공고 내용 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
@@ -607,7 +460,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_DRAFT_DETAIL_SUCCESS, draft);
     }
 
-    @Operation(summary = "작성 가능 공고 조회 API",
+    @Operation(summary = "작성 가능 공고 조회 API (태근)",
             description = "현재 회원이 작성할 수 있는 공고 유형을 조회합니다.<br>" +
                     "프리미엄 공고가 가능한 경우 '일반 공고', '프리미엄 공고'를 반환합니다.<br>" +
                     "프리미엄 공고가 불가능한 경우 '일반 공고'만 반환합니다.")
@@ -676,9 +529,22 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.APPLY_RECRUIT_ARTICLE_SUCCESS);
     }
 
-    @Operation(summary = "공고 전체 조회 API",
-            description = "등록되어있는 공고들을 전체 조회 합니다. <br>"+
-                    "상단 점프한 공고는 jump = true로 표시됩니다.")
+    @Operation(summary = "공고 전체 조회 API (태근)",
+            description = "등록되어있는 공고를 전체 조회합니다.<br>"
+                    + "상단 점프한 공고는 jump = true 로 표시됩니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "page, size : 페이징 처리 <br>"
+                    + "businessFields : 업직종 필터 <br>"
+                    + "workDurations : 근무기간 필터 <br>"
+                    + "workDays : 근무요일 필터 <br>"
+                    + "workTimes : 근무시간 필터 <br>"
+                    + "gender : 성별 필터 <br>"
+                    + "salaryType : 급여 타입 필터 <br>"
+                    + "<p>"
+                    + "요청 예시: <a href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af281f8b7b3c84b2b9e234f&pm=s\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @GetMapping("/search")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 전체 조회 성공"),
@@ -712,9 +578,21 @@ public class RecruitController {
     }
 
     @Operation(
-            summary = "프리미엄 공고 전체 조회 API",
-            description = "프리미엄 공고 만 조회합니다. " +
-                    "상단 점프한 공고는 jump = true로 표시됩니다."
+            summary = "프리미엄 공고 전체 조회 API (태근)",
+            description = "프리미엄 공고만 조회합니다.<br>"
+                    + "상단 점프한 공고는 jump = true 로 표시됩니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "page, size : 페이징 처리 <br>"
+                    + "businessFields : 업직종 필터 <br>"
+                    + "workDurations : 근무기간 필터 <br>"
+                    + "workDays : 근무요일 필터 <br>"
+                    + "workTimes : 근무시간 필터 <br>"
+                    + "gender : 성별 필터 <br>"
+                    + "salaryType : 급여 타입 필터 <br>"
+                    + "<p>"
+                    + "요청 예시: <a href=\"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af2811fbabccbe33003a34c&pm=s\" target= \"_blank\">이동 하기</a><br>" +
+                    "ENUM 정보 : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 전체 조회 성공"),
@@ -748,10 +626,11 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, pageResponse);
     }
 
-    @Operation(summary = "공고 상세 조회 API",
+    @Operation(summary = "공고 상세 조회 API (태근)",
             description = "공고 ID를 받아 해당 공고의 상세 정보를 반환합니다.<br>" +
                     "반환 정보: 회사(점포) 명, 회사 아이콘 이미지, 공고 제목, 급여(시급) 정보 등 공고 등록된 모든 정보를 포함합니다.<br>" +
-                    "<p>" +
+                    "<p>"
+                    + "응답 필드 정보) <br>" +
                     "employerAddress : 회사 주소<br>" +
                     "employerContact : 연락처<br>" +
                     "representative : 담당자명<br>" +
@@ -1005,8 +884,11 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.PORTFOLIO_VIEW_SUCCESS, portfolios);
     }
 
-    @Operation(summary = "프리미엄 공고 상단 점프 API",
-            description = "프리미엄 공고를 상단으로 올립니다."
+    @Operation(summary = "프리미엄 공고 상단 점프 API (태근)",
+            description = "프리미엄 공고를 상단으로 올립니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "recruitId : 프리미엄 공고 ID"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상단 점프 성공"),
@@ -1021,8 +903,11 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.UPDATE_TOP_JUMP_SUCCESS);
     }
 
-    @Operation(summary = "일반 공고 상단 점프 API",
-            description = "일반 공고를 상단으로 올립니다."
+    @Operation(summary = "일반 공고 상단 점프 API (태근)",
+            description = "일반 공고를 상단으로 올립니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "recruitId : 일반 공고 ID"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 상단 점프 성공"),
@@ -1037,8 +922,12 @@ public class RecruitController {
         return ApiResponse.success_only(SuccessStatus.UPDATE_TOP_JUMP_SUCCESS);
     }
 
-    @Operation(summary = "상단 점프 잔여 횟수 조회 API",
-            description = "현재 사용자가 보유한 프리미엄/일반 상단 점프 횟수를 반환합니다.")
+    @Operation(summary = "상단 점프 잔여 횟수 조회 API (태근)",
+            description = "현재 사용자가 보유한 프리미엄/일반 상단 점프 횟수를 반환합니다.<br>"
+                    + "<p>"
+                    + "응답 필드 정보) <br>"
+                    + "premiumJumpCount : 프리미엄 공고 점프 가능 횟수, normalJumpCount : 일반 공고 점프 가능 횟수"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "상단 점프 잔여 횟수 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
@@ -1051,8 +940,9 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_TOP_JUMP_COUNT_SUCCESS, topJumpCountResponseDTO);
     }
 
-    @Operation(summary = "프리미엄 공고 상단 점프 목록 조회 API",
-            description = "프리미엄 공고 중 상단 점프를 한 공고들을 최신순으로 반환합니다.")
+    @Operation(summary = "프리미엄 공고 상단 점프 목록 조회 API (태근)",
+            description = "프리미엄 공고 중 상단 점프를 한 공고들을 최신순으로 반환합니다.<br>"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프리미엄 공고 목록 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
@@ -1067,7 +957,7 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
-    @Operation(summary = "일반 공고 상단 점프 목록 조회 API",
+    @Operation(summary = "일반 공고 상단 점프 목록 조회 API (태근)",
             description = "일반 공고 중 상단 점프를 한 공고들을 최신순으로 반환합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "일반 공고 목록 조회 성공"),
@@ -1083,8 +973,13 @@ public class RecruitController {
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
-    @Operation(summary = "메인 공고 조회 API",
-            description = "공고 명, 회사점표명을 입력받아 관련된 공고를 연관도 높은순으로 반환합니다.")
+    @Operation(summary = "메인 공고 조회 API (태근)",
+            description = "공고 명, 회사(점포)명을 입력받아 관련 공고를 연관도 높은순으로 반환합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "query : 검색 키워드 <br>"
+                    + "page, size : 페이징 처리"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 검색 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
