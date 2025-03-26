@@ -68,6 +68,11 @@ public interface RecruitRepository
     @Query("select pr from PremiumRecruit pr where pr.id = :id and pr.recruitPublishStatus = :status")
     Optional<PremiumRecruit> findPremiumDraftById(Long id, RecruitPublishStatus status);
 
+    @Query("select r from Recruit r" +
+            " join fetch r.applicationMethods" +
+            " where r.id=:recruitId")
+    Optional<Recruit> findByRecruitIdWithApplicationMethods(@Param("recruitId")Long recruitId);
+
     default Optional<PremiumRecruit> findPremiumDraftById(Long id) {
         return findPremiumDraftById(id, RecruitPublishStatus.DRAFT);
     }

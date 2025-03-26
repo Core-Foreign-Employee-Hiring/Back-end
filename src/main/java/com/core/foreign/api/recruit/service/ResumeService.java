@@ -47,7 +47,20 @@ public class ResumeService {
 
     @Transactional
     public Long applyResume(Long employeeId, Long recruitId, GeneralResumeRequestDTO dto) {
-        Recruit recruit = recruitRepository.findById(recruitId).orElseThrow(() -> new NotFoundException(RECRUIT_NOT_FOUND_EXCEPTION.getMessage()));
+        Recruit recruit = recruitRepository.findByRecruitIdWithApplicationMethods(recruitId)
+                .orElseThrow(()->{
+                    log.warn("[applyResume][공고 없음.][recruitId= {}]", recruitId);
+                    return new NotFoundException(ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Set<ApplyMethod> applicationMethods = recruit.getApplicationMethods();
+        ApplyMethod applyMethod = dto.getApplyMethod();
+
+        if(!applicationMethods.contains(applyMethod)){
+            log.warn("[applyResume][지원 방법 틀림.][applicationMethods= {}, requestApplyMethod= {}]", applicationMethods, dto.getApplyMethod());
+            throw new BadRequestException(ErrorStatus.INVALID_APPLY_METHOD_EXCEPTION.getMessage());
+        }
+
 
         if(recruit.getRecruitType()!=RecruitType.GENERAL) {
             throw  new BadRequestException(INVALID_RECRUIT_TYPE_EXCEPTION.getMessage());

@@ -979,7 +979,7 @@ public class RecruitService {
     }
 
 
-    public boolean isEmployeeEligibleForRecruitment(Long employeeId, Long recruitId) {
+    public void isEmployeeEligibleForRecruitment(Long employeeId, Long recruitId) {
 
         Member member = memberRepository.findById(employeeId).get();
         if (member instanceof Employer) {
@@ -1023,7 +1023,5 @@ public class RecruitService {
                 throw new BadRequestException(MISSING_REQUIRED_SPEC_OR_EXPERIENCE_EXCEPTION.getMessage());
             }
         }
-
-        return true;
     }
 }
