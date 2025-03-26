@@ -26,7 +26,7 @@ public class FileController {
 
     private final FileService fileService;
 
-    @Operation(summary = "파일 업로드 API",
+    @Operation(summary = "파일 업로드 API (태근)",
             description = "파일 업로드 기능을 수행합니다, 업로드 시 해당 파일의 URL을 반환합니다."
     )
     @ApiResponses({

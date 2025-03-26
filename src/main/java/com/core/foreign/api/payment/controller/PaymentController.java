@@ -28,8 +28,14 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @Operation(
-            summary = "초기 결제 세팅 API",
-            description = "프론트엔드에서 결제 요청 전 수행해야하는 결제 세팅 API 입니다."
+            summary = "초기 결제 세팅 API (태근)",
+            description = "프론트엔드에서 결제 요청 전 수행해야 하는 결제 세팅 API입니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "amount : 결제 금액<br>"
+                    + "orderId : 주문 ID"
+                    + "<p>"
+                    + "주의! 프론트엔드에서 토스페이먼트에 결제 요청할 때 주문이름을 위와 같이 동일하게 해주세요! (프리미엄 공고 등록 횟수 구매 시 -> 주문이름 : '프리미엄 공고' / 프리미엄 공고 점프 횟수 구매 시 -> 주문이름 : '프리미엄 공고 상단점프' / 일반 공고 점프 횟수 구매 시 -> 주문이름 : '일반 공고 상단점프')"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "결제 정보 등록 성공"),
@@ -43,8 +49,14 @@ public class PaymentController {
     }
 
     @Operation(
-            summary = "결제 승인 요청 API",
-            description = "토스페이먼트에 결제 승인 요청을 수행합니다.")
+            summary = "결제 승인 요청 API (태근)",
+            description = "토스페이먼트에 결제 승인 요청을 수행합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "paymentKey : 결제 키<br>"
+                    + "orderId : 주문 ID<br>"
+                    + "amount : 결제 금액"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 승인 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "결제 승인 실패"),
@@ -76,8 +88,12 @@ public class PaymentController {
     }
 
     @Operation(
-            summary = "결제 취소 API",
-            description = "토스페이먼트에 결제 취소 요청을 수행합니다."
+            summary = "결제 취소 API (태근)",
+            description = "토스페이먼트에 결제 취소 요청을 수행합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "paymentKey : 결제 키<br>"
+                    + "cancelReason : 취소 사유"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 취소 성공"),
@@ -95,7 +111,7 @@ public class PaymentController {
     }
 
     @Operation(
-            summary = "결제 내역 조회. API",
+            summary = "결제 내역 조회 API (용범)",
             description = "결제 내역을 확인할 수 있습니다."
     )
     @ApiResponses({

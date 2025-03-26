@@ -25,9 +25,14 @@ public class AlbaReviewCommentController {
     private final AlbaReviewCommentService albaReviewCommentService;
 
     @Operation(
-            summary = "알바 후기 댓글 작성 API",
-            description = "새로운 알바 후기 댓글을 작성합니다. <br>" +
-                    "만약 등록 하는 댓글이 부모댓글일 경우 parentId : null' 로 하시면 됩니다!")
+            summary = "알바 후기 댓글 작성 API (태근)",
+            description = "새로운 알바 후기 댓글을 작성합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "content : 댓글 내용 <br>"
+                    + "reviewId : 알바 후기 ID <br>"
+                    + "parentId : 부모 댓글 ID (부모 댓글 작성 시 null) <br>"
+    )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "알바 후기 댓글 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
@@ -42,10 +47,13 @@ public class AlbaReviewCommentController {
     }
 
     @Operation(
-            summary = "알바 후기 댓글 조회 API",
-            description = "리뷰 ID에 해당하는 댓글들을 최신순(생성일 내림차순)으로 반환합니다. <br>" +
-                    "<p>" +
-                    "내 댓글 여부 : 'mine : true'"
+            summary = "알바 후기 댓글 조회 API (태근)",
+            description = "리뷰 ID에 해당하는 댓글들을 최신순(생성일 내림차순)으로 반환합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "reviewId : 알바 후기 ID <br>"
+                    + "<p>"
+                    + "내 댓글 여부 : 'mine : true' 일 때, 현재 로그인 사용자가 작성한 댓글입니다."
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 조회 성공"),
@@ -62,8 +70,12 @@ public class AlbaReviewCommentController {
     }
 
     @Operation(
-            summary = "알바 후기 댓글 수정 API",
-            description = "댓글 작성자만 댓글을 수정할 수 있습니다."
+            summary = "알바 후기 댓글 수정 API (태근)",
+            description = "댓글 작성자만 댓글을 수정할 수 있습니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "commentId : 수정할 댓글의 ID <br>"
+                    + "content : 수정할 댓글 내용 <br>"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 수정 성공"),
@@ -80,8 +92,11 @@ public class AlbaReviewCommentController {
     }
 
     @Operation(
-            summary = "알바 후기 댓글 삭제 API",
-            description = "댓글 작성자만 댓글을 삭제할 수 있습니다."
+            summary = "알바 후기 댓글 삭제 API (태근)",
+            description = "댓글 작성자만 댓글을 삭제할 수 있습니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "commentId : 삭제할 댓글의 ID <br>"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 댓글 삭제 성공"),

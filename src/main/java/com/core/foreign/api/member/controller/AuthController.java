@@ -34,8 +34,11 @@ public class AuthController {
     private final SmsService smsService;
 
     @Operation(
-            summary = "이메일 인증코드 발송 API",
-            description = "이메일 인증코드를 발송합니다."
+            summary = "이메일 인증코드 발송 API (태근)",
+            description = "이메일 인증코드를 발송합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "email : 사용자 이메일"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이메일 인증코드 발송 성공"),
@@ -56,8 +59,11 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "이메일 코드 인증 API",
-            description = "발송된 이메일 인증 코드를 검증합니다."
+            summary = "이메일 코드 인증 API (태근)",
+            description = "발송된 이메일 인증 코드를 검증합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 이메일로 발송된 인증코드"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이메일 코드 인증 성공"),
@@ -71,8 +77,11 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "SMS 인증코드 발송 API",
-            description = "휴대폰으로 인증코드를 발송합니다. / 입력형식 'phoneNumber' : '01012345678'"
+            summary = "SMS 인증코드 발송 API (태근)",
+            description = "휴대폰으로 인증코드를 발송합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "phoneNumber : 전화번호 (예시 : 01012345678)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "SMS 인증코드 발송 성공"),
@@ -92,8 +101,11 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "SMS 코드 인증 API",
-            description = "발송된 SMS 인증 코드를 검증합니다."
+            summary = "SMS 코드 인증 API (태근)",
+            description = "발송된 SMS 인증 코드를 검증합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 문자로 발송된 인증코드"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "SMS 코드 인증 성공"),

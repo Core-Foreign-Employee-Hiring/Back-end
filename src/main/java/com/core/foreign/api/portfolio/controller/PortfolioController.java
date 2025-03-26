@@ -29,7 +29,7 @@ public class PortfolioController {
 
 
     @Operation(
-            summary = "포트폴리오 기본 조회. API (용범)",
+            summary = "포트폴리오 기본 조회 API (용범)",
             description = "포트폴리오 기본 조회. <br>"+
                     "<p>" +
                     "호출 필드 정보) <br>" +
@@ -57,7 +57,7 @@ public class PortfolioController {
     }
 
     @Operation(
-            summary = "포트폴리오 기본 상세 조회. API (용범)",
+            summary = "포트폴리오 기본 상세 조회 API (용범)",
             description = "포트폴리오 기본 상세 조회. <br>" +
                     "<p>" +
                     "호출 필드 정보) <br>" +
@@ -115,7 +115,7 @@ public class PortfolioController {
 
 
     @Operation(
-            summary = "포트폴리오 실제 지원 조회. API (용범)",
+            summary = "포트폴리오 실제 지원 조회 API (용범)",
             description = "포트폴리오 실제 지원 조회. <br>"+
                     "<p>" +
                     "호출 필드 정보) <br>" +
@@ -147,7 +147,7 @@ public class PortfolioController {
     }
 
     @Operation(
-            summary = "포트폴리오 실제 지원 상세 조회. API (용범)",
+            summary = "포트폴리오 실제 지원 상세 조회 API (용범)",
             description = "포트폴리오 실제 지원 상세 조회. <br>"
     )
     @ApiResponses({
@@ -166,7 +166,7 @@ public class PortfolioController {
     }
 
     @Operation(
-            summary = "포트폴리오 기본 찜하기. API (용범)",
+            summary = "포트폴리오 기본 찜하기 API (용범)",
             description = "포트폴리오 기본 찜하기. <br>"
     )
     @ApiResponses({
@@ -182,7 +182,7 @@ public class PortfolioController {
     }
 
     @Operation(
-            summary = "포트폴리오 실제 지원 찜하기. API (용범)",
+            summary = "포트폴리오 실제 지원 찜하기 API (용범)",
             description = "포트폴리오 실제 지원 찜하기. <br>"
     )
     @ApiResponses({

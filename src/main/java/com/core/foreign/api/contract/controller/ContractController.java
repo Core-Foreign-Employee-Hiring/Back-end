@@ -56,7 +56,7 @@ public class ContractController {
 
 
     @Operation(
-            summary = "계약서 형태 선택. API(용범)",
+            summary = "계약서 형태 선택 API (용범)",
             description = "고용인이 계약서 형태를 선택합니다. <br>" +
                     "<p>" +
                     "호출 필드 정보)<br>" +
@@ -88,7 +88,7 @@ public class ContractController {
     }
 
 
-    @Operation(summary = "실물 계약서 최소 업로드. API (용범)",
+    @Operation(summary = "실물 계약서 최소 업로드 API (용범)",
             description = "실물 계약서 최소 업로드합니다. <br>" +
                     "<p>" +
                     "호출 필드 정보)<br>" +
@@ -110,7 +110,7 @@ public class ContractController {
         return ApiResponse.success_only(SuccessStatus.CONTRACT_UPLOAD_SUCCESS);
     }
 
-    @Operation(summary = "실물 계약서 수정. API (용범)",
+    @Operation(summary = "실물 계약서 수정 API (용범)",
             description = "실물 계약서 수정합니다. <br>" +
                     "<p>" +
                     "호출 필드 정보)<br>" +

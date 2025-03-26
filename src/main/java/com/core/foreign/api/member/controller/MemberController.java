@@ -54,17 +54,29 @@ public class MemberController {
     private final RecruitService recruitService;
 
     @Operation(
-            summary = "피고용인 회원가입 API",
-            description = "피고용인 회원가입을 진행합니다.<br>" +
-                    "<p>" +
-                    "전화번호(phoneNumber) 전달 형식 : 01012345678<br>" +
-                    "생년월일(birthDate) 전달 형식 : 2025-01-20<br>" +
-                    "<p>" +
-                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
-                    "isOver15 : 만 15세 이상 확인<br>" +
-                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
-                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
-                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>"
+            summary = "피고용인 회원가입 API (태근)",
+            description = "피고용인 회원가입을 진행합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 ID <br>"
+                    + "email : 사용자 이메일 <br>"
+                    + "password : 사용자 비밀번호 <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "phoneNumber : 전화번호 (예시: 01012345678) <br>"
+                    + "birthDate : 생년월일 (예시: 2025-01-20) <br>"
+                    + "zipcode : 우편번호 (예시: 28111) <br>"
+                    + "address1 : 주소 1 (예시: 충북 청주시 서원구 충대로 1) <br>"
+                    + "address2 : 주소 2 (예시: 충북대학교 E8-7) <br>"
+                    + "nationality : 국적 <br>"
+                    + "education : 학력 <br>"
+                    + "visa : 비자 <br>"
+                    + "male : true - 남자 (여성일경우 false)"
+                    + "<p>"
+                    + "termsOfServiceAgreement : 서비스 이용 약관 동의 <br>"
+                    + "over15 : 만 15세 이상 확인 <br>"
+                    + "personalInfoAgreement : 개인정보 수집 및 이용 동의 <br>"
+                    + "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS) <br>"
+                    + "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일) <br>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -77,35 +89,33 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "고용주 회원가입 API",
-            description = "고용인 회원가입을 진행합니다.<br>" +
-                    "<p>" +
-                    "전화번호(phoneNumber) 전달 형식 : 01012345678<br>" +
-                    "설립일(establishedDate) 전달 형식 : 2025-01-20<br>" +
-                    "가입명의자생년월일(birthDate) 전달 형식 : 2025-01-20<br>" +
-                    "사업자등록번호(businessRegistrationNumber) 전달 형식 : 0000000000<br>" +
-                    "<p>" +
-                    "termsOfServiceAgreement : 서비스 이용 약관 동의<br>" +
-                    "isOver15 : 만 15세 이상 확인<br>" +
-                    "personalInfoAgreement : 개인정보 수집 및 이용 동의<br>" +
-                    "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS)<br>" +
-                    "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일)<br>" +
-                    "<p>" +
-                    "businessField 전달 형식 : FOOD_BEVERAGE<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스"
+            summary = "고용주 회원가입 API (태근)",
+            description = "고용주 회원가입을 진행합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 ID <br>"
+                    + "email : 사용자 이메일 <br>"
+                    + "password : 사용자 비밀번호 <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "zipcode : 우편번호 (예시: 28111) <br>"
+                    + "address1 : 주소 1 (예시: 충북 청주시 서원구 충대로 1) <br>"
+                    + "address2 : 주소 2 (예시: 충북대학교 E8-7) <br>"
+                    + "phoneNumber : 전화번호 (예시: 01012345678) <br>"
+                    + "establishedDate : 설립일 (예시: 2025-01-20) <br>"
+                    + "birthDate : 가입명의자생년월일 (예시: 2025-01-20) <br>"
+                    + "businessRegistrationNumber : 사업자등록번호 (예시: 0000000000) <br>"
+                    + "companyName : 회사 이름 <br>"
+                    + "representativeName : 회사 대표자 이름 <br>"
+                    + "male : true - 남자 (여성일경우 false)"
+                    + "businessField - ENUM <br>"
+                    + "<p>"
+                    + "termsOfServiceAgreement : 서비스 이용 약관 동의 <br>"
+                    + "over15 : 만 15세 이상 확인 <br>"
+                    + "personalInfoAgreement : 개인정보 수집 및 이용 동의 <br>"
+                    + "adInfoAgreementSnsMms : 광고성 정보 수신 동의 (SNS/MMS) <br>"
+                    + "adInfoAgreementEmail : 광고성 정보 수신 동의 (이메일) <br>"
+                    + "<p>"
+                    + "ENUM : <A href = \"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -118,8 +128,14 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "로그인 API",
-            description = "ID와 Password를 통해 사용자를 인증하고 토큰을 발급합니다."
+            summary = "로그인 API (태근)",
+            description = "ID와 Password를 통해 사용자를 인증하고 토큰을 발급합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 아이디 (예시: user) <br>"
+                    + "password : 사용자 비밀번호 (예시: password)"
+                    + "<p>"
+                    + "요청 예시 : <A href = \"https://www.notion.so/1bc244b92af281f9a82dce6cafca896f?v=1bc244b92af281559243000c1a4fef2f&p=1bc244b92af28125b330c47629fd5152&pm=s\" target=\"_blank\"> 이동 하기 </A>"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -133,7 +149,7 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "토큰 재발급 API",
+            summary = "토큰 재발급 API (태근)",
             description = "유효한 리프레시 토큰을 헤더(Authorization-Refresh)로 제공하면 새로운 액세스 토큰과 리프레시 토큰을 발급하여 헤더로 전송합니다. / [주의] 스웨거로 테스트할때 토큰 앞에 'Bearer ' 을 붙여야 함"
     )
     @ApiResponses({
@@ -160,8 +176,11 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "사용자 ID 중복 체크 API",
-            description = "해당 사용자 ID가 사용가능한지 체크합니다."
+            summary = "사용자 ID 중복 체크 API (태근)",
+            description = "해당 사용자 ID가 사용가능한지 체크합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 ID"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용자 ID 사용 가능"),
@@ -472,8 +491,12 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "사용자 ID 찾기 API",
-            description = "이름과 전화번호를 이용하여 사용자의 ID를 반환합니다."
+            summary = "사용자 ID 찾기 API (태근)",
+            description = "이름과 전화번호를 이용하여 사용자의 ID를 반환합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "phoneNumber : 사용자 전화번호 (예시 : 01012345678)"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용자 ID 찾기 성공"),
@@ -654,8 +677,11 @@ public class MemberController {
         return ApiResponse.success_only(SEND_EMPLOYER_PORTFOLIO_UPDATE_SUCCESS);
     }
 
-    @Operation(summary = "비밀번호 확인 API",
-            description = "비밀번호 확인합니다.<br>"
+    @Operation(summary = "비밀번호 확인 API (용범)",
+            description = "비밀번호를 확인합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "password : 사용자 비밀번호"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 확인 완료."),
@@ -707,8 +733,14 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "비밀번호 초기화 요청 API",
-            description = "[비밀번호 찾기 기능] 이메일로 비밀번호 초기화 링크를 보냅니다.")
+            summary = "비밀번호 초기화 요청 API (태근)",
+            description = "[비밀번호 찾기 기능] 이메일로 비밀번호 초기화 링크를 보냅니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 아이디 <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "email : 사용자 이메일"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 초기화 링크 전송 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
@@ -721,8 +753,13 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "비밀번호 초기화 API",
-            description = "[비밀번호 찾기 기능] 비밀번호 초기화 링크에서 받은 코드를 이용해 비밀번호를 변경합니다.")
+            summary = "비밀번호 초기화 API (태근)",
+            description = "[비밀번호 찾기 기능] 비밀번호 초기화 링크에서 받은 코드를 이용해 비밀번호를 변경합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 비밀번호 초기화 인증코드 <br>"
+                    + "newPassword : 새 비밀번호"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 초기화 인증코드 입니다."),
