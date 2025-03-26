@@ -25,26 +25,18 @@ public class AlbaReviewController {
     private final AlbaReviewService albaReviewService;
 
     @Operation(
-            summary = "알바 후기 작성 API",
-            description = "새로운 알바 후기를 작성합니다.<br>"+
-                    "region1 : (시/도) <br>" +
-                    "region2 : (시/구/군) <br>" +
-                    "<p>" +
-                    "businessField 종류<br>" +
-                    "<p>" +
-                    "FOOD_BEVERAGE : 외식/음료,<br>" +
-                    "STORE_SALES : 매장/판매,<br>" +
-                    "PRODUCTION_CONSTRUCTION : 생산-건설,<br>" +
-                    "PRODUCTION_TECHNICAL : 생산-기술,<br>" +
-                    "OFFICE_SALES : 사무/영업,<br>" +
-                    "DRIVING_DELIVERY : 운전/배달,<br>" +
-                    "LOGISTICS_TRANSPORT : 물류/운송,<br>" +
-                    "ACCOMMODATION_CLEANING : 숙박/청소,<br>" +
-                    "CULTURE_LEISURE_LIFESTYLE : 문화/여가/생활,<br>" +
-                    "RURAL_FISHING : 농어촌/선원,<br>" +
-                    "MODEL_SHOPPING_MALL : 모델/쇼핑몰,<br>" +
-                    "EDUCATION : 교육,<br>" +
-                    "OTHER_SERVICE : 기타/서비스")
+            summary = "알바 후기 작성 API (태근)",
+            description = "새로운 알바 후기를 작성합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "title : 후기 제목 <br>"
+                    + "content : 후기 내용 <br>"
+                    + "region1 : 시/도 <br>"
+                    + "region2 : 시/구/군 <br>"
+                    + "businessField : 업직종(FOOD_BEVERAGE, STORE_SALES, 등) <br>"
+                    + "<p>"
+                    + "ENUM : <A href=\"https://www.notion.so/enum-1bc244b92af28155acb1cfb57edb4fd3\" target=\"_blank\"> 이동 하기 </A>"
+    )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다.")
@@ -59,9 +51,13 @@ public class AlbaReviewController {
     }
 
     @Operation(
-            summary = "알바 후기 상세조회 API",
-            description = "알바 후기 게시글 ID를 받아 상세 정보를 조회합니다.<br>" +
-                    "현재 사용자가 작성한 글인지 여부(mine)"
+            summary = "알바 후기 상세조회 API (태근)",
+            description = "알바 후기 게시글 ID를 받아 상세 정보를 조회합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "reviewId : 후기 게시글 ID <br>"
+                    + "<p>"
+                    + "현재 사용자가 작성한 글인지 여부는 'mine' 필드로 확인"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 상세조회 성공"),
@@ -79,9 +75,13 @@ public class AlbaReviewController {
     }
 
     @Operation(
-            summary = "알바 후기 전체조회 API",
-            description = "알바 후기 전체목록을 페이지네이션과 함께 조회합니다.<br>" +
-                    "정렬조건(sortType) popular : 조회수 / newest : 최신순"
+            summary = "알바 후기 전체조회 API (태근)",
+            description = "알바 후기 전체 목록을 페이지네이션과 함께 조회합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "page : 페이지 번호(0부터 시작) <br>"
+                    + "size : 한 페이지당 개수 <br>"
+                    + "sortType : 정렬조건('popular'=조회수, 'newest'=최신순) <br>"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 전체조회 성공"),
@@ -98,9 +98,18 @@ public class AlbaReviewController {
     }
 
     @Operation(
-            summary = "알바 후기 수정 API",
-            description = "알바 후기 게시글 ID를 받아 해당 후기를 수정합니다.<br>" +
-                    "수정은 작성자만 가능하며, 미로그인 시 수정할 수 없습니다."
+            summary = "알바 후기 수정 API (태근)",
+            description = "알바 후기 게시글 ID를 받아 해당 후기를 수정합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "reviewId : 수정할 후기 게시글 ID <br>"
+                    + "title : 후기 제목 <br>"
+                    + "content : 후기 내용 <br>"
+                    + "region1 : 시/도 <br>"
+                    + "region2 : 시/구/군 <br>"
+                    + "businessField : 업직종(FOOD_BEVERAGE, STORE_SALES, 등) <br>"
+                    + "<p>"
+                    + "작성자 본인만 수정 가능"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 수정 성공"),
@@ -119,9 +128,13 @@ public class AlbaReviewController {
     }
 
     @Operation(
-            summary = "알바 후기 삭제 API",
-            description = "알바 후기 게시글 ID를 받아 해당 후기를 삭제합니다.<br>" +
-                    "삭제는 작성자만 가능하며, 미로그인 시 삭제할 수 없습니다."
+            summary = "알바 후기 삭제 API (태근)",
+            description = "알바 후기 게시글 ID를 받아 해당 후기를 삭제합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "reviewId : 삭제할 후기 게시글 ID <br>"
+                    + "<p>"
+                    + "작성자 본인만 삭제 가능"
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 삭제 성공"),
@@ -139,8 +152,14 @@ public class AlbaReviewController {
     }
 
     @Operation(
-            summary = "알바 후기 검색 API",
-            description = "제목이나 본문 내용에 검색어(keyword)를 포함하는 알바 후기를 연관도(제목 가중치 우선)와 최신순으로 조회합니다."
+            summary = "알바 후기 검색 API (태근)",
+            description = "제목이나 본문 내용에 검색어(keyword)를 포함하는 알바 후기를 조회합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "keyword : 검색어 <br>"
+                    + "page, size : 페이지네이션 <br>"
+                    + "<p>"
+                    + "제목 가중치가 더 높게 설정되어있습니다."
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알바 후기 검색 성공"),
